@@ -284,7 +284,7 @@ export default function BodaMicaTincho() {
           </div>
         </div>
       </section>
-{/*  */}
+
       <section className="px-4 bg-[url('/FotosMartin&Mica/confirmarPresenciaMobile.png')] md:bg-[url('/FotosMartin&Mica/confirmarPresenciaDesktop.png')] bg-cover bg-top bg-no-repeat py-[150px] md:py-20"  >
         <div className="max-w-2xl mx-auto text-center">
           <h2 className="text-4xl md:text-5xl font-bold text-[#827a71] mb-6 text-balance">Confirmá tu presencia</h2>
@@ -297,19 +297,20 @@ export default function BodaMicaTincho() {
           >
             Confirma presencia aqui
           </Button>
+
+
           <a
             href="https://calendar.google.com/calendar/u/0/r/eventedit?text=Boda+Mica+%26+Tincho&dates=20260131T200000Z/20260201T090000Z&details=%C2%A1Guardate+la+fecha+de+nuestro+casamiento+para+que+no+te+olvides+y+puedas+compartir+con+nosotros%21"
             target="_blank"
             rel="noopener noreferrer"
-            className="absolute inset-0 z-0"
-          ></a>
-
-          <Button
-            size="lg"
-            className="border-[#688268] border-2 hover:bg-[#688268]/10 text-[#688268] font-semibold text-lg px-8 py-6 rounded-md bg-transparent w-[250px]"
           >
-            Agregalo a tu calendario
-          </Button>
+            <Button
+              size="lg"
+              className="border-[#688268] border-2 hover:bg-[#688268]/10 text-[#688268] font-semibold text-lg px-8 py-6 rounded-md bg-transparent w-[250px]"
+            >
+              Agregalo a tu calendario
+            </Button>
+          </a>
 
         </div>
       </section>
