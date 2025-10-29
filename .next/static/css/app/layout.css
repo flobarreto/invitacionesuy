@@ -4641,6 +4641,11 @@
       display: flex;
     }
   }
+  .md\:hidden {
+    @media (width >= 48rem) {
+      display: none;
+    }
+  }
   .md\:h-96 {
     @media (width >= 48rem) {
       height: calc(var(--spacing) * 96);

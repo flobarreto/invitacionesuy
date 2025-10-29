@@ -52,7 +52,7 @@ export default function BodaMicaTincho() {
             <div className="dynalight-regular text-6xl md:text-8xl text-[#827a71] mb-2 text-balance text-2xl">Mica & Tincho</div>
           </div>
 
-          <p className="text-[#827a71]/60 text-xl mb-4 tracking-wide">31 DE ENERO, 2026</p>
+          <p className="text-[#827a71]/60 text-xl mb-4 tracking-wide">31 DE ENERO 2026</p>
 
         </div>
 
@@ -172,7 +172,7 @@ export default function BodaMicaTincho() {
                 className="object-cover group-hover:scale-105 transition-transform duration-300"
               />
             </div>
-            <div className="relative w-full aspect-[4/3] rounded-lg overflow-hidden shadow-lg">
+            <div className="relative w-full aspect-[4/3] rounded-lg overflow-hidden shadow-lg md:hidden">
               <Image
                 src="/FotosMartin&Mica/Picture4.jpg"
                 alt="Martin y Mica"
@@ -180,7 +180,7 @@ export default function BodaMicaTincho() {
                 className="object-cover group-hover:scale-105 transition-transform duration-300"
               />
             </div>
-            <div className="relative w-full aspect-[4/3] rounded-lg overflow-hidden shadow-lg">
+            <div className="relative w-full aspect-[4/3] rounded-lg overflow-hidden shadow-lg md:hidden">
               <Image
                 src="/FotosMartin&Mica/Picture5.jpg"
                 alt="Martin y Mica"
@@ -188,22 +188,7 @@ export default function BodaMicaTincho() {
                 className="object-cover group-hover:scale-105 transition-transform duration-300"
               />
             </div>
-            <div className="relative w-full aspect-[4/3] rounded-lg overflow-hidden shadow-lg">
-              <Image
-                src="/FotosMartin&Mica/Picture6.jpg"
-                alt="Martin y Mica"
-                fill
-                className="object-cover group-hover:scale-105 transition-transform duration-300"
-              />
-            </div>
-            <div className="relative w-full aspect-[4/3] rounded-lg overflow-hidden shadow-lg">
-              <Image
-                src="/FotosMartin&Mica/Picture7.jpg"
-                alt="Martin y Mica"
-                fill
-                className="object-cover group-hover:scale-105 transition-transform duration-300"
-              />
-            </div>
+
             <div className="relative w-full aspect-[4/3] rounded-lg overflow-hidden shadow-lg">
               <Image
                 src="/FotosMartin&Mica/Picture8.jpg"
