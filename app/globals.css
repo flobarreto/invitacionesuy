@@ -130,6 +130,12 @@
     font-weight: 400;
     font-style: normal;
   }
+
+  .font-boska-medium {
+    font-family: "Boska", serif;
+    font-weight: 500;
+    font-style: normal;
+  }
 }
 
 @keyframes fade-in {

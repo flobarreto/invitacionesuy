@@ -7,35 +7,45 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@radix-ui/react-label";
 import { RadioGroup, RadioGroupItem } from "@radix-ui/react-radio-group";
 import { Separator } from "@radix-ui/react-separator";
-import { CalendarIcon, SendIcon } from "lucide-react"
+import { CalendarIcon, SendIcon, MapPinIcon } from "lucide-react"
 import Image from "next/image"
 
 const eventSections = [
   {
     id: "ceremony",
-    icon: "https://c.animaapp.com/mhwmlgcmJBg8gd/img/imagen-de-whatsapp-2025-11-10-a-las-14-31-09-ad9b49d6-1.png",
-    iconWidth: "w-28",
-    iconHeight: "h-[111px]",
+    icon: "/bodaSofi&Gonchi/church.png",
+    iconHeight: "h-[100px]",
     title: "Ceremonia",
     location: "Parroquia San Juan Bautista\nMonseñor Domingo Tamburini 1210",
     time: "19:30",
     timeLabel: "Puntual",
     hasButton: true,
-    decorativeTopOffset: "top-[81px]",
-    decorativeHeight: "h-[calc(100%_-_104px)]",
+    googleURL: 'www.google.com',
+    wazeURL: "www.waze.com"
   },
   {
     id: "party",
-    icon: "https://c.animaapp.com/mhwmlgcmJBg8gd/img/imagen-de-whatsapp-2025-11-10-a-las-14-31-10-fd19e10d-1.png",
-    iconWidth: "w-[120px]",
-    iconHeight: "h-20",
+    icon: "/bodaSofi&Gonchi/party.png",
+    iconHeight: "h-[100px]",
     title: "Fiesta",
-    location: "Parroquia San Juan Bautista\nMonseñor Domingo Tamburini 1210",
+    location: "Quinta de Arteaga \n Ruta 5, Km 12.500",
     time: "Post",
     timeLabel: "Ceremonia",
     hasButton: true,
-    decorativeTopOffset: "top-9",
-    decorativeHeight: "h-[calc(100%_-_59px)]",
+    googleURL: 'www.google.com',
+    wazeURL: "www.waze.com"
+  },
+  {
+    id: "gift",
+    icon: "/bodaSofi&Gonchi/gift.png",
+    iconHeight: "h-[100px]",
+    title: "Regalos",
+    giftInformation: {
+      name: "Sofia Symonds",
+      bank: "Itau",
+      accountNumber: "4203797",
+      accountType: "Caja de ahorro USD"
+    }
   },
 ];
 
@@ -80,18 +90,18 @@ export default function BodaSofiGonchi() {
   return (
     <main className="source-sans-3-font h-[100vh] w-[100vw]">
       <section
-       className="relative h-full bg-[#F9F7EB] py-[40px] px-[8px] flex flex-col justify-between"
+        className="relative h-full bg-[#F9F7EB] py-[40px] px-[8px] flex flex-col justify-between"
       >
-        <div  
-        className="absolute bottom-0 left-0 w-full rounded-[166px_166px_0px_0px]"
-        style={{
-          background: `radial-gradient(81.64% 81.64% at 50% 81.64%, rgba(249, 247, 235, 0.00) 70%, #F9F7EB 100%), linear-gradient(180deg, rgba(83, 44, 10, 0.00) 0%, rgba(83, 44, 10, 0.00) 75.48%, #532C0A 100%), url(https://c.animaapp.com/mhwmlgcmJBg8gd/img/image-1.png) lightgray`,
-          backgroundSize: 'cover',
-          backgroundPosition: '50%',
-          backgroundRepeat: 'no-repeat',
-          backgroundBlendMode: 'normal, normal, multiply',
-          height: '70%'
-        }}>
+        <div
+          className="absolute bottom-0 left-0 w-full rounded-[166px_166px_0px_0px]"
+          style={{
+            background: `radial-gradient(81.64% 81.64% at 50% 81.64%, rgba(249, 247, 235, 0.00) 70%, #F9F7EB 100%), linear-gradient(180deg, rgba(83, 44, 10, 0.00) 0%, rgba(83, 44, 10, 0.00) 75.48%, #532C0A 100%), url(https://c.animaapp.com/mhwmlgcmJBg8gd/img/image-1.png) lightgray`,
+            backgroundSize: 'cover',
+            backgroundPosition: '50%',
+            backgroundRepeat: 'no-repeat',
+            backgroundBlendMode: 'normal, normal, multiply',
+            height: '70%'
+          }}>
 
         </div>
 
@@ -105,7 +115,7 @@ export default function BodaSofiGonchi() {
           <Button className="h-8 gap-2 mb-[16px] pl-3 pr-4 py-0 bg-[#0c4256] hover:bg-[#0c4256] rounded-[100px] transition-colors">
             <CalendarIcon className="w-5 h-5" />
             <span className=" font-light text-[#f9f7eb] text-base text-center tracking-[0] leading-[normal] whitespace-nowrap">
-             Agendar
+              Agendar
             </span>
           </Button>
           <div className="font-boska text-[#532C0A] text-[28px] inline-flex flex-col items-center gap-3 relative rounded-[1000px] bg-[rgba(249,247,235,0.75)] py-[12px] px-[32px]">
@@ -113,12 +123,42 @@ export default function BodaSofiGonchi() {
           </div>
         </div>
       </section>
-      <section className="bg-[#532C0A]">
-        <div>
-          ceremonia
-        </div>
-        </section>    
-        </main>                                                           
+      
+      <section className="bg-[#532C0A] min-h-[400px] text-[#F9F7EB] flex flex-col items-center justify-center">
+        {eventSections.map((section) => <div className="flex flex-col items-center justify-center" key={section.id}>
+          <div>
+            <img
+              className={`relative object-contain ${section.iconHeight} w-auto`}
+              alt={`${section.title} icon`}
+              src={section.icon}
+            />
+          </div>
+
+          {section.giftInformation ? <div>
+            BANK
+          </div> :
+            <>
+              <div className="flex flex-col items-center justify-center text-center font-light max-w-[80%]">
+                <p className="font-boska-medium text-[28px]">{section.title}</p>
+                <p>{section.location}</p>
+                <Button className="rounded-[100px] bg-[rgba(249,247,235,0.20)] font-light">
+                  <MapPinIcon className="w-5 h-5" strokeWidth={1}/>
+                  ¿Cómo ir?
+                </Button>
+              </div>
+              <div>
+              <p className="font-boska-medium text-[28px]">{section.time}</p>
+              <p className="font-light text-[16px]">{section.timeLabel}</p>
+              </div>
+            </>}
+
+
+
+        </div>)}
+
+        
+
+      </section>
+    </main>                                                                                                                                                                                 
   )
 };
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  
