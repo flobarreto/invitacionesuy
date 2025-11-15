@@ -13,32 +13,6 @@ const plans = [
       "Entrega en 7 días",
     ],
   },
-  {
-    name: "Invitación Animada",
-    description: "Dale vida a tu invitación",
-    features: [
-      "Todo lo de Simple",
-      "Animaciones suaves",
-      "Música de fondo",
-      "Múltiples secciones",
-      "Galería de fotos",
-      "Entrega en 10 días",
-    ],
-    featured: true,
-  },
-  {
-    name: "Invitación Premium",
-    description: "La experiencia completa",
-    features: [
-      "Todo lo de Animada",
-      "Ilustraciones personalizadas",
-      "Interacciones avanzadas",
-      "Mapa interactivo",
-      "Contador regresivo",
-      "Soporte prioritario",
-      "Entrega en 14 días",
-    ],
-  },
 ]
 
 export function Pricing() {
@@ -53,19 +27,12 @@ export function Pricing() {
           </p>
         </div>
 
-        <div className="grid md:grid-cols-3 gap-8 max-w-6xl mx-auto">
+        <div className="flex gap-8 max-w-6xl mx-auto items-center justify-center">
           {plans.map((plan, index) => (
             <div
               key={index}
-              className={`relative bg-card rounded-3xl p-8 shadow-lg hover:shadow-xl transition-all ${
-                plan.featured ? "border-2 border-primary scale-105" : "border border-border"
-              }`}
+              className={`relative bg-card rounded-3xl p-8 shadow-lg hover:shadow-xl transition-all`}
             >
-              {plan.featured && (
-                <div className="absolute -top-4 left-1/2 -translate-x-1/2 bg-primary text-primary-foreground px-4 py-1 rounded-full text-sm font-medium">
-                  Más popular
-                </div>
-              )}
 
               <div className="space-y-6">
                 <div>

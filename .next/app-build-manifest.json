@@ -11,10 +11,10 @@
       "static/chunks/main-app.js",
       "static/chunks/app/page.js"
     ],
-    "/bodaMica&Tincho/page": [
+    "/bodaSofi&Gonchi/page": [
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",
-      "static/chunks/app/bodaMica&Tincho/page.js"
+      "static/chunks/app/bodaSofi&Gonchi/page.js"
     ]
   }
 }

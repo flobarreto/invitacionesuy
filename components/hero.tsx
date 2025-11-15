@@ -32,11 +32,8 @@ export function Hero() {
             </p>
 
             <div className="flex flex-wrap gap-4">
-              <Button size="lg" className="bg-primary hover:bg-primary/90 text-primary-foreground rounded-full px-8">
-                Ver ejemplos
-              </Button>
               <Button size="lg" variant="outline" className="rounded-full px-8 border-2 bg-transparent">
-                Solicitar presupuesto
+                action button
               </Button>
             </div>
           </div>
