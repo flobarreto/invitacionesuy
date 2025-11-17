@@ -132,7 +132,7 @@ export default function BodaSofiGonchi() {
     setIsSubmitting(true)
 
     try {
-      const response = await fetch("/api/rsvp", {
+      const response = await fetch("/api/rsvp/bodaSofiGonchi", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

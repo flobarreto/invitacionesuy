@@ -1,9 +1,9 @@
 "use client";
 
-import { CalendarHeart, Clock, MapPin, PartyPopper, Church, Shirt } from "lucide-react"
+import { CalendarHeart, Clock, MapPin, PartyPopper, Church, Shirt, MessageCircleHeart } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import Image from "next/image"
-import { useState } from "react";
+import { FormEvent, useState } from "react";
 
 export default function BodaMicaTincho() {
   const [copied, setCopied] = useState(false);
@@ -31,6 +31,65 @@ export default function BodaMicaTincho() {
     }
   };
 
+  const [guestName, setGuestName] = useState("");
+  const [attendanceResponse, setAttendanceResponse] = useState<"yes" | "no">("yes");
+  const [dietaryPreferences, setDietaryPreferences] = useState<string[]>(["none"]);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submissionFeedback, setSubmissionFeedback] = useState<{ type: "success" | "error"; message: string } | null>(
+    null
+  );
+
+  const handleRsvpSubmit = async (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    setSubmissionFeedback(null);
+
+    if (!guestName.trim()) {
+      setSubmissionFeedback({
+        type: "error",
+        message: "Por favor escribí tu nombre y apellido.",
+      });
+      return;
+    }
+
+    setIsSubmitting(true);
+
+    try {
+      const response = await fetch("/api/rsvp/bodaMicaTincho", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          name: guestName.trim(),
+          attendance: attendanceResponse,
+          dietaryPreferences,
+        }),
+      });
+
+      if (!response.ok) {
+        const errorBody = await response.json().catch(() => null);
+        throw new Error(errorBody?.error ?? "No pudimos guardar tu respuesta. Intenta nuevamente.");
+      }
+
+      setSubmissionFeedback({
+        type: "success",
+        message: "¡Gracias! Registramos tu respuesta.",
+      });
+      setGuestName("");
+      setAttendanceResponse("yes");
+      setDietaryPreferences(["none"]);
+
+      setTimeout(() => setSubmissionFeedback(null), 5000);
+    } catch (error) {
+      setSubmissionFeedback({
+        type: "error",
+        message: error instanceof Error ? error.message : "Ocurrió un error inesperado. Intenta nuevamente.",
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
   return (
     <main className="min-h-screen bg-soft-white">
       {/* Hero Section */}
@@ -52,7 +111,13 @@ export default function BodaMicaTincho() {
             <div className="dynalight-regular text-6xl md:text-8xl text-[#827a71] mb-2 text-balance text-2xl">Mica & Tincho</div>
           </div>
 
+          <a
+            href="https://calendar.google.com/calendar/u/0/r/eventedit?text=Boda+Mica+%26+Tincho&dates=20260131T200000Z/20260201T090000Z&details=%C2%A1Guardate+la+fecha+de+nuestro+casamiento+para+que+no+te+olvides+y+puedas+compartir+con+nosotros%21"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
           <p className="text-[#827a71]/60 text-xl mb-4 tracking-wide">31 DE ENERO 2026</p>
+          </a>
 
         </div>
 
@@ -272,19 +337,116 @@ export default function BodaMicaTincho() {
 
       <section className="px-4 bg-[url('/FotosMartin&Mica/confirmarPresenciaMobile.png')] md:bg-[url('/FotosMartin&Mica/confirmarPresenciaDesktop.png')] bg-cover bg-top bg-no-repeat py-[150px] md:py-20"  >
         <div className="max-w-2xl mx-auto text-center">
-          <h2 className="text-4xl md:text-5xl font-bold text-[#827a71] mb-6 text-balance">Confirmá tu presencia</h2>
+          <h2 className="text-4xl md:text-5xl font-bold text-[#827a71] mb-3 mt-6 text-balance">Confirmá tu presencia</h2>
           <p className="text-xl text-[#827a71]/70 mb-8 leading-relaxed">
             Nos vemos el 31 de enero!
           </p>
-          <Button
-            size="lg"
-            className="bg-transparent border-2 border-[#688268] hover:bg-[#688268]/10 text-[#688268] font-semibold text-lg px-8 py-6 rounded-md w-[250px] mb-2 md:mr-6"
+
+          <form
+            onSubmit={handleRsvpSubmit}
+            className="bg-white/90  p-6 md:p-8 text-left space-y-6 "
           >
-            Confirma presencia aqui
-          </Button>
+            <div className="flex flex-col gap-2">
+              <label htmlFor="guest-name" className="text-sm font-semibold text-[#827a71] uppercase tracking-wide">
+                Nombre y Apellido
+              </label>
+              <input
+                id="guest-name"
+                type="text"
+                value={guestName}
+                onChange={(event) => setGuestName(event.target.value)}
+                placeholder="Ej: Juan Pérez"
+                className="w-full rounded-lg border border-[#827a71]/30 bg-white/80 px-4 py-3 text-[#827a71] focus:outline-none focus:ring-2 focus:ring-[#688268] transition"
+              />
+            </div>
 
+            <div className="space-y-3">
+              <p className="text-sm font-semibold text-[#827a71] uppercase tracking-wide">Confirmar asistencia</p>
+              <div className="flex flex-col sm:flex-row gap-3">
+                {[
+                  { value: "yes", label: "Sí" },
+                  { value: "no", label: "No, lo siento" },
+                ].map((option) => (
+                  <label
+                    key={option.value}
+                    className={`flex-1 cursor-pointer rounded-xl border px-4 py-3 text-center text-sm font-medium transition ${
+                      attendanceResponse === option.value
+                        ? "bg-[#688268] text-white border-[#688268]"
+                        : "border-[#827a71]/30 text-[#827a71]"
+                    }`}
+                  >
+                    <input
+                      type="radio"
+                      name="attendance"
+                      value={option.value}
+                      checked={attendanceResponse === option.value}
+                      onChange={() => setAttendanceResponse(option.value as "yes" | "no")}
+                      className="hidden"
+                    />
+                    {option.label}
+                  </label>
+                ))}
+              </div>
+            </div>
 
-          <a
+            <div className="flex flex-col gap-3">
+              <p className="text-sm font-semibold text-[#827a71] uppercase tracking-wide">
+                Restricciones Alimentarias
+              </p>
+              {[
+                { value: "no", label: "No" },
+                { value: "celiaco", label: "Celíaco/a" },
+                { value: "veggie", label: "Veggie" },
+              ].map((option) => {
+                const checked = dietaryPreferences.includes(option.value);
+                return (
+                  <label
+                    key={option.value}
+                    className="flex items-center gap-3 text-[#827a71]"
+                  >
+                    <input
+                      type="checkbox"
+                      value={option.value}
+                      checked={checked}
+                      onChange={(event) => {
+                        const isChecked = event.target.checked;
+                        setDietaryPreferences((prev) => {
+                          if (isChecked) {
+                            return [...prev, option.value];
+                          }
+                          return prev.filter((value) => value !== option.value);
+                        });
+                      }}
+                      className="h-4 w-4 rounded border-[#827a71]/50 accent-[#688268] focus:ring-[#688268]"
+                    />
+                    {option.label}
+                  </label>
+                );
+              })}
+            </div>
+
+            <Button
+              type="submit"
+              disabled={isSubmitting || !guestName.trim()}
+              className="w-full bg-[#688268] hover:bg-[#827a71] disabled:bg-[#827a71]/30 disabled:cursor-not-allowed disabled:text-white/60 text-white font-semibold text-lg py-3 rounded-lg transition-colors"
+            >
+              {isSubmitting ? "Enviando..." : "Confirmar asistencia"}
+            </Button>
+
+            {submissionFeedback && (
+              <p
+                className={`text-center text-sm font-medium ${
+                  submissionFeedback.type === "success" ? "text-[#688268]" : "text-red-500"
+                }`}
+                role="status"
+                aria-live="polite"
+              >
+                {submissionFeedback.message}
+              </p>
+            )}
+          </form>
+
+          {/* <a
             href="https://calendar.google.com/calendar/u/0/r/eventedit?text=Boda+Mica+%26+Tincho&dates=20260131T200000Z/20260201T090000Z&details=%C2%A1Guardate+la+fecha+de+nuestro+casamiento+para+que+no+te+olvides+y+puedas+compartir+con+nosotros%21"
             target="_blank"
             rel="noopener noreferrer"
@@ -295,7 +457,7 @@ export default function BodaMicaTincho() {
             >
               Agregalo a tu calendario
             </Button>
-          </a>
+          </a> */}
 
         </div>
       </section>
@@ -303,13 +465,17 @@ export default function BodaMicaTincho() {
 
       <footer className="bg-[#827a71]/50 text-soft-white py-12 px-4 pb-15">
         <div className="max-w-4xl mx-auto text-center">
-          <p className="text-2xl md:text-3xl font-bold mb-4 text-[#827a71]">No tenes como ir?</p>
+          <p className="text-xl md:text-2xl font-bold mb-2 text-[#827a71]">No tenes como ir?</p>
+          <p className=" text-[#827a71] text-md mb-3">
+          Hicimos un grupo de whatsapp para que puedan coordinar transporte
+          </p>
           <Button
-            className="bg-transparent text-[#827a71] font-bold text-lg"
+            className="bg-transparent text-[#827a71] text-lg rounded-md border-1 border-[#827a71]"
             style={{ textWrap: 'wrap' }}
             onClick={() => window.open('https://chat.whatsapp.com/FiEw3kgzvuLI3LQdHBR4bg', '_blank')}
           >
-            Hicimos un grupo de whatsapp para que puedan coordinar transporte, unite aqui!
+            <MessageCircleHeart className="w-10 h-10" />
+           Unirme
           </Button>
         </div>
       </footer>
