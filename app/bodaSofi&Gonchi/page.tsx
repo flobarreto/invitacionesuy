@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, FormEvent } from "react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -61,9 +61,18 @@ const dietaryOptions = [
   { value: "celiac", label: "Celíaco" },
 ];
 
+const DEFAULT_ATTENDANCE_RESPONSE = attendanceOptions[0]?.value ?? "yes"
+const DEFAULT_NAME = ""
+const DEFAULT_SONG = ""
+
 export default function BodaSofiGonchi() {
   const [timeLeft, setTimeLeft] = useState({ days: 0, hours: 0, minutes: 0 })
-  const [dietarySelection, setDietarySelection] = useState<string[]>([])
+  const [dietarySelection, setDietarySelection] = useState<string[]>([dietaryOptions[0].value ?? "none"])
+  const [guestName, setGuestName] = useState(DEFAULT_NAME)
+  const [attendanceResponse, setAttendanceResponse] = useState(DEFAULT_ATTENDANCE_RESPONSE)
+  const [favoriteSong, setFavoriteSong] = useState(DEFAULT_SONG)
+  const [isSubmitting, setIsSubmitting] = useState(false)
+  const [submissionFeedback, setSubmissionFeedback] = useState<{ type: "success" | "error"; message: string } | null>(null)
 
   useEffect(() => {
     const targetDate = new Date('2025-12-20T19:30:00').getTime()
@@ -88,6 +97,75 @@ export default function BodaSofiGonchi() {
 
     return () => clearInterval(interval)
   }, [])
+
+  useEffect(() => {
+    if (submissionFeedback?.type === "success") {
+      const timeout = setTimeout(() => {
+        setSubmissionFeedback(null)
+      }, 5000)
+      return () => clearTimeout(timeout)
+    }
+  }, [submissionFeedback])
+
+  const resetForm = (options?: { preserveFeedback?: boolean }) => {
+    setGuestName(DEFAULT_NAME)
+    setAttendanceResponse(DEFAULT_ATTENDANCE_RESPONSE)
+    setDietarySelection([dietaryOptions[0].value ?? "none"])
+    setFavoriteSong(DEFAULT_SONG)
+    if (!options?.preserveFeedback) {
+      setSubmissionFeedback(null)
+    }
+  }
+
+  const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault()
+    setSubmissionFeedback(null)
+
+    if (!guestName.trim()) {
+      setSubmissionFeedback({
+        type: "error",
+        message: "Necesitamos tu nombre para registrar la asistencia.",
+      })
+      return
+    }
+
+    setIsSubmitting(true)
+
+    try {
+      const response = await fetch("/api/rsvp", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          name: guestName.trim(),
+          attendance: attendanceResponse,
+          dietaryPreferences: dietarySelection,
+          favoriteSong: favoriteSong.trim(),
+        }),
+      })
+
+      if (!response.ok) {
+        const errorBody = await response.json().catch(() => null)
+        throw new Error(errorBody?.error ?? "No pudimos guardar tu respuesta. Intenta nuevamente.")
+      }
+
+      setSubmissionFeedback({
+        type: "success",
+        message: "Enviado",
+      })
+      resetForm({ preserveFeedback: true })
+    } catch (error) {
+      setSubmissionFeedback({
+        type: "error",
+        message: error instanceof Error ? error.message : "Ocurrió un error inesperado. Intenta nuevamente.",
+      })
+    } finally {
+      setIsSubmitting(false)
+    }
+  }
+
+  const isSuccessState = submissionFeedback?.type === "success"
 
   return (
     <main className="source-sans-3-font h-[100vh] w-[100vw] bg-[#532C0A]">
@@ -196,116 +274,147 @@ export default function BodaSofiGonchi() {
             backgroundBlendMode: "soft-light",
           }}
         >
-          <CardContent className="flex flex-col items-center gap-8 w-full p-0">
-            <h1 className="w-fit font-boska-medium text-[#532c0a] text-[28px] tracking-[0] leading-[normal] whitespace-nowrap">
-              Asistencia
-            </h1>
+          <CardContent className="w-full p-0">
+            <form onSubmit={handleSubmit} className="flex flex-col items-center gap-8 w-full">
+              <h1 className="w-fit font-boska-medium text-[#532c0a] text-[28px] tracking-[0] leading-[normal] whitespace-nowrap">
+                Asistencia
+              </h1>
 
-            <div className="flex flex-col items-start gap-2 w-full">
-              <Label
-                htmlFor="name-input"
-                className="font-semibold text-[#532c0a] text-xs tracking-[0] leading-[normal]"
-              >
-                Nombre y Apellido:
-              </Label>
+              <div className="flex flex-col items-start gap-2 w-full">
+                <Label
+                  htmlFor="name-input"
+                  className="font-semibold text-[#532c0a] text-xs tracking-[0] leading-[normal]"
+                >
+                  Nombre y Apellido:
+                </Label>
 
-              <Input
-                id="name-input"
-                defaultValue="Gonzalo Puig"
-                className="flex text-[16px] items-center justify-center gap-2 px-3 py-2 w-full rounded border-[0.75px] border-solid border-[#532c0a] bg-transparent font-light text-[#745437] text-base tracking-[0] leading-[normal] h-auto"
-              />
-            </div>
+                <Input
+                  id="name-input"
+                  value={guestName}
+                  onChange={(event) => setGuestName(event.target.value)}
+                  className="flex text-[16px] items-center justify-center gap-2 px-3 py-2 w-full rounded border-[0.75px] border-solid border-[#532c0a] bg-transparent  text-[#745437] text-base tracking-[0] leading-[normal] h-auto"
+                  placeholder="Ej. Gonzalo Puig"
+                />
+              </div>
 
-            <div className="flex flex-col items-start gap-4 w-full">
-              <Label className="font-semibold text-[#532c0a] text-xs tracking-[0] leading-[normal]">
-                ¿Asistes a la boda?
-              </Label>
+              <div className="flex flex-col items-start gap-4 w-full">
+                <Label className="font-semibold text-[#532c0a] text-xs tracking-[0] leading-[normal]">
+                  ¿Asistes a la boda?
+                </Label>
 
-              <RadioGroup
-                defaultValue="yes"
-                className="flex flex-col gap-2 w-full"
-              >
-                {attendanceOptions.map((option) => (
-                  <div
-                    key={option.value}
-                    className="inline-flex items-center gap-2"
-                  >
-                    <RadioGroupItem
-                      value={option.value}
-                      id={`attendance-${option.value}`}
-                      className="w-5 h-5 rounded-full border border-[#532c0a] bg-[#f9f7ebcc] text-[#532c0a] data-[state=checked]:bg-[#532c0a] data-[state=checked]:border-[#532c0a] data-[state=checked]:shadow-[inset_0_0_0_3px_#f9f7ebcc] focus-visible:ring-[#532c0a]/30"
-                    />
-                    <Label
-                      htmlFor={`attendance-${option.value}`}
-                      className="font-light text-[#745437] text-base tracking-[0] leading-[normal] whitespace-nowrap cursor-pointer"
-                    >
-                      {option.label}
-                    </Label>
-                  </div>
-                ))}
-              </RadioGroup>
-            </div>
-
-            <div className="flex flex-col items-start gap-4 w-full">
-              <Label className="font-semibold text-[#532c0a] text-xs tracking-[0] leading-[normal]">
-                Restricciones Alimentarias (Menú Especial)
-              </Label>
-
-              <div className="flex flex-col gap-2 w-full">
-                {dietaryOptions.map((option) => {
-                  const isChecked = dietarySelection.includes(option.value)
-                  return (
+                <RadioGroup
+                  value={attendanceResponse}
+                  onValueChange={(value) => setAttendanceResponse(value)}
+                  className="flex flex-col gap-2 w-full"
+                >
+                  {attendanceOptions.map((option) => (
                     <div
                       key={option.value}
                       className="inline-flex items-center gap-2"
                     >
-                      <Checkbox
-                        id={`dietary-${option.value}`}
-                        checked={isChecked}
-                        onCheckedChange={(state) => {
-                          const nextChecked = state === true
-                          setDietarySelection((prev) => {
-                            if (nextChecked) {
-                              if (prev.includes(option.value)) return prev
-                              return [...prev, option.value]
-                            }
-                            return prev.filter((value) => value !== option.value)
-                          })
-                        }}
-                        className="w-5 h-5 rounded-[6px] border border-[#532c0a] bg-[#f9f7ebcc] text-[#532c0a] data-[state=checked]:bg-[#532c0a] data-[state=checked]:border-[#532c0a] focus-visible:ring-[#532c0a]/30"
+                      <RadioGroupItem
+                        value={option.value}
+                        id={`attendance-${option.value}`}
+                        className="w-5 h-5 rounded-full border border-[#532c0a] bg-[#f9f7ebcc] text-[#532c0a] data-[state=checked]:bg-[#532c0a] data-[state=checked]:border-[#532c0a] data-[state=checked]:shadow-[inset_0_0_0_3px_#f9f7ebcc] focus-visible:ring-[#532c0a]/30"
                       />
                       <Label
-                        htmlFor={`dietary-${option.value}`}
+                        htmlFor={`attendance-${option.value}`}
                         className="font-light text-[#745437] text-base tracking-[0] leading-[normal] whitespace-nowrap cursor-pointer"
                       >
                         {option.label}
                       </Label>
                     </div>
-                  )
-                })}
+                  ))}
+                </RadioGroup>
               </div>
-            </div>
 
-            <div className="flex flex-col items-start gap-2 w-full">
-              <Label
-                htmlFor="music-input"
-                className="font-semibold text-[#532c0a] text-xs tracking-[0] leading-[normal]"
-              >
-                ¿Qué canción no puede faltar?
-              </Label>
+              <div className="flex flex-col items-start gap-4 w-full">
+                <Label className="font-semibold text-[#532c0a] text-xs tracking-[0] leading-[normal]">
+                  Restricciones Alimentarias (Menú Especial)
+                </Label>
 
-              <Input
-                id="music-input"
-                defaultValue="TU VAS SIN - Rels"
-                className="flex items-center justify-center gap-2 px-3 py-2 w-full rounded border-[0.75px] border-solid border-[#532c0a] bg-transparent font-light text-[#745437] text-base tracking-[0] leading-[normal] h-auto"
-              />
-            </div>
+                <div className="flex flex-col gap-2 w-full">
+                  {dietaryOptions.map((option) => {
+                    const isChecked = dietarySelection.includes(option.value)
+                    return (
+                      <div
+                        key={option.value}
+                        className="inline-flex items-center gap-2"
+                      >
+                        <Checkbox
+                          id={`dietary-${option.value}`}
+                          checked={isChecked}
+                          onCheckedChange={(state) => {
+                            const nextChecked = state === true
+                            setDietarySelection((prev) => {
+                              if (nextChecked) {
+                                if (prev.includes(option.value)) return prev
+                                return [...prev, option.value]
+                              }
+                              return prev.filter((value) => value !== option.value)
+                            })
+                          }}
+                          className="w-5 h-5 rounded-[6px] border border-[#532c0a] bg-[#f9f7ebcc] text-[#532c0a] data-[state=checked]:bg-[#532c0a] data-[state=checked]:border-[#532c0a] focus-visible:ring-[#532c0a]/30"
+                        />
+                        <Label
+                          htmlFor={`dietary-${option.value}`}
+                          className="font-light text-[#745437] text-base tracking-[0] leading-[normal] whitespace-nowrap cursor-pointer"
+                        >
+                          {option.label}
+                        </Label>
+                      </div>
+                    )
+                  })}
+                </div>
+              </div>
+
+              <div className="flex flex-col items-start gap-2 w-full">
+                <Label
+                  htmlFor="music-input"
+                  className="font-semibold text-[#532c0a] text-xs tracking-[0] leading-[normal]"
+                >
+                  ¿Qué canción no puede faltar?
+                </Label>
+
+                <Input
+                  id="music-input"
+                  value={favoriteSong}
+                  onChange={(event) => setFavoriteSong(event.target.value)}
+                  placeholder="Comparte tu canción favorita"
+                  className="flex items-center justify-center gap-2 px-3 py-2 w-full rounded border-[0.75px] border-solid border-[#532c0a] bg-transparent text-[#745437] text-base tracking-[0] leading-[normal] h-auto"
+                />
+              </div>
+
+              <div className="flex flex-col sm:flex-row w-full gap-3">
+                <Button
+                  type="submit"
+                  disabled={isSubmitting || !guestName.trim()}
+                  className={`flex-1 flex items-center justify-center gap-2 pl-3 pr-4 py-3 rounded-[100px] font-light text-[#f9f7eb] text-xl text-center tracking-[0] leading-[normal] whitespace-nowrap h-[40px] transition-colors disabled:opacity-60 disabled:cursor-not-allowed ${
+                    isSuccessState ? "bg-[#532C0A] hover:bg-[#532C0A]" : "bg-[#0c4256] hover:bg-[#0c4256]"
+                  }`}
+                >
+                  {isSuccessState ? (
+                    "Enviado, te esperamos!"
+                  ) : (
+                    <>
+                      <SendIcon className="w-5 h-5" />
+                      {isSubmitting ? "Enviando..." : "Enviar"}
+                    </>
+                  )}
+                </Button>
+              </div>
+
+              {submissionFeedback?.type === "error" && (
+                <p
+                  className="text-sm text-center text-red-200"
+                  role="status"
+                  aria-live="polite"
+                >
+                  {submissionFeedback.message}
+                </p>
+              )}
+            </form>
           </CardContent>
-
-          <Button className="flex items-center justify-center gap-2 pl-3 pr-4 py-3 w-full bg-[#0c4256a6] hover:bg-[#0c4256] rounded-[100px] font-light text-[#f9f7eb] text-xl text-center tracking-[0] leading-[normal] whitespace-nowrap h-[40px] transition-colors">
-            <SendIcon className="w-5 h-5" />
-            Enviar
-          </Button>
         </Card>
       </section>
       <section className="relative w-full h-[472px] px-6 py-10 flex flex-col items-center bg-gradient-to-t from-[#0C4256] via-[#0C4256]/80 to-[#0C4256]/30 border-t border-[#0C4256]">
