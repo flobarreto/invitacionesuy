@@ -6,8 +6,9 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@radix-ui/react-label";
 import { RadioGroup, RadioGroupItem } from "@radix-ui/react-radio-group";
+import { Checkbox } from "@/components/ui/checkbox";
 import { Separator } from "@radix-ui/react-separator";
-import { CalendarIcon, SendIcon, MapPinIcon } from "lucide-react"
+import { CalendarIcon, SendIcon, MapPinIcon, MessageCircleIcon, MessageCircleHeart } from "lucide-react"
 import Image from "next/image"
 
 const eventSections = [
@@ -62,6 +63,7 @@ const dietaryOptions = [
 
 export default function BodaSofiGonchi() {
   const [timeLeft, setTimeLeft] = useState({ days: 0, hours: 0, minutes: 0 })
+  const [dietarySelection, setDietarySelection] = useState<string[]>([])
 
   useEffect(() => {
     const targetDate = new Date('2025-12-20T19:30:00').getTime()
@@ -88,10 +90,8 @@ export default function BodaSofiGonchi() {
   }, [])
 
   return (
-    <main className="source-sans-3-font h-[100vh] w-[100vw]">
-      <section
-        className="relative h-full bg-[#F9F7EB] py-[40px] px-[8px] flex flex-col justify-between"
-      >
+    <main className="source-sans-3-font h-[100vh] w-[100vw] bg-[#532C0A]">
+      <section className="relative h-full bg-[#F9F7EB] py-[40px] px-[8px] flex flex-col justify-between border-b border-[#532C0A]">
         <div
           className="absolute bottom-0 left-0 w-full rounded-[166px_166px_0px_0px]"
           style={{
@@ -123,42 +123,242 @@ export default function BodaSofiGonchi() {
           </div>
         </div>
       </section>
-      
-      <section className="bg-[#532C0A] min-h-[400px] text-[#F9F7EB] flex flex-col items-center justify-center">
-        {eventSections.map((section) => <div className="flex flex-col items-center justify-center" key={section.id}>
-          <div>
-            <img
-              className={`relative object-contain ${section.iconHeight} w-auto`}
-              alt={`${section.title} icon`}
-              src={section.icon}
-            />
+
+      <section className="bg-[#532C0A] max-w-[100%] min-h-[400px] text-[#F9F7EB] flex flex-wrap lg:gap-12 lg:flex-nowrap lg:flex-row flex-col items-center justify-center pt-6 border-t border-[#532C0A]">
+        {eventSections.map((section) =>
+          <div
+            className="flex w-full lg:w-auto justify-center bg-[#532C0A] py-[24px]"
+            key={section.id}
+          >
+            <div className="relative w-[312px] px-6">
+              <div className="pointer-events-none absolute inset-x-0 top-10 bottom-10">
+                <div className="h-full w-full border border-[#E8DCC8] rounded-t-[4rem]" />
+                <div className="absolute left-1/2 -translate-x-1/2 -top-[1px] h-8 w-30 bg-[#532C0A]" />
+                {!section.giftInformation && <div className="absolute left-1/2 -translate-x-1/2 -bottom-[1px] h-10 w-44 bg-[#532C0A]" />}
+              </div>
+
+              <img
+                className={`absolute left-1/2 -top-2 -translate-x-1/2 object-contain ${section.iconHeight} w-auto`}
+                alt={`${section.title} icon`}
+                src={section.icon}
+              />
+
+              <div className="relative z-10 flex flex-col items-center text-center text-[#E8DCC8] pt-24 pb-20 gap-6 lg:h-[354px]">
+                {section.giftInformation ? (
+                  <div className="flex flex-col items-center font-light max-w-[80%]">
+                    <p className="font-boska-medium text-[28px]">{section.title}</p>
+                    <p className="mt-2 text-sm sm:text-base">
+                      {section.location}
+                    </p>
+                    <p><b className="font-bold">Titular:</b> {section.giftInformation.name}</p>
+                    <p><b className="font-bold">Banco:</b> {section.giftInformation.bank}</p>
+                    <p><b className="font-bold">Cuenta:</b> {section.giftInformation.accountNumber}</p>
+                    <p><b className="font-bold">Tipo:</b> {section.giftInformation.accountType}</p>
+                  </div>
+                ) : (
+                  <>
+                    <div className="flex flex-col items-center font-light max-w-[85%]">
+                      <p className="font-boska-medium text-[28px]">{section.title}</p>
+                      <p className="mt-2 text-sm sm:text-base">
+                        {section.location}
+                      </p>
+
+                      <Button className="mt-6 rounded-[100px] bg-[rgba(249,247,235,0.20)] font-light text-[#E8DCC8] h-[32px]">
+                        <MapPinIcon className="w-5 h-5" strokeWidth={1} />
+                        ¿Cómo ir?
+                      </Button>
+                    </div>
+                  </>
+                )}
+              </div>
+
+              {!section.giftInformation && (
+                <div className="absolute left-1/2 -bottom-1 -translate-x-1/2 flex flex-col items-center text-[#E8DCC8]">
+                  <p className="font-boska-medium text-[28px]">{section.time}</p>
+                  <p className="font-light text-[14px] tracking-[0.1em] uppercase mt-1">
+                    {section.timeLabel}
+                  </p>
+                </div>
+              )}
+            </div>
           </div>
-
-          {section.giftInformation ? <div>
-            BANK
-          </div> :
-            <>
-              <div className="flex flex-col items-center justify-center text-center font-light max-w-[80%]">
-                <p className="font-boska-medium text-[28px]">{section.title}</p>
-                <p>{section.location}</p>
-                <Button className="rounded-[100px] bg-[rgba(249,247,235,0.20)] font-light">
-                  <MapPinIcon className="w-5 h-5" strokeWidth={1}/>
-                  ¿Cómo ir?
-                </Button>
-              </div>
-              <div>
-              <p className="font-boska-medium text-[28px]">{section.time}</p>
-              <p className="font-light text-[16px]">{section.timeLabel}</p>
-              </div>
-            </>}
-
-
-
-        </div>)}
-
-        
-
+        )}
       </section>
-    </main>                                                                                                                                                                                 
+      <section className="w-full justify-around gap-6 px-6 py-10 bg-[linear-gradient(180deg,rgba(83,44,10,1)_0%,rgba(12,66,86,1)_100%)] flex flex-col items-center">
+        <Card
+          className="flex flex-col items-center gap-6 p-6 w-full max-w-md rounded-3xl border-0 bg-transparent translate-y-[-1rem] animate-fade-in opacity-0"
+          style={{
+            backgroundImage: "url(/bodaSofi&Gonchi/formBackground.jpeg)",
+            backgroundPosition: "50%",
+            backgroundSize: "cover",
+            backgroundRepeat: "no-repeat",
+            backgroundColor: "rgba(249, 247, 235, 0.75)",
+            backgroundBlendMode: "soft-light",
+          }}
+        >
+          <CardContent className="flex flex-col items-center gap-8 w-full p-0">
+            <h1 className="w-fit font-boska-medium text-[#532c0a] text-[28px] tracking-[0] leading-[normal] whitespace-nowrap">
+              Asistencia
+            </h1>
+
+            <div className="flex flex-col items-start gap-2 w-full">
+              <Label
+                htmlFor="name-input"
+                className="font-semibold text-[#532c0a] text-xs tracking-[0] leading-[normal]"
+              >
+                Nombre y Apellido:
+              </Label>
+
+              <Input
+                id="name-input"
+                defaultValue="Gonzalo Puig"
+                className="flex text-[16px] items-center justify-center gap-2 px-3 py-2 w-full rounded border-[0.75px] border-solid border-[#532c0a] bg-transparent font-light text-[#745437] text-base tracking-[0] leading-[normal] h-auto"
+              />
+            </div>
+
+            <div className="flex flex-col items-start gap-4 w-full">
+              <Label className="font-semibold text-[#532c0a] text-xs tracking-[0] leading-[normal]">
+                ¿Asistes a la boda?
+              </Label>
+
+              <RadioGroup
+                defaultValue="yes"
+                className="flex flex-col gap-2 w-full"
+              >
+                {attendanceOptions.map((option) => (
+                  <div
+                    key={option.value}
+                    className="inline-flex items-center gap-2"
+                  >
+                    <RadioGroupItem
+                      value={option.value}
+                      id={`attendance-${option.value}`}
+                      className="w-5 h-5 rounded-full border border-[#532c0a] bg-[#f9f7ebcc] text-[#532c0a] data-[state=checked]:bg-[#532c0a] data-[state=checked]:border-[#532c0a] data-[state=checked]:shadow-[inset_0_0_0_3px_#f9f7ebcc] focus-visible:ring-[#532c0a]/30"
+                    />
+                    <Label
+                      htmlFor={`attendance-${option.value}`}
+                      className="font-light text-[#745437] text-base tracking-[0] leading-[normal] whitespace-nowrap cursor-pointer"
+                    >
+                      {option.label}
+                    </Label>
+                  </div>
+                ))}
+              </RadioGroup>
+            </div>
+
+            <div className="flex flex-col items-start gap-4 w-full">
+              <Label className="font-semibold text-[#532c0a] text-xs tracking-[0] leading-[normal]">
+                Restricciones Alimentarias (Menú Especial)
+              </Label>
+
+              <div className="flex flex-col gap-2 w-full">
+                {dietaryOptions.map((option) => {
+                  const isChecked = dietarySelection.includes(option.value)
+                  return (
+                    <div
+                      key={option.value}
+                      className="inline-flex items-center gap-2"
+                    >
+                      <Checkbox
+                        id={`dietary-${option.value}`}
+                        checked={isChecked}
+                        onCheckedChange={(state) => {
+                          const nextChecked = state === true
+                          setDietarySelection((prev) => {
+                            if (nextChecked) {
+                              if (prev.includes(option.value)) return prev
+                              return [...prev, option.value]
+                            }
+                            return prev.filter((value) => value !== option.value)
+                          })
+                        }}
+                        className="w-5 h-5 rounded-[6px] border border-[#532c0a] bg-[#f9f7ebcc] text-[#532c0a] data-[state=checked]:bg-[#532c0a] data-[state=checked]:border-[#532c0a] focus-visible:ring-[#532c0a]/30"
+                      />
+                      <Label
+                        htmlFor={`dietary-${option.value}`}
+                        className="font-light text-[#745437] text-base tracking-[0] leading-[normal] whitespace-nowrap cursor-pointer"
+                      >
+                        {option.label}
+                      </Label>
+                    </div>
+                  )
+                })}
+              </div>
+            </div>
+
+            <div className="flex flex-col items-start gap-2 w-full">
+              <Label
+                htmlFor="music-input"
+                className="font-semibold text-[#532c0a] text-xs tracking-[0] leading-[normal]"
+              >
+                ¿Qué canción no puede faltar?
+              </Label>
+
+              <Input
+                id="music-input"
+                defaultValue="TU VAS SIN - Rels"
+                className="flex items-center justify-center gap-2 px-3 py-2 w-full rounded border-[0.75px] border-solid border-[#532c0a] bg-transparent font-light text-[#745437] text-base tracking-[0] leading-[normal] h-auto"
+              />
+            </div>
+          </CardContent>
+
+          <Button className="flex items-center justify-center gap-2 pl-3 pr-4 py-3 w-full bg-[#0c4256a6] hover:bg-[#0c4256] rounded-[100px] font-light text-[#f9f7eb] text-xl text-center tracking-[0] leading-[normal] whitespace-nowrap h-[40px] transition-colors">
+            <SendIcon className="w-5 h-5" />
+            Enviar
+          </Button>
+        </Card>
+      </section>
+      <section className="relative w-full h-[472px] px-6 py-10 flex flex-col items-center bg-gradient-to-t from-[#0C4256] via-[#0C4256]/80 to-[#0C4256]/30 border-t border-[#0C4256]">
+        <div
+          className="absolute inset-0"
+          style={{
+            background:
+              "radial-gradient(81.64% 81.64% at 50% 81.64%, rgba(12, 66, 86, 0) 70%, #0C4256 100%), linear-gradient(180deg, rgba(83, 44, 10, 0) 65.38%, rgba(83, 44, 10, 0.9) 100%), url(/bodaSofi&Gonchi/bottomBackground.jpeg) lightgray 50% / cover no-repeat",
+            backgroundSize: "cover",
+            backgroundPosition: "50%",
+            backgroundRepeat: "no-repeat",
+            backgroundBlendMode: "normal, normal, multiply",
+          }}
+        />
+        <div
+          className="absolute top-0 left-0 w-full h-[50px] pointer-events-none"
+          aria-hidden="true"
+          style={{
+            background: "linear-gradient(180deg, #0C4256 0%, rgba(12, 66, 86, 0) 100%)",
+          }}
+        />
+
+        <div className="relative w-full max-w-md z-10 mt-10">
+          <div
+            className="relative px-10 py-8 text-center text-[#F9F7EB] flex flex-col gap-4 items-center shadow-[0px_20px_60px_rgba(12,66,86,0.35)]"
+            style={{
+              borderRadius: "24px",
+              background: "rgba(83, 44, 10, 0.65)",
+              backdropFilter: "blur(6px)",
+            }}
+          >
+            <div>
+              <p className="font-boska-medium text-[28px]">¿No tenés cómo ir?</p>
+              <p className="font-light text-base mt-2">
+                Unite al grupo de whatsapp para coordinar traslados. Nos vemos!
+              </p>
+            </div>
+
+            <Button
+              className="rounded-full text-[#F9F7EB] px-6 py-2 flex items-center gap-2 transition-colors font-light"
+              style={{
+                backgroundColor: "rgba(249, 247, 235, 0.20)",
+                color: "#F9F7EB",
+              }}
+            >
+              <MessageCircleHeart className="w-5 h-5" strokeWidth={1} />
+              Unirse
+            </Button>
+          </div>
+        </div>
+      </section>
+    </main>                                                                                                                                                                                                                                                                                                                                                                  
   )
 };
+
+//https://c.animaapp.com sacar estas cosas
