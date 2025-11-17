@@ -146,8 +146,8 @@ export default function BodaMicaTincho() {
                   target="_blank"
                   rel="noopener noreferrer"
                 >
-                  <Button className="mt-6 bg-[#688268] hover:bg-[#827a71]/90 text-white font-semibold">
-                    <MapPin className="w-8 h-8 text-white" />
+                  <Button className="mt-6 bg-transparent border-1 border-[#688268] hover:bg-[#688268]/60 text-[#688268] font-semibold">
+                    <MapPin className="w-8 h-8 text-[#688268]" />
                     Google Maps
                   </Button>
                 </a>
@@ -156,8 +156,8 @@ export default function BodaMicaTincho() {
                   target="_blank"
                   rel="noopener noreferrer"
                 >
-                  <Button className="mt-6 bg-[#827a71] hover:bg-[#688268]/90 text-white font-semibold">
-                    <MapPin className="w-8 h-8 text-white" />
+                  <Button className="mt-6 bg-transparent border-1 border-[#827a71] hover:bg-[#827a71]/60 text-[#827a71] font-semibold">
+                    <MapPin className="w-8 h-8 text-[#827a71]" />
                     Waze
                   </Button>
                 </a>
@@ -180,8 +180,8 @@ export default function BodaMicaTincho() {
                   target="_blank"
                   rel="noopener noreferrer"
                 >
-                  <Button className="mt-6 bg-[#688268] hover:bg-[#827a71]/90 text-white font-semibold">
-                    <MapPin className="w-8 h-8 text-white" />
+                   <Button className="mt-6 bg-transparent border-1 border-[#688268] hover:bg-[#688268]/60 text-[#688268] font-semibold">
+                    <MapPin className="w-8 h-8 text-[#688268]" />
                     Google Maps
                   </Button>
                 </a>
@@ -190,8 +190,8 @@ export default function BodaMicaTincho() {
                   target="_blank"
                   rel="noopener noreferrer"
                 >
-                  <Button className="mt-6 bg-[#827a71] hover:bg-[#688268]/90 text-white font-semibold">
-                    <MapPin className="w-8 h-8 text-white" />
+                  <Button className="mt-6 bg-transparent border-1 border-[#827a71] hover:bg-[#827a71]/60 text-[#827a71] font-semibold">
+                    <MapPin className="w-8 h-8 text-[#827a71]" />
                     Waze
                   </Button>
                 </a>
