@@ -57,7 +57,7 @@ export function GuestManagementSection() {
               ))}
             </div>
             <p className="pt-4 text-sm leading-relaxed text-foreground/90 md:text-lg">
-              Es tu propio centro de organización, pero hermoso.
+              Es tu propio centro de organización.
             </p>
           </div>
         </div>
