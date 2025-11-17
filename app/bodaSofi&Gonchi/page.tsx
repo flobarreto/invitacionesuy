@@ -221,7 +221,7 @@ export default function BodaSofiGonchi() {
 
         <div className="flex flex-col items-center relative z-10">
           <Button asChild className="h-8 gap-2 mb-[16px] pl-3 pr-4 py-0 bg-[#0c4256] hover:bg-[#0c4256] rounded-[100px] transition-colors">
-            <a href="https://calendar.google.com/calendar/u/0/r/eventedit?text=Boda+Sofi+%26+Gonchi&dates=20241220T223000Z/20241221T013000Z&details=%C2%A1Guardate+la+fecha+de+nuestro+casamiento+para+que+no+te+olvides+y+puedas+compartir+con+nosotros%21" target="_blank" rel="noopener noreferrer">
+            <a href="https://calendar.google.com/calendar/u/0/r/eventedit?text=Boda+Sofi+%26+Gonchi&dates=20251220T223000Z/20251221T013000Z&details=%C2%A1Guardate+la+fecha+de+nuestro+casamiento+para+que+no+te+olvides+y+puedas+compartir+con+nosotros%21" target="_blank" rel="noopener noreferrer">
               <CalendarIcon className="w-5 h-5" />
               <span className=" font-light text-[#f9f7eb] text-base text-center tracking-[0] leading-[normal] whitespace-nowrap">
                 Agendar
