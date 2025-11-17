@@ -17,24 +17,26 @@ const eventSections = [
     icon: "/bodaSofi&Gonchi/church.png",
     iconHeight: "h-[100px]",
     title: "Ceremonia",
-    location: "Parroquia San Juan Bautista\nMonseñor Domingo Tamburini 1210",
+    locationName: "Parroquia San Juan Bautista",
+    locationAddress: "Monseñor Domingo Tamburini 1210",
     time: "19:30",
     timeLabel: "Puntual",
     hasButton: true,
-    googleURL: 'www.google.com',
-    wazeURL: "www.waze.com"
+    googleURL: 'https://maps.app.goo.gl/2Za2Mna6u83ykAdw9',
+    wazeURL: "https://ul.waze.com/ul?venue_id=199099819.1991325869.1381639&overview=yes&utm_campaign=default&utm_source=waze_website&utm_medium=lm_share_location"
   },
   {
     id: "party",
     icon: "/bodaSofi&Gonchi/party.png",
     iconHeight: "h-[100px]",
     title: "Fiesta",
-    location: "Quinta de Arteaga \n Ruta 5, Km 12.500",
+    locationName: "Quinta de Arteaga",
+    locationAddress: "Ruta 5, Km 12.500",
     time: "Post",
     timeLabel: "Ceremonia",
     hasButton: true,
-    googleURL: 'www.google.com',
-    wazeURL: "www.waze.com"
+    googleURL: 'https://maps.app.goo.gl/GaQ83n2DW6gqASyR8',
+    wazeURL: "https://ul.waze.com/ul?venue_id=199099819.1991325869.1381639&overview=yes&utm_campaign=default&utm_source=waze_website&utm_medium=lm_share_location"
   },
   {
     id: "gift",
@@ -51,29 +53,29 @@ const eventSections = [
 ];
 
 const attendanceOptions = [
-  { value: "yes", label: "Sí, allí estaré" },
+  { value: "si", label: "Sí, allí estaré" },
   { value: "no", label: "No, lo siento" },
 ];
 
 const dietaryOptions = [
-  { value: "none", label: "Sin Restricción" },
-  { value: "vegetarian", label: "Vegetariano" },
-  { value: "celiac", label: "Celíaco" },
+  { value: "no", label: "Sin Restricción" },
+  { value: "vegetariano", label: "Vegetariano" },
+  { value: "celiaco", label: "Celíaco" },
 ];
 
-const DEFAULT_ATTENDANCE_RESPONSE = attendanceOptions[0]?.value ?? "yes"
+const DEFAULT_ATTENDANCE_RESPONSE = attendanceOptions[0]?.value ?? "si"
 const DEFAULT_NAME = ""
 const DEFAULT_SONG = ""
 
 export default function BodaSofiGonchi() {
   const [timeLeft, setTimeLeft] = useState({ days: 0, hours: 0, minutes: 0 })
-  const [dietarySelection, setDietarySelection] = useState<string[]>([dietaryOptions[0].value ?? "none"])
+  const [dietarySelection, setDietarySelection] = useState<string[]>([dietaryOptions[0].value ?? "no"])
   const [guestName, setGuestName] = useState(DEFAULT_NAME)
   const [attendanceResponse, setAttendanceResponse] = useState(DEFAULT_ATTENDANCE_RESPONSE)
   const [favoriteSong, setFavoriteSong] = useState(DEFAULT_SONG)
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [submissionFeedback, setSubmissionFeedback] = useState<{ type: "success" | "error"; message: string } | null>(null)
-
+  const [copied, setCopied] = useState(false)
   useEffect(() => {
     const targetDate = new Date('2025-12-20T19:30:00').getTime()
 
@@ -106,6 +108,33 @@ export default function BodaSofiGonchi() {
       return () => clearTimeout(timeout)
     }
   }, [submissionFeedback])
+
+  const copyToClipboard = (text: string) => {
+    if (typeof navigator === "undefined") return
+
+    if (navigator.clipboard?.writeText) {
+      navigator.clipboard.writeText(text).catch(() => {
+        console.error("No se pudo copiar el texto al portapapeles.")
+      })
+      return
+    }
+
+    const textarea = document.createElement("textarea")
+    textarea.value = text
+    textarea.style.position = "fixed"
+    textarea.style.opacity = "0"
+    document.body.appendChild(textarea)
+    textarea.focus()
+    textarea.select()
+
+    try {
+      document.execCommand("copy")
+    } catch (err) {
+      console.error("No se pudo copiar el texto al portapapeles.", err)
+    } finally {
+      document.body.removeChild(textarea)
+    }
+  }
 
   const resetForm = (options?: { preserveFeedback?: boolean }) => {
     setGuestName(DEFAULT_NAME)
@@ -190,11 +219,13 @@ export default function BodaSofiGonchi() {
         </div>
 
         <div className="flex flex-col items-center relative z-10">
-          <Button className="h-8 gap-2 mb-[16px] pl-3 pr-4 py-0 bg-[#0c4256] hover:bg-[#0c4256] rounded-[100px] transition-colors">
-            <CalendarIcon className="w-5 h-5" />
-            <span className=" font-light text-[#f9f7eb] text-base text-center tracking-[0] leading-[normal] whitespace-nowrap">
-              Agendar
-            </span>
+          <Button asChild className="h-8 gap-2 mb-[16px] pl-3 pr-4 py-0 bg-[#0c4256] hover:bg-[#0c4256] rounded-[100px] transition-colors">
+            <a href="https://calendar.google.com/calendar/u/0/r/eventedit?text=Boda+Sofi+%26+Gonchi&dates=20241220T223000Z/20241221T013000Z&details=%C2%A1Guardate+la+fecha+de+nuestro+casamiento+para+que+no+te+olvides+y+puedas+compartir+con+nosotros%21" target="_blank" rel="noopener noreferrer">
+              <CalendarIcon className="w-5 h-5" />
+              <span className=" font-light text-[#f9f7eb] text-base text-center tracking-[0] leading-[normal] whitespace-nowrap">
+                Agendar
+              </span>
+            </a>
           </Button>
           <div className="font-boska text-[#532C0A] text-[28px] inline-flex flex-col items-center gap-3 relative rounded-[1000px] bg-[rgba(249,247,235,0.75)] py-[12px] px-[32px]">
             {timeLeft.days} d . {String(timeLeft.hours).padStart(2, '0')} h . {String(timeLeft.minutes).padStart(2, '0')} m
@@ -226,22 +257,49 @@ export default function BodaSofiGonchi() {
                   <div className="flex flex-col items-center font-light max-w-[80%]">
                     <p className="font-boska-medium text-[28px]">{section.title}</p>
                     <p className="mt-2 text-sm sm:text-base">
-                      {section.location}
+                      {section.locationName}
                     </p>
                     <p><b className="font-bold">Titular:</b> {section.giftInformation.name}</p>
                     <p><b className="font-bold">Banco:</b> {section.giftInformation.bank}</p>
-                    <p><b className="font-bold">Cuenta:</b> {section.giftInformation.accountNumber}</p>
+                    <p>
+                      <b className="font-bold">Cuenta:</b>{' '}
+                      <span
+                        className="underline cursor-pointer"
+                        role="button"
+                        tabIndex={0}
+                        onClick={() => {
+                          copyToClipboard(section.giftInformation.accountNumber)
+                          setCopied(true)
+                          setTimeout(() => setCopied(false), 2000)
+                        }}
+                        onKeyDown={(event) => {
+                          if (event.key === "Enter" || event.key === " ") {
+                            event.preventDefault()
+                            copyToClipboard(section.giftInformation.accountNumber)
+                          }
+                        }}
+                      >
+                        {section.giftInformation.accountNumber}
+                      </span>
+                    </p>
                     <p><b className="font-bold">Tipo:</b> {section.giftInformation.accountType}</p>
+                    <p className="ml-2 text-sm h-[30px]">
+                      {copied && '✓ Copiado!'}
+                    </p>
                   </div>
                 ) : (
                   <>
                     <div className="flex flex-col items-center font-light max-w-[85%]">
                       <p className="font-boska-medium text-[28px]">{section.title}</p>
-                      <p className="mt-2 text-sm sm:text-base">
-                        {section.location}
-                      </p>
+                      <p className="mt-2 text-sm sm:text-base">{section.locationName}</p>
+                      <a href={section.googleURL} target="_blank" rel="noopener noreferrer" className="mt-2 text-sm sm:text-base underline">
+                        {section.locationAddress}
+                      </a>
 
-                      <Button className="mt-6 rounded-[100px] bg-[rgba(249,247,235,0.20)] font-light text-[#E8DCC8] h-[32px]">
+                      <Button
+                      onClick={() => window.open(section.wazeURL, '_blank')}
+                      rel="noopener noreferrer"
+                      className="mt-6 rounded-[100px] bg-[rgba(249,247,235,0.20)] font-light text-[#E8DCC8] h-[32px]">
                         <MapPinIcon className="w-5 h-5" strokeWidth={1} />
                         ¿Cómo ir?
                       </Button>
@@ -347,10 +405,19 @@ export default function BodaSofiGonchi() {
                           onCheckedChange={(state) => {
                             const nextChecked = state === true
                             setDietarySelection((prev) => {
-                              if (nextChecked) {
-                                if (prev.includes(option.value)) return prev
-                                return [...prev, option.value]
+                              if (option.value === "no") {
+                                if (nextChecked) {
+                                  return ["no"]
+                                }
+                                return prev.filter((value) => value !== "no")
                               }
+
+                              if (nextChecked) {
+                                const withoutNo = prev.filter((value) => value !== "no")
+                                if (withoutNo.includes(option.value)) return withoutNo
+                                return [...withoutNo, option.value]
+                              }
+
                               return prev.filter((value) => value !== option.value)
                             })
                           }}
@@ -455,6 +522,7 @@ export default function BodaSofiGonchi() {
 
             <Button
               className="rounded-full text-[#F9F7EB] px-6 py-2 flex items-center gap-2 transition-colors font-light"
+              onClick={() => window.open('https://chat.whatsapp.com/GYzVFSKwBqDBKPN476fQ7D', '_blank')}
               style={{
                 backgroundColor: "rgba(249, 247, 235, 0.20)",
                 color: "#F9F7EB",

@@ -32,8 +32,8 @@ export default function BodaMicaTincho() {
   };
 
   const [guestName, setGuestName] = useState("");
-  const [attendanceResponse, setAttendanceResponse] = useState<"yes" | "no">("yes");
-  const [dietaryPreferences, setDietaryPreferences] = useState<string[]>(["none"]);
+  const [attendanceResponse, setAttendanceResponse] = useState<"si" | "no">("si");
+  const [dietaryPreferences, setDietaryPreferences] = useState<string[]>(["no"]);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submissionFeedback, setSubmissionFeedback] = useState<{ type: "success" | "error"; message: string } | null>(
     null
@@ -76,8 +76,8 @@ export default function BodaMicaTincho() {
         message: "¡Gracias! Registramos tu respuesta.",
       });
       setGuestName("");
-      setAttendanceResponse("yes");
-      setDietaryPreferences(["none"]);
+      setAttendanceResponse("si");
+      setDietaryPreferences(["no"]);
 
       setTimeout(() => setSubmissionFeedback(null), 5000);
     } catch (error) {
@@ -138,7 +138,7 @@ export default function BodaMicaTincho() {
               <p className="text-lg text-[#827a71]/80 mb-1 leading-relaxed">Instituto Pre Universitario Juan XXIII</p>
               <div className="flex items-center gap-2 text-[#827a71]/70">
                 <Clock className="w-5 h-5 text-[#688268]" />
-                <span className="text-lg" >17:00 hs</span>
+                <span className="text-lg" >17:30 hs (Puntual)</span>
               </div>
               <div className="flex items-center gap-2 text-[#827a71]/70">
                 <a
@@ -364,7 +364,7 @@ export default function BodaMicaTincho() {
               <p className="text-sm font-semibold text-[#827a71] uppercase tracking-wide">Confirmar asistencia</p>
               <div className="flex flex-col sm:flex-row gap-3">
                 {[
-                  { value: "yes", label: "Sí" },
+                  { value: "si", label: "Sí" },
                   { value: "no", label: "No, lo siento" },
                 ].map((option) => (
                   <label
@@ -380,7 +380,7 @@ export default function BodaMicaTincho() {
                       name="attendance"
                       value={option.value}
                       checked={attendanceResponse === option.value}
-                      onChange={() => setAttendanceResponse(option.value as "yes" | "no")}
+                      onChange={() => setAttendanceResponse(option.value as "si" | "no")}
                       className="hidden"
                     />
                     {option.label}
@@ -411,9 +411,19 @@ export default function BodaMicaTincho() {
                       onChange={(event) => {
                         const isChecked = event.target.checked;
                         setDietaryPreferences((prev) => {
-                          if (isChecked) {
-                            return [...prev, option.value];
+                          if (option.value === "no") {
+                            if (isChecked) {
+                              return ["no"];
+                            }
+                            return prev.filter((value) => value !== "no");
                           }
+
+                          if (isChecked) {
+                            const withoutNo = prev.filter((value) => value !== "no");
+                            if (withoutNo.includes(option.value)) return withoutNo;
+                            return [...withoutNo, option.value];
+                          }
+
                           return prev.filter((value) => value !== option.value);
                         });
                       }}
@@ -445,19 +455,6 @@ export default function BodaMicaTincho() {
               </p>
             )}
           </form>
-
-          {/* <a
-            href="https://calendar.google.com/calendar/u/0/r/eventedit?text=Boda+Mica+%26+Tincho&dates=20260131T200000Z/20260201T090000Z&details=%C2%A1Guardate+la+fecha+de+nuestro+casamiento+para+que+no+te+olvides+y+puedas+compartir+con+nosotros%21"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Button
-              size="lg"
-              className="border-[#688268] border-2 hover:bg-[#688268]/10 text-[#688268] font-semibold text-lg px-8 py-6 rounded-md bg-transparent w-[250px]"
-            >
-              Agregalo a tu calendario
-            </Button>
-          </a> */}
 
         </div>
       </section>
