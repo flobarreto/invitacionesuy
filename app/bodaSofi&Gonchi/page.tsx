@@ -37,7 +37,7 @@ const eventSections = [
     timeLabel: "Ceremonia",
     hasButton: true,
     googleURL: 'https://maps.app.goo.gl/GaQ83n2DW6gqASyR8',
-    wazeURL: "https://ul.waze.com/ul?venue_id=199099819.1991325869.1381639&overview=yes&utm_campaign=default&utm_source=waze_website&utm_medium=lm_share_location"
+    wazeURL: "https://ul.waze.com/ul?venue_id=199034284.1990539447.12247172&overview=yes&utm_campaign=default&utm_source=waze_website&utm_medium=lm_share_location"
   },
   {
     id: "gift",
