@@ -160,7 +160,15 @@ export default function Home() {
                           </li>
                           <li className="flex items-start gap-2">
                             <span className="text-[#37322F] mt-1">•</span>
+                            <span>Link para compartir con tus invitados</span>
+                          </li>
+                          <li className="flex items-start gap-2">
+                            <span className="text-[#37322F] mt-1">•</span>
                             <span>Base de datos de invitados</span>
+                          </li>
+                          <li className="flex items-start gap-2">
+                            <span className="text-[#37322F] mt-1">•</span>
+                            <span>Números de mesa y menús personalizados</span>
                           </li>
                         </ul>
                       </div>
@@ -185,11 +193,7 @@ export default function Home() {
                         <ul className="flex flex-col gap-2 text-[#605A57] text-sm leading-relaxed">
                           <li className="flex items-start gap-2">
                             <span className="text-[#37322F] mt-1">•</span>
-                            <span>Diseño único creado desde cero</span>
-                          </li>
-                          <li className="flex items-start gap-2">
-                            <span className="text-[#37322F] mt-1">•</span>
-                            <span>Desarrollo completo</span>
+                            <span>Diseño + desarrollo único creado desde cero</span>
                           </li>
                           <li className="flex items-start gap-2">
                             <span className="text-[#37322F] mt-1">•</span>
