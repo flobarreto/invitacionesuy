@@ -91,7 +91,7 @@ export default function Home() {
                 <div className="self-stretch text-center text-[#37322F] text-base sm:text-lg md:text-xl leading-relaxed font-sans">
                   Cada evento tiene una esencia propia. Un tono, una energía, una historia que merece ser contada con amor y con intención.
                   <br /><br />
-                  Por eso, diseño páginas web que nacen desde cero, pensadas especialmente para vos. No hay dos iguales: cada una refleja la estética, emoción y personalidad de quienes celebran.
+                  Por eso, diseñamos páginas web que nacen desde cero, pensadas especialmente para vos. No hay dos iguales: cada una refleja la estética, emoción y personalidad de quienes celebran.
                   <br /><br />
                   Incluye una base de datos para gestionar RSVP, preferencias y todo lo que necesitás para organizar con calma y sin estrés.
                 </div>
@@ -160,14 +160,6 @@ export default function Home() {
                           </li>
                           <li className="flex items-start gap-2">
                             <span className="text-[#37322F] mt-1">•</span>
-                            <span>Carga inicial del contenido</span>
-                          </li>
-                          <li className="flex items-start gap-2">
-                            <span className="text-[#37322F] mt-1">•</span>
-                            <span>Optimización full responsive</span>
-                          </li>
-                          <li className="flex items-start gap-2">
-                            <span className="text-[#37322F] mt-1">•</span>
                             <span>Base de datos de invitados</span>
                           </li>
                         </ul>
@@ -205,7 +197,7 @@ export default function Home() {
                           </li>
                           <li className="flex items-start gap-2">
                             <span className="text-[#37322F] mt-1">•</span>
-                            <span>Panel opcional para gestionar invitados</span>
+                            <span>Base de datos de invitados</span>
                           </li>
                         </ul>
                       </div>
@@ -322,10 +314,6 @@ export default function Home() {
                   <li className="flex items-center gap-3">
                     <span className="text-[#37322F] text-xl">•</span>
                     <span>Moodboard</span>
-                  </li>
-                  <li className="flex items-center gap-3">
-                    <span className="text-[#37322F] text-xl">•</span>
-                    <span>Logo / monograma</span>
                   </li>
                   <li className="flex items-center gap-3">
                     <span className="text-[#37322F] text-xl">•</span>
