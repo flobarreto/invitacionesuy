@@ -3,6 +3,7 @@
 import { CalendarHeart, Clock, MapPin, PartyPopper, Church, Shirt, MessageCircleHeart } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import Image from "next/image"
+import Link from "next/link"
 import { FormEvent, useState } from "react";
 
 export default function BodaMicaTincho() {
@@ -467,7 +468,7 @@ export default function BodaMicaTincho() {
           Hicimos un grupo de whatsapp para que puedan coordinar transporte
           </p>
           <Button
-            className="bg-transparent text-[#827a71] text-lg rounded-md border-1 border-[#827a71]"
+            className="bg-transparent text-[#827a71] text-md rounded-md border-1 border-[#827a71]"
             style={{ textWrap: 'wrap' }}
             onClick={() => window.open('https://chat.whatsapp.com/FiEw3kgzvuLI3LQdHBR4bg', '_blank')}
           >
@@ -480,8 +481,14 @@ export default function BodaMicaTincho() {
       <footer className="bg-gray-200 py-5 md:py-10">
         <div className="max-w-6xl mx-auto px-">
           <div className="text-center text-gray-600 mt-2">
-            <p className="text-sm">Hecho en Uruguay por Legup</p>
-            <p className="text-xs">Contactate vía florencia@legup.studio</p>
+            <p className="text-sm">Invitaciones.uy - Diseño de páginas web para eventos.</p>
+            <Button
+              variant="link"
+              asChild
+              className="text-xs text-[#688268] underline underline-offset-2 p-0 h-auto"
+            >
+              <Link href="/">Conocé más aquí</Link>
+            </Button>
           </div>
         </div>
       </footer>

@@ -10,6 +10,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Separator } from "@radix-ui/react-separator";
 import { CalendarIcon, SendIcon, MapPinIcon, MessageCircleIcon, MessageCircleHeart } from "lucide-react"
 import Image from "next/image"
+import Link from "next/link";
 
 const eventSections = [
   {
@@ -202,7 +203,7 @@ export default function BodaSofiGonchi() {
         <div
           className="absolute bottom-0 left-0 w-full rounded-[166px_166px_0px_0px]"
           style={{
-            background: `radial-gradient(81.64% 81.64% at 50% 81.64%, rgba(249, 247, 235, 0.00) 70%, #F9F7EB 100%), linear-gradient(180deg, rgba(83, 44, 10, 0.00) 0%, rgba(83, 44, 10, 0.00) 75.48%, #532C0A 100%), url(https://c.animaapp.com/mhwmlgcmJBg8gd/img/image-1.png) lightgray`,
+            background: `radial-gradient(81.64% 81.64% at 50% 81.64%, rgba(249, 247, 235, 0.00) 70%, #F9F7EB 100%), linear-gradient(180deg, rgba(83, 44, 10, 0.00) 0%, rgba(83, 44, 10, 0.00) 75.48%, #532C0A 100%), url('/bodaSofi&Gonchi/background.png') lightgray`,
             backgroundSize: 'cover',
             backgroundPosition: '50%',
             backgroundRepeat: 'no-repeat',
@@ -534,8 +535,20 @@ export default function BodaSofiGonchi() {
           </div>
         </div>
       </section>
+      <footer className="bg-[#0c4256] text-white py-5 md:py-10">
+        <div className="max-w-6xl mx-auto px-">
+          <div className="text-center mt-2">
+            <p className="text-sm">Invitaciones.uy - Diseño de páginas web para eventos.</p>
+            <Button
+              variant="link"
+              asChild
+              className="text-xs underline underline-offset-2 p-0 h-auto"
+            >
+              <Link href="/" className="text-white">Conocé más aquí</Link>
+            </Button>
+          </div>
+        </div>
+      </footer>
     </main>                                                                                                                                                                                                                                                                                                                                                                  
   )
 };
-
-//https://c.animaapp.com sacar estas cosas
