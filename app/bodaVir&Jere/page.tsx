@@ -72,7 +72,6 @@ export default function BodaVirJere() {
             backgroundImage: "url('/FotosVir&Jere/wedding-hero.png')",
           }}
         >
-          {/* Overlay for better text readability - adjust opacity here */}
           <div className="absolute inset-0 bg-black/70"></div>
         </div>
 
