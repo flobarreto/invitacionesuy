@@ -4,20 +4,16 @@ import { Button } from "@/components/ui/button";
 import { useState, useEffect } from "react";
 
 interface TimeLeft {
-  months: number;
   days: number;
   hours: number;
   minutes: number;
-  seconds: number;
 }
 
 export default function BodaVirJere() {
   const [timeLeft, setTimeLeft] = useState<TimeLeft>({
-    months: 0,
     days: 0,
     hours: 0,
     minutes: 0,
-    seconds: 0,
   });
   const [isOpen, setIsOpen] = useState(false);
   const [copied, setCopied] = useState(false);
@@ -30,9 +26,8 @@ export default function BodaVirJere() {
       const difference = weddingDate.getTime() - now.getTime();
 
       if (difference > 0) {
-        const months = Math.floor(difference / (1000 * 60 * 60 * 24 * 30.44));
         const days = Math.floor(
-          (difference % (1000 * 60 * 60 * 24 * 30.44)) / (1000 * 60 * 60 * 24)
+          difference / (1000 * 60 * 60 * 24)
         );
         const hours = Math.floor(
           (difference % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)
@@ -42,14 +37,12 @@ export default function BodaVirJere() {
         );
 
         setTimeLeft({
-          months: Math.max(0, months),
           days: Math.max(0, days),
           hours: Math.max(0, hours),
           minutes: Math.max(0, minutes),
-          seconds: Math.max(0, Math.floor((difference % (1000 * 60)) / 1000)),
         });
       } else {
-        setTimeLeft({ months: 0, days: 0, hours: 0, minutes: 0, seconds: 0 });
+        setTimeLeft({ days: 0, hours: 0, minutes: 0 });
       }
     };
 
@@ -85,44 +78,27 @@ export default function BodaVirJere() {
 
         {/* Content */}
         <div className="relative z-10 min-h-screen flex flex-col">
-          {/* Navigation Header */}
-          <header className="fixed w-full flex flex-col md:flex-row items-center justify-between gap-4 p-6 md:p-8">
-            {/* Right RSVP Button */}
-            <div className="md:ml-auto">
-              <a
-                href="https://docs.google.com/forms/u/0/"
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                <Button
-                  variant="outline"
-                  className="bg-white/10 border-white/30 text-white hover:bg-white/20 backdrop-blur-sm font-sans text-sm px-6"
-                >
-                  Confirmar asistencia
-                </Button>
-              </a>
-            </div>
-          </header>
+
 
           {/* Main Content */}
-          <main className="flex-1 flex flex-col items-center justify-center text-center px-6 pb-20">
+          <main className="flex-1 flex flex-col mt-8 text-center px-6 pb-20">
             {/* We're Getting Married */}
-            <div className="mb-8">
-              <p className="text-white/90 font-sans text-lg md:text-xl tracking-wide">
-                ¡Nos casamos!
+            <div className="">
+              <p className="text-white/90 font-light font-sans text-lg md:text-xl tracking-wide">
+                ¡NOS CASAMOS!
               </p>
             </div>
 
             {/* Couple Names */}
-            <div className="mb-8">
-              <h1 className="text-white font-italianno text-7xl lg:text-8xl font-light tracking-wide leading-tight">
+            <div className="mb-4">
+              <h1 className="text-white font-italianno text-8xl lg:text-8xl font-light tracking-wide leading-tight">
                 {/* TODOFLO: cambiar el nombre de los novios a curisva */}
                 Vir y Jere
               </h1>
             </div>
 
             {/* Wedding Date */}
-            <div className="text-white font-sans text-xl md:text-2xl tracking-[0.3em] font-light">
+            <div className="text-white mt-auto font-sans text-xl md:text-2xl tracking-[0.3em] font-light">
               14 . 03 . 26
             </div>
           </main>
@@ -132,24 +108,12 @@ export default function BodaVirJere() {
       {/* Countdown Section */}
       <section className="bg-white py-15 md:py-18">
         <div className="max-w-4xl mx-auto px-6 text-center">
-          <h2 className="font-serif text-2xl md:text-3xl text-gray-800 mb-10 tracking-wide">
-            Faltan
-          </h2>
           {/* todo flo: esto no anda en mobile  */}
-          <div className="grid grid-cols-5">
-            {/* Months */}
-            <div className="text-center">
-              <div className="font-serif text-4xl md:text-6xl text-gray-800 mb-2">
-                {timeLeft.months}
-              </div>
-              <div className="font-sans text-sm md:text-base text-gray-600 tracking-wide uppercase">
-                {timeLeft.months === 1 ? "Mes" : "Meses"}
-              </div>
-            </div>
+          <div className="grid grid-cols-3">
 
             {/* Days */}
             <div className="text-center">
-              <div className="font-serif text-4xl md:text-6xl text-gray-800 mb-2">
+              <div className=" text-4xl md:text-6xl text-gray-800 mb-2">
                 {timeLeft.days}
               </div>
               <div className="font-sans text-sm md:text-base text-gray-600 tracking-wide uppercase">
@@ -159,7 +123,7 @@ export default function BodaVirJere() {
 
             {/* Hours */}
             <div className="text-center">
-              <div className="font-serif text-4xl md:text-6xl text-gray-800 mb-2">
+              <div className=" text-4xl md:text-6xl text-gray-800 mb-2">
                 {timeLeft.hours}
               </div>
               <div className="font-sans text-sm md:text-base text-gray-600 tracking-wide uppercase">
@@ -169,21 +133,11 @@ export default function BodaVirJere() {
 
             {/* Minutes */}
             <div className="text-center">
-              <div className="font-serif text-4xl md:text-6xl text-gray-800 mb-2">
+              <div className=" text-4xl md:text-6xl text-gray-800 mb-2">
                 {timeLeft.minutes}
               </div>
               <div className="font-sans text-sm md:text-base text-gray-600 tracking-wide uppercase">
                 {timeLeft.minutes === 1 ? "Minuto" : "Minutos"}
-              </div>
-            </div>
-
-            {/* Seconds */}
-            <div className="text-center">
-              <div className="font-serif text-4xl md:text-6xl text-gray-800 mb-2">
-                {timeLeft.seconds}
-              </div>
-              <div className="font-sans text-sm md:text-base text-gray-600 tracking-wide uppercase">
-                {timeLeft.seconds === 1 ? "Segundo" : "Segundos"}
               </div>
             </div>
           </div>
