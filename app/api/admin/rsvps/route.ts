@@ -36,7 +36,45 @@ export async function GET() {
       )
     }
 
-    return NextResponse.json({ rsvps: data || [], username, tableName, eventName })
+    console.log("floooo a ver", data?.[0]?.tags, "tipo:", typeof data?.[0]?.tags)
+    console.log("floooo tabla:", tableName)
+    console.log("floooo primer rsvp completo:", data?.[0])
+
+    // Asegurar que tags sea un array (puede venir como null o string desde la BD)
+    const rsvpsWithTags = (data || []).map((rsvp: any) => {
+      console.log(`floooo RSVP ${rsvp.id} - tags raw:`, rsvp.tags, "tipo:", typeof rsvp.tags)
+      
+      if (rsvp.tags === null || rsvp.tags === undefined) {
+        console.log(`floooo RSVP ${rsvp.id} - tags es null/undefined, retornando []`)
+        return { ...rsvp, tags: [] }
+      }
+      
+      // Si tags es un string, intentar parsearlo como JSON
+      if (typeof rsvp.tags === 'string') {
+        console.log(`floooo RSVP ${rsvp.id} - tags es string:`, rsvp.tags)
+        try {
+          const parsed = JSON.parse(rsvp.tags)
+          console.log(`floooo RSVP ${rsvp.id} - parsed:`, parsed)
+          return { ...rsvp, tags: Array.isArray(parsed) ? parsed : [] }
+        } catch (e) {
+          console.log(`floooo RSVP ${rsvp.id} - error parseando JSON:`, e)
+          return { ...rsvp, tags: [] }
+        }
+      }
+      
+      // Si ya es un array, asegurarse de que sea válido
+      if (Array.isArray(rsvp.tags)) {
+        console.log(`floooo RSVP ${rsvp.id} - tags es array:`, rsvp.tags)
+        return { ...rsvp, tags: rsvp.tags }
+      }
+      
+      console.log(`floooo RSVP ${rsvp.id} - tags no es array ni string, retornando []`)
+      return { ...rsvp, tags: [] }
+    })
+    
+    console.log("floooo rsvpsWithTags final:", rsvpsWithTags.map((r: any) => ({ id: r.id, name: r.name, tags: r.tags })))
+
+    return NextResponse.json({ rsvps: rsvpsWithTags, username, tableName, eventName })
   } catch (error: any) {
     if (error.message === "Unauthorized") {
       return NextResponse.json(

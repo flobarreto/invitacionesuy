@@ -13,7 +13,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table"
-import { RefreshCw, Users, Download, Search, ChevronDown, ChevronUp, Plus, Trash2 } from "lucide-react"
+import { RefreshCw, Users, Download, Search, ChevronDown, ChevronUp, Plus, Trash2, Tag, Filter, X } from "lucide-react"
 import { Checkbox } from "@/components/ui/checkbox"
 import { Label } from "@/components/ui/label"
 import {
@@ -26,6 +26,14 @@ import {
 } from "@/components/ui/dialog"
 import { Textarea } from "@/components/ui/textarea"
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
+import { Badge } from "@/components/ui/badge"
+
+interface Tag {
+  id: string
+  name: string
+  color: string
+}
 
 interface RSVP {
   id?: string
@@ -34,6 +42,7 @@ interface RSVP {
   dietary_preferences?: string[]
   favorite_song?: string
   created_at?: string
+  tags?: string[]
 }
 
 interface AdminDashboardProps {
@@ -56,6 +65,11 @@ export default function AdminDashboard({ username }: AdminDashboardProps) {
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false)
   const [rsvpToDelete, setRsvpToDelete] = useState<RSVP | null>(null)
   const [isDeleting, setIsDeleting] = useState(false)
+  const [availableTags, setAvailableTags] = useState<Tag[]>([])
+  const [tagsLoading, setTagsLoading] = useState(false)
+  const [editingTagsForRsvp, setEditingTagsForRsvp] = useState<string | null>(null)
+  const [isFilterModalOpen, setIsFilterModalOpen] = useState(false)
+  const [selectedFilterTags, setSelectedFilterTags] = useState<string[]>([])
   const [formData, setFormData] = useState({
     name: "",
     attendance: "Sí",
@@ -95,8 +109,25 @@ export default function AdminDashboard({ username }: AdminDashboardProps) {
     }
   }
 
+  const fetchTags = async () => {
+    setTagsLoading(true)
+    try {
+      const response = await fetch("/api/admin/tags")
+      const data = await response.json()
+
+      if (response.ok) {
+        setAvailableTags(data.tags || [])
+      }
+    } catch (err) {
+      console.error("Error fetching tags:", err)
+    } finally {
+      setTagsLoading(false)
+    }
+  }
+
   useEffect(() => {
     fetchRSVPs()
+    fetchTags()
   }, [])
 
 
@@ -133,7 +164,7 @@ export default function AdminDashboard({ username }: AdminDashboardProps) {
     return attendance.includes("sí") || attendance.includes("si")
   }
 
-  // Filtrar RSVPs por búsqueda y confirmados
+  // Filtrar RSVPs por búsqueda, confirmados y etiquetas
   const filteredRsvps = useMemo(() => {
     let filtered = rsvps
 
@@ -150,8 +181,19 @@ export default function AdminDashboard({ username }: AdminDashboardProps) {
       filtered = filtered.filter(isConfirmed)
     }
 
+    // Filtrar por etiquetas seleccionadas
+    if (selectedFilterTags.length > 0) {
+      filtered = filtered.filter((rsvp) => {
+        if (!rsvp.tags || rsvp.tags.length === 0) return false
+        // Verificar si el RSVP tiene al menos una de las etiquetas seleccionadas
+        return selectedFilterTags.some((filterTagId) =>
+          rsvp.tags?.some((rsvpTagId) => String(rsvpTagId) === String(filterTagId))
+        )
+      })
+    }
+
     return filtered
-  }, [rsvps, searchQuery, showOnlyConfirmed])
+  }, [rsvps, searchQuery, showOnlyConfirmed, selectedFilterTags])
 
   // Detectar si la tabla tiene la columna favorite_song
   const hasFavoriteSong = useMemo(() => {
@@ -295,11 +337,57 @@ export default function AdminDashboard({ username }: AdminDashboardProps) {
     }
   }
 
+  const handleTagToggle = async (rsvpId: string, tagId: string, currentTagIds: string[] = []) => {
+    // Normalizar a strings para comparación
+    const normalizedTagId = String(tagId)
+    const isSelected = currentTagIds.some((id) => String(id) === normalizedTagId)
+    const newTagIds = isSelected
+      ? currentTagIds.filter((id) => String(id) !== normalizedTagId)
+      : [...currentTagIds, normalizedTagId]
+    
+    try {
+      const response = await fetch("/api/admin/update-rsvp-tags", {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          rsvpId,
+          tagIds: newTagIds,
+        }),
+      })
+
+      const data = await response.json()
+
+      if (!response.ok) {
+        throw new Error(data.error || "Error al actualizar las etiquetas")
+      }
+
+      // Actualizar el RSVP localmente
+      setRsvps((prev) =>
+        prev.map((rsvp) =>
+          rsvp.id === rsvpId ? { ...rsvp, tags: newTagIds } : rsvp
+        )
+      )
+    } catch (err) {
+      console.error("Error updating tags:", err)
+      alert(err instanceof Error ? err.message : "Error al actualizar las etiquetas")
+    }
+  }
+
+  const getTagById = (tagId: string) => {
+    const tag = availableTags.find((tag) => {
+      // Comparar como string para evitar problemas de tipo
+      return String(tag.id) === String(tagId)
+    })
+    return tag
+  }
+
   // Función para descargar CSV
   const handleDownloadCSV = () => {
     const headers = hasFavoriteSong
-      ? ["Nombre", "Asistencia", "Preferencias Dietéticas", "Canción Favorita", "Fecha de Respuesta"]
-      : ["Nombre", "Asistencia", "Preferencias Dietéticas", "Fecha de Respuesta"]
+      ? ["Nombre", "Asistencia", "Preferencias Dietéticas", "Canción Favorita", "Etiquetas", "Fecha de Respuesta"]
+      : ["Nombre", "Asistencia", "Preferencias Dietéticas", "Etiquetas", "Fecha de Respuesta"]
     
     const csvRows = [
       headers.join(","),
@@ -311,6 +399,17 @@ export default function AdminDashboard({ username }: AdminDashboardProps) {
           : "no"
         
         const date = rsvp.created_at ? formatDate(rsvp.created_at) : "N/A"
+        
+        // Obtener nombres de etiquetas
+        const tagNames = rsvp.tags && rsvp.tags.length > 0
+          ? rsvp.tags
+              .map((tagId) => {
+                const tag = getTagById(tagId)
+                return tag ? tag.name : null
+              })
+              .filter((name) => name !== null)
+              .join("; ")
+          : ""
         
         // Escapar comillas y comas en los valores
         const escapeCSV = (value: string) => {
@@ -331,6 +430,7 @@ export default function AdminDashboard({ username }: AdminDashboardProps) {
           row.push(escapeCSV(favoriteSong))
         }
         
+        row.push(escapeCSV(tagNames))
         row.push(escapeCSV(date))
         
         return row.join(",")
@@ -412,21 +512,6 @@ export default function AdminDashboard({ username }: AdminDashboardProps) {
             <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
               <div>
                 <CardTitle>Lista de Confirmaciones</CardTitle>
-                <CardDescription>
-                <div className="flex items-center space-x-2 mt-2">
-                  <Checkbox
-                    id="show-only-confirmed"
-                    checked={showOnlyConfirmed}
-                    onCheckedChange={(checked) => setShowOnlyConfirmed(checked === true)}
-                  />
-                  <Label
-                    htmlFor="show-only-confirmed"
-                    className="text-sm font-medium cursor-pointer whitespace-nowrap"
-                  >
-                    Ver solo confirmados
-                  </Label>
-                </div>
-                </CardDescription>
               </div>
               <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3 w-full sm:w-auto">
                 <Button
@@ -452,20 +537,71 @@ export default function AdminDashboard({ username }: AdminDashboardProps) {
             {/* Search Bar */}
             {rsvps.length > 0 && (
               <div className="mb-4">
-                <div className="relative">
-                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                  <Input
-                    type="text"
-                    placeholder="Buscar por nombre..."
-                    value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
-                    className="pl-10"
-                  />
+                <div className="flex gap-2">
+                  <div className="relative flex-1">
+                    <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                    <Input
+                      type="text"
+                      placeholder="Buscar por nombre..."
+                      value={searchQuery}
+                      onChange={(e) => setSearchQuery(e.target.value)}
+                      className="pl-10"
+                    />
+                  </div>
+                  <Button
+                    variant={selectedFilterTags.length > 0 ? "default" : "outline"}
+                    onClick={() => setIsFilterModalOpen(true)}
+                    className="relative"
+                  >
+                    <Filter className="h-4 w-4 mr-2" />
+                    Filtros
+                    {selectedFilterTags.length > 0 && (
+                      <span className="ml-2 bg-background text-foreground rounded-full px-1.5 py-0.5 text-xs font-medium">
+                        {selectedFilterTags.length}
+                      </span>
+                    )}
+                  </Button>
                 </div>
-                {(searchQuery || showOnlyConfirmed) && (
+                {/* Mostrar etiquetas seleccionadas para filtrar */}
+                {selectedFilterTags.length > 0 && (
+                  <div className="flex flex-wrap gap-2 mt-2">
+                    {selectedFilterTags.map((tagId) => {
+                      const tag = getTagById(tagId)
+                      return tag ? (
+                        <Badge
+                          key={tagId}
+                          variant="secondary"
+                          className="flex items-center gap-1"
+                        >
+                          {tag.name}
+                          <button
+                            onClick={() => {
+                              setSelectedFilterTags((prev) =>
+                                prev.filter((id) => String(id) !== String(tagId))
+                              )
+                            }}
+                            className="ml-1 hover:bg-muted rounded-full p-0.5"
+                          >
+                            <X className="h-3 w-3" />
+                          </button>
+                        </Badge>
+                      ) : null
+                    })}
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => setSelectedFilterTags([])}
+                      className="h-6 text-xs"
+                    >
+                      Limpiar filtros
+                    </Button>
+                  </div>
+                )}
+                {(searchQuery || showOnlyConfirmed || selectedFilterTags.length > 0) && (
                   <p className="text-sm text-muted-foreground mt-2">
                     Mostrando {filteredRsvps.length} de {rsvps.length} resultados
                     {showOnlyConfirmed && " (solo confirmados)"}
+                    {selectedFilterTags.length > 0 && ` (filtrado por ${selectedFilterTags.length} etiqueta${selectedFilterTags.length > 1 ? 's' : ''})`}
                   </p>
                 )}
               </div>
@@ -548,10 +684,33 @@ export default function AdminDashboard({ username }: AdminDashboardProps) {
                                     </div>
                                   )}
                                   <div>
-                                    <p className="text-xs text-muted-foreground mb-1">Fecha de Respuesta</p>
-                                    <p className="text-sm text-muted-foreground">
-                                      {formatDate(rsvp.created_at)}
-                                    </p>
+                                    <p className="text-xs text-muted-foreground mb-1">Etiquetas</p>
+                                    <div className="flex flex-wrap gap-1 mt-1">
+                                      {rsvp.tags && rsvp.tags.length > 0 ? (
+                                        rsvp.tags.map((tagId) => {
+                                          const tag = getTagById(tagId)
+                                          return tag ? (
+                                            <Badge
+                                              key={tagId}
+                                              style={{ backgroundColor: tag.color }}
+                                              className="text-white border-0"
+                                            >
+                                              {tag.name}
+                                            </Badge>
+                                          ) : (
+                                            <Badge
+                                              key={tagId}
+                                              variant="outline"
+                                              className="text-xs"
+                                            >
+                                              ID: {tagId}
+                                            </Badge>
+                                          )
+                                        })
+                                      ) : (
+                                        <span className="text-sm text-muted-foreground">Sin etiquetas</span>
+                                      )}
+                                    </div>
                                   </div>
                                 </div>
                               )}
@@ -579,7 +738,7 @@ export default function AdminDashboard({ username }: AdminDashboardProps) {
                         <TableHead>Asistencia</TableHead>
                         <TableHead>Preferencias Dietéticas</TableHead>
                         {hasFavoriteSong && <TableHead>Canción Favorita</TableHead>}
-                        <TableHead>Fecha de Respuesta</TableHead>
+                        <TableHead>Etiquetas</TableHead>
                         <TableHead className="w-[100px]">Acciones</TableHead>
                       </TableRow>
                     </TableHeader>
@@ -613,8 +772,106 @@ export default function AdminDashboard({ username }: AdminDashboardProps) {
                                 {rsvp.favorite_song || "—"}
                               </TableCell>
                             )}
-                            <TableCell className="text-sm text-muted-foreground">
-                              {formatDate(rsvp.created_at)}
+                            <TableCell>
+                              <Popover
+                                open={editingTagsForRsvp === rsvp.id}
+                                onOpenChange={(open) =>
+                                  setEditingTagsForRsvp(open ? rsvp.id || null : null)
+                                }
+                              >
+                                <PopoverTrigger asChild>
+                                  <Button
+                                    variant={rsvp.tags && rsvp.tags.length > 0 ? "ghost" : "outline"}
+                                    size="sm"
+                                    className="h-auto min-h-[32px] justify-start"
+                                    onClick={(e) => {
+                                      e.stopPropagation()
+                                      setEditingTagsForRsvp(rsvp.id || null)
+                                    }}
+                                  >
+                                    {rsvp.tags && rsvp.tags.length > 0 ? (
+                                      <div className="flex flex-wrap gap-1">
+                                        {rsvp.tags.map((tagId) => {
+                                          const tag = getTagById(tagId)
+                                          return tag ? (
+                                            <Badge
+                                              key={tagId}
+                                              style={{ backgroundColor: tag.color }}
+                                              className="text-white border-0 text-xs"
+                                            >
+                                              {tag.name}
+                                            </Badge>
+                                          ) : (
+                                            <Badge
+                                              key={tagId}
+                                              variant="outline"
+                                              className="text-xs"
+                                            >
+                                              ID: {tagId}
+                                            </Badge>
+                                          )
+                                        })}
+                                      </div>
+                                    ) : (
+                                      <span className="text-muted-foreground flex items-center gap-1">
+                                        <Tag className="h-3 w-3" />
+                                        Agregar etiquetas
+                                      </span>
+                                    )}
+                                  </Button>
+                                </PopoverTrigger>
+                                <PopoverContent className="w-64" onClick={(e) => e.stopPropagation()}>
+                                  <div className="space-y-2">
+                                    <Label className="text-sm font-medium">Etiquetas</Label>
+                                    {tagsLoading ? (
+                                      <div className="text-sm text-muted-foreground">Cargando...</div>
+                                    ) : availableTags.length === 0 ? (
+                                      <div className="text-sm text-muted-foreground">
+                                        No hay etiquetas disponibles
+                                      </div>
+                                    ) : (
+                                      <div className="space-y-2 max-h-60 overflow-y-auto">
+                                        {availableTags.map((tag) => {
+                                          // Comparar como strings para evitar problemas de tipo
+                                          const isSelected = rsvp.tags?.some(
+                                            (tagId) => String(tagId) === String(tag.id)
+                                          ) || false
+                                          return (
+                                            <div
+                                              key={tag.id}
+                                              className="flex items-center space-x-2 cursor-pointer hover:bg-accent p-2 rounded"
+                                              onClick={() =>
+                                                handleTagToggle(
+                                                  rsvp.id || "",
+                                                  tag.id,
+                                                  rsvp.tags || []
+                                                )
+                                              }
+                                            >
+                                              <Checkbox
+                                                checked={isSelected}
+                                                onCheckedChange={() =>
+                                                  handleTagToggle(
+                                                    rsvp.id || "",
+                                                    tag.id,
+                                                    rsvp.tags || []
+                                                  )
+                                                }
+                                              />
+                                              <Badge
+                                                style={{ backgroundColor: tag.color }}
+                                                className="text-white border-0 flex-1"
+                                              >
+                                                {tag.name}
+                                              </Badge>
+                                            </div>
+                                          )
+                                        })}
+                                      </div>
+                                    )}
+                                  </div>
+                                </PopoverContent>
+                              </Popover>
                             </TableCell>
                             <TableCell>
                               <Button
@@ -795,6 +1052,108 @@ export default function AdminDashboard({ username }: AdminDashboardProps) {
               </Button>
               <Button onClick={handleAddGuest} disabled={isSubmitting}>
                 {isSubmitting ? "Agregando..." : "Agregar"}
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
+
+        {/* Modal para filtrar por etiquetas */}
+        <Dialog open={isFilterModalOpen} onOpenChange={setIsFilterModalOpen}>
+          <DialogContent className="max-w-md">
+            <DialogHeader>
+              <DialogTitle>Filtrar por Etiquetas</DialogTitle>
+              <DialogDescription>
+                Selecciona las etiquetas para filtrar la lista de invitados
+              </DialogDescription>
+            </DialogHeader>
+            <div className="space-y-4 py-4">
+              {/* Filtro de solo confirmados */}
+              <div className="flex items-center space-x-2 p-3 border rounded-lg">
+                <Checkbox
+                  id="show-only-confirmed-filter"
+                  checked={showOnlyConfirmed}
+                  onCheckedChange={(checked) => setShowOnlyConfirmed(checked === true)}
+                />
+                <Label
+                  htmlFor="show-only-confirmed-filter"
+                  className="text-sm font-medium cursor-pointer flex-1"
+                >
+                  Ver solo confirmados
+                </Label>
+              </div>
+
+              <div className="border-t pt-4">
+                <Label className="text-sm font-medium mb-3 block">Filtrar por Etiquetas</Label>
+              </div>
+
+              {tagsLoading ? (
+                <div className="flex items-center justify-center py-8">
+                  <RefreshCw className="h-5 w-5 animate-spin text-muted-foreground mr-2" />
+                  <span className="text-sm text-muted-foreground">Cargando etiquetas...</span>
+                </div>
+              ) : availableTags.length === 0 ? (
+                <div className="text-center py-8">
+                  <p className="text-sm text-muted-foreground">
+                    No hay etiquetas disponibles
+                  </p>
+                </div>
+              ) : (
+                <div className="space-y-2 max-h-96 overflow-y-auto">
+                  {availableTags.map((tag) => {
+                    const isSelected = selectedFilterTags.some(
+                      (tagId) => String(tagId) === String(tag.id)
+                    )
+                    return (
+                      <div
+                        key={tag.id}
+                        className="flex items-center space-x-2 cursor-pointer hover:bg-accent p-2 rounded"
+                        onClick={() => {
+                          if (isSelected) {
+                            setSelectedFilterTags((prev) =>
+                              prev.filter((id) => String(id) !== String(tag.id))
+                            )
+                          } else {
+                            setSelectedFilterTags((prev) => [...prev, String(tag.id)])
+                          }
+                        }}
+                      >
+                        <Checkbox
+                          checked={isSelected}
+                          onCheckedChange={(checked) => {
+                            if (checked) {
+                              setSelectedFilterTags((prev) => [...prev, String(tag.id)])
+                            } else {
+                              setSelectedFilterTags((prev) =>
+                                prev.filter((id) => String(id) !== String(tag.id))
+                              )
+                            }
+                          }}
+                        />
+                        <Badge
+                          style={{ backgroundColor: tag.color }}
+                          className="text-white border-0 flex-1"
+                        >
+                          {tag.name}
+                        </Badge>
+                      </div>
+                    )
+                  })}
+                </div>
+              )}
+            </div>
+            <DialogFooter>
+              <Button
+                variant="outline"
+                onClick={() => {
+                  setSelectedFilterTags([])
+                  setShowOnlyConfirmed(false)
+                }}
+                disabled={selectedFilterTags.length === 0 && !showOnlyConfirmed}
+              >
+                Limpiar Todo
+              </Button>
+              <Button onClick={() => setIsFilterModalOpen(false)}>
+                Aplicar Filtros
               </Button>
             </DialogFooter>
           </DialogContent>
