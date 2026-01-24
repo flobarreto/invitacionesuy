@@ -30,7 +30,7 @@ export function IdentitySection() {
             style={{ transitionDelay: "200ms" }}
           >
             <p className="text-sm leading-relaxed text-foreground/90 md:text-lg">
-              Puedo crear la identidad visual completa:
+              Podemos crear la identidad visual completa:
             </p>
             <div className="space-y-3">
               {[

@@ -46,7 +46,7 @@ export function ProcessSection() {
             {
               number: "04",
               title: "Entrega",
-              description: "Te la entrego lista para compartir y emocionar a tus invitados.",
+              description: "Te la entregamos lista para compartir y emocionar a tus invitados.",
               direction: "right",
             },
             {
@@ -54,6 +54,12 @@ export function ProcessSection() {
               title: "Ajustes",
               description: "Si hay algo que querés cambiar, lo hacemos hasta que quede exactamente como lo soñaste.",
               direction: "left",
+            },
+            {
+              number: "06",
+              title: "Admin page",
+              description: "Te damos acceso a una página de administración para que puedas gestionar tus invitados y mesas.",
+              direction: "right",
             },
           ].map((step, i) => (
             <ProcessCard key={i} step={step} index={i} isVisible={isVisible} />
