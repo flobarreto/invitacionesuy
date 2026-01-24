@@ -13,7 +13,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table"
-import { LogOut, RefreshCw, Users, Download, Search, ChevronDown, ChevronUp, Plus, Trash2 } from "lucide-react"
+import { RefreshCw, Users, Download, Search, ChevronDown, ChevronUp, Plus, Trash2 } from "lucide-react"
 import { Checkbox } from "@/components/ui/checkbox"
 import { Label } from "@/components/ui/label"
 import {
@@ -99,15 +99,6 @@ export default function AdminDashboard({ username }: AdminDashboardProps) {
     fetchRSVPs()
   }, [])
 
-  const handleLogout = async () => {
-    try {
-      await fetch("/api/admin/logout", { method: "POST" })
-      router.push("/admin/login")
-      router.refresh()
-    } catch (err) {
-      console.error("Logout error:", err)
-    }
-  }
 
   const formatDate = (dateString?: string) => {
     if (!dateString) return "N/A"
@@ -317,7 +308,7 @@ export default function AdminDashboard({ username }: AdminDashboardProps) {
           ? Array.isArray(rsvp.dietary_preferences)
             ? rsvp.dietary_preferences.join("; ")
             : rsvp.dietary_preferences
-          : "Ninguna"
+          : "no"
         
         const date = rsvp.created_at ? formatDate(rsvp.created_at) : "N/A"
         
@@ -360,12 +351,12 @@ export default function AdminDashboard({ username }: AdminDashboardProps) {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800 p-4 md:p-8">
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800 p-4 pt-16 md:pt-8 md:p-8">
       <div className="max-w-7xl mx-auto space-y-6">
         {/* Header */}
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
           <div>
-            <h1 className="text-3xl font-bold"> {eventName || "Admin Dashboard"}</h1>
+            <h1 className="text-3xl font-bold">{eventName || "Admin Dashboard"}</h1>
           </div>
           <div className="flex gap-2">
             <Button
@@ -375,10 +366,6 @@ export default function AdminDashboard({ username }: AdminDashboardProps) {
             >
               <RefreshCw className={`h-4 w-4 mr-2 ${loading ? "animate-spin" : ""}`} />
               Actualizar
-            </Button>
-            <Button variant="outline" onClick={handleLogout}>
-              <LogOut className="h-4 w-4 mr-2" />
-              Cerrar Sesión
             </Button>
           </div>
         </div>
@@ -551,7 +538,7 @@ export default function AdminDashboard({ username }: AdminDashboardProps) {
                                         ? Array.isArray(rsvp.dietary_preferences)
                                           ? rsvp.dietary_preferences.join(", ")
                                           : rsvp.dietary_preferences
-                                        : "Ninguna"}
+                                        : "no"}
                                     </p>
                                   </div>
                                   {hasFavoriteSong && (
@@ -619,7 +606,7 @@ export default function AdminDashboard({ username }: AdminDashboardProps) {
                                 ? Array.isArray(rsvp.dietary_preferences)
                                   ? rsvp.dietary_preferences.join(", ")
                                   : rsvp.dietary_preferences
-                                : "Ninguna"}
+                                : "no"}
                             </TableCell>
                             {hasFavoriteSong && (
                               <TableCell className="max-w-xs truncate">
