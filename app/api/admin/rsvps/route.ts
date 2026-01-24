@@ -13,6 +13,15 @@ export async function GET() {
       )
     }
 
+    // Obtener el event_name de la tabla admin
+    const { data: adminData, error: adminError } = await supabaseAdmin
+      .from("admin")
+      .select("event_name")
+      .eq("username", username)
+      .single()
+
+    const eventName = adminData?.event_name || null
+
     // Usar el table_name de la tabla admin, o el username como fallback
     const { data, error } = await supabaseAdmin
       .from(tableName)
@@ -27,7 +36,7 @@ export async function GET() {
       )
     }
 
-    return NextResponse.json({ rsvps: data || [], username, tableName })
+    return NextResponse.json({ rsvps: data || [], username, tableName, eventName })
   } catch (error: any) {
     if (error.message === "Unauthorized") {
       return NextResponse.json(

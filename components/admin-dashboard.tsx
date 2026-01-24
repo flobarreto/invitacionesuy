@@ -13,9 +13,19 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table"
-import { LogOut, RefreshCw, Users, Download, Search, ChevronDown, ChevronUp } from "lucide-react"
+import { LogOut, RefreshCw, Users, Download, Search, ChevronDown, ChevronUp, Plus } from "lucide-react"
 import { Checkbox } from "@/components/ui/checkbox"
 import { Label } from "@/components/ui/label"
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog"
+import { Textarea } from "@/components/ui/textarea"
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
 
 interface RSVP {
   id?: string
@@ -36,9 +46,20 @@ export default function AdminDashboard({ username }: AdminDashboardProps) {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState("")
   const [tableName, setTableName] = useState<string>(username)
+  const [eventName, setEventName] = useState<string | null>(null)
   const [searchQuery, setSearchQuery] = useState("")
   const [showOnlyConfirmed, setShowOnlyConfirmed] = useState(false)
   const [expandedRows, setExpandedRows] = useState<Set<string>>(new Set())
+  const [isAddModalOpen, setIsAddModalOpen] = useState(false)
+  const [isSubmitting, setIsSubmitting] = useState(false)
+  const [submitError, setSubmitError] = useState("")
+  const [formData, setFormData] = useState({
+    name: "",
+    attendance: "Sí",
+    dietaryPreferences: ["no"] as string[],
+    dietaryOther: "",
+    favoriteSong: "",
+  })
 
   const fetchRSVPs = async () => {
     setLoading(true)
@@ -60,6 +81,9 @@ export default function AdminDashboard({ username }: AdminDashboardProps) {
       setRsvps(data.rsvps || [])
       if (data.tableName) {
         setTableName(data.tableName)
+      }
+      if (data.eventName) {
+        setEventName(data.eventName)
       }
     } catch (err) {
       setError("Error de conexión. Intenta nuevamente.")
@@ -95,17 +119,6 @@ export default function AdminDashboard({ username }: AdminDashboardProps) {
     } catch {
       return dateString
     }
-  }
-
-  const formatTableName = (tableName: string) => {
-    return tableName
-      .replace(/_rsvps$/i, "") // Eliminar "_rsvps" al final
-      .replace(/rsvps_/i, "") // Eliminar "rsvps_" al inicio
-      .replace(/_rsvps_/i, "_") // Eliminar "_rsvps_" en el medio
-      .replace(/\brsvps\b/i, "") // Eliminar "rsvps" como palabra completa
-      .replace(/_/g, " ")
-      .replace(/\b\w/g, (l) => l.toUpperCase())
-      .trim()
   }
 
   const toggleRow = (rsvpId: string) => {
@@ -162,6 +175,90 @@ export default function AdminDashboard({ username }: AdminDashboardProps) {
   // Estadísticas filtradas (solo para mostrar en la tabla)
   const confirmedCount = filteredRsvps.filter(isConfirmed).length
   const declinedCount = filteredRsvps.length - confirmedCount
+
+  const handleAddGuest = async () => {
+    setSubmitError("")
+    
+    if (!formData.name.trim()) {
+      setSubmitError("El nombre es obligatorio")
+      return
+    }
+
+    setIsSubmitting(true)
+    try {
+      // Procesar preferencias dietéticas: solo valores válidos (celiaco, veggie) y el texto de "otro" sin duplicados
+      const validPreferences = formData.dietaryPreferences
+        .filter((p) => p !== "no" && p !== "otro" && !p.startsWith("otro:"))
+        .filter((value, index, self) => self.indexOf(value) === index) // Eliminar duplicados
+      
+      // Agregar el texto de "otro" si existe
+      const finalPreferences = formData.dietaryOther.trim()
+        ? [...validPreferences, formData.dietaryOther.trim()].filter((value, index, self) => self.indexOf(value) === index)
+        : validPreferences
+
+      const response = await fetch("/api/admin/add-rsvp", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          name: formData.name.trim(),
+          attendance: formData.attendance,
+          dietaryPreferences: finalPreferences,
+          favoriteSong: formData.favoriteSong.trim(),
+        }),
+      })
+
+      const data = await response.json()
+
+      if (!response.ok) {
+        throw new Error(data.error || "Error al agregar el invitado")
+      }
+
+      // Cerrar modal y resetear formulario
+      setIsAddModalOpen(false)
+      setFormData({
+        name: "",
+        attendance: "Sí",
+        dietaryPreferences: [],
+        dietaryOther: "",
+        favoriteSong: "",
+      })
+      setSubmitError("")
+      
+      // Recargar la lista de RSVPs
+      await fetchRSVPs()
+    } catch (err) {
+      setSubmitError(err instanceof Error ? err.message : "Error al agregar el invitado")
+    } finally {
+      setIsSubmitting(false)
+    }
+  }
+
+  const handleDietaryPreferenceChange = (value: string, checked: boolean) => {
+    setFormData((prev) => {
+      if (value === "no") {
+        return {
+          ...prev,
+          dietaryPreferences: checked ? ["no"] : [],
+        }
+      }
+
+      if (checked) {
+        const withoutNo = prev.dietaryPreferences.filter((p) => p !== "no")
+        if (withoutNo.includes(value)) return prev
+        return {
+          ...prev,
+          dietaryPreferences: [...withoutNo, value],
+        }
+      }
+
+      return {
+        ...prev,
+        dietaryPreferences: prev.dietaryPreferences.filter((p) => p !== value),
+      }
+    })
+  }
 
   // Función para descargar CSV
   const handleDownloadCSV = () => {
@@ -224,10 +321,7 @@ export default function AdminDashboard({ username }: AdminDashboardProps) {
         {/* Header */}
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
           <div>
-            <h1 className="text-3xl font-bold">Admin Dashboard</h1>
-            <p className="text-muted-foreground mt-1">
-              Evento: {formatTableName(tableName)}
-            </p>
+            <h1 className="text-3xl font-bold"> {eventName || "Admin Dashboard"}</h1>
           </div>
           <div className="flex gap-2">
             <Button
@@ -288,11 +382,7 @@ export default function AdminDashboard({ username }: AdminDashboardProps) {
               <div>
                 <CardTitle>Lista de Confirmaciones</CardTitle>
                 <CardDescription>
-                  Todas las respuestas recibidas para este evento
-                </CardDescription>
-              </div>
-              <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3 w-full sm:w-auto">
-                <div className="flex items-center space-x-2">
+                <div className="flex items-center space-x-2 mt-2">
                   <Checkbox
                     id="show-only-confirmed"
                     checked={showOnlyConfirmed}
@@ -305,6 +395,16 @@ export default function AdminDashboard({ username }: AdminDashboardProps) {
                     Ver solo confirmados
                   </Label>
                 </div>
+                </CardDescription>
+              </div>
+              <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3 w-full sm:w-auto">
+                <Button
+                  onClick={() => setIsAddModalOpen(true)}
+                  className="w-full sm:w-auto"
+                >
+                  <Plus className="h-4 w-4 mr-2" />
+                  Agregar Invitado
+                </Button>
                 <Button
                   variant="outline"
                   onClick={handleDownloadCSV}
@@ -484,6 +584,138 @@ export default function AdminDashboard({ username }: AdminDashboardProps) {
             )}
           </CardContent>
         </Card>
+
+        {/* Modal para agregar invitado */}
+        <Dialog open={isAddModalOpen} onOpenChange={setIsAddModalOpen}>
+          <DialogContent className="max-w-md">
+            <DialogHeader>
+              <DialogTitle>Agregar Invitado</DialogTitle>
+              <DialogDescription>
+                Completa los datos del invitado para agregarlo a la lista
+              </DialogDescription>
+            </DialogHeader>
+            <div className="space-y-4 py-4">
+              <div className="space-y-2">
+                <Label htmlFor="name">Nombre *</Label>
+                <Input
+                  id="name"
+                  value={formData.name}
+                  onChange={(e) =>
+                    setFormData({ ...formData, name: e.target.value })
+                  }
+                  className="border-0 border-b rounded-none shadow-none focus-visible:border-b focus-visible:ring-0 focus-visible:ring-offset-0"
+                  placeholder="Nombre y apellido"
+                />
+              </div>
+
+              <div className="space-y-2">
+                <Label>Asistencia *</Label>
+                <RadioGroup
+                  value={formData.attendance}
+                  onValueChange={(value) =>
+                    setFormData({ ...formData, attendance: value })
+                  }
+                >
+                  <div className="flex items-center space-x-2">
+                    <RadioGroupItem value="Sí" id="attendance-si" />
+                    <Label htmlFor="attendance-si" className="font-normal cursor-pointer">
+                      Sí
+                    </Label>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <RadioGroupItem value="No" id="attendance-no" />
+                    <Label htmlFor="attendance-no" className="font-normal cursor-pointer">
+                      No
+                    </Label>
+                  </div>
+                </RadioGroup>
+              </div>
+
+              <div className="space-y-2">
+                <Label>Preferencias Dietéticas</Label>
+                <div className="space-y-2">
+                  {[
+                    { value: "no", label: "No" },
+                    { value: "celiaco", label: "Celíaco/a" },
+                    { value: "veggie", label: "Veggie" },
+                  ].map((option) => (
+                    <div key={option.value} className="flex items-center space-x-2">
+                      <Checkbox
+                        id={`dietary-${option.value}`}
+                        checked={formData.dietaryPreferences.includes(option.value)}
+                        onCheckedChange={(checked) =>
+                          handleDietaryPreferenceChange(
+                            option.value,
+                            checked === true
+                          )
+                        }
+                      />
+                      <Label
+                        htmlFor={`dietary-${option.value}`}
+                        className="font-normal cursor-pointer"
+                      >
+                        {option.label}
+                      </Label>
+                    </div>
+                  ))}
+
+                    <Input
+                      id="dietary-other"
+                      value={formData.dietaryOther}
+                      onChange={(e) =>
+                        setFormData({ ...formData, dietaryOther: e.target.value })
+                      }
+                      placeholder="Otra preferencia alimentaria"
+                      className="border-0 border-b rounded-none shadow-none focus-visible:border-b focus-visible:ring-0 focus-visible:ring-offset-0"
+                    />
+                </div>
+              </div>
+
+              {hasFavoriteSong && (
+                <div className="space-y-2">
+                  <Label htmlFor="favoriteSong">Canción Favorita</Label>
+                  <Textarea
+                    id="favoriteSong"
+                    value={formData.favoriteSong}
+                    onChange={(e) =>
+                      setFormData({ ...formData, favoriteSong: e.target.value })
+                    }
+                    placeholder="Opcional"
+                    rows={2}
+                  />
+                </div>
+              )}
+
+              {submitError && (
+                <div className="text-sm text-red-600 dark:text-red-400">
+                  {submitError}
+                </div>
+              )}
+            </div>
+            <DialogFooter>
+              <Button
+                variant="outline"
+                onClick={() => {
+                  setIsAddModalOpen(false)
+                  setFormData({
+                    name: "",
+                    attendance: "Sí",
+                    dietaryPreferences: [],
+                    dietaryOther: "",
+                    favoriteSong: "",
+                  })
+                  setSubmitError("")
+                }}
+                disabled={isSubmitting}
+              >
+                Cancelar
+              </Button>
+              <Button onClick={handleAddGuest} disabled={isSubmitting}>
+                {isSubmitting ? "Agregando..." : "Agregar"}
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
       </div>
     </div>
   )
