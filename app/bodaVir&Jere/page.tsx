@@ -2,8 +2,7 @@
 
 import { Button } from "@/components/ui/button";
 import { CalendarIcon, MapPinIcon } from "lucide-react";
-import { useState, useEffect } from "react";
-import { FormEvent } from "react";
+import { useState, useEffect, FormEvent } from "react";
 import {
   Accordion,
   AccordionContent,
