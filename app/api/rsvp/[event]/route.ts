@@ -7,6 +7,7 @@ import { access } from "node:fs/promises"
 const EVENT_TABLES: Record<string, string> = {
   bodaSofiGonchi: "boda_sofi_gonchi_rsvps",
   bodaMicaTincho: "boda_mica_tincho_rsvps",
+  bodaVirJere: "boda_vir_jere",
 }
 
 const FALLBACK_DIR = path.join(process.cwd(), "data")
@@ -19,13 +20,16 @@ type RsvpPayload = {
 }
 
 type RouteContext = {
-  params: {
+  params: Promise<{
     event: string
-  }
+  }>
 }
 
 export async function POST(request: Request, { params }: RouteContext) {
-  const tableName = EVENT_TABLES[params.event]
+  const { event } = await params
+  const tableName = EVENT_TABLES[event]
+
+  console.log('flo llega aca 0')
 
   let payload: RsvpPayload
 
@@ -44,16 +48,25 @@ export async function POST(request: Request, { params }: RouteContext) {
     )
   }
 
+  console.log('flo llega aca 1')
+
   if (tableName && supabaseAdmin) {
-    const { error } = await supabaseAdmin.from(tableName).insert({
+    const insertData: Record<string, any> = {
       name: name.trim(),
       attendance,
       dietary_preferences: dietaryPreferences,
-      favorite_song: favoriteSong.trim(),
-    })
+    }
+
+    // Solo incluir favorite_song si está presente y no está vacío
+    if (favoriteSong && favoriteSong.trim()) {
+      insertData.favorite_song = favoriteSong.trim()
+    }
+
+    const { error } = await supabaseAdmin.from(tableName).insert(insertData)
 
     if (error) {
-      console.error(`Supabase RSVP insert error for ${params.event}:`, error)
+      console.log('flo llega aca 2')
+      console.error(`Supabase RSVP insert error for ${event}:`, error)
       return NextResponse.json(
         { error: "Hubo un error al guardar tu respuesta. Intenta nuevamente." },
         { status: 500 }
@@ -63,7 +76,7 @@ export async function POST(request: Request, { params }: RouteContext) {
     return NextResponse.json({ ok: true })
   }
 
-  await persistToCsv(params.event, { name, attendance, dietaryPreferences, favoriteSong })
+  await persistToCsv(event, { name, attendance, dietaryPreferences, favoriteSong })
   return NextResponse.json({ ok: true, fallback: true })
 }
 
