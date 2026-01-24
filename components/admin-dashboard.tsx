@@ -13,7 +13,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table"
-import { LogOut, RefreshCw, Users, Download, Search, ChevronDown, ChevronUp, Plus } from "lucide-react"
+import { LogOut, RefreshCw, Users, Download, Search, ChevronDown, ChevronUp, Plus, Trash2 } from "lucide-react"
 import { Checkbox } from "@/components/ui/checkbox"
 import { Label } from "@/components/ui/label"
 import {
@@ -53,6 +53,9 @@ export default function AdminDashboard({ username }: AdminDashboardProps) {
   const [isAddModalOpen, setIsAddModalOpen] = useState(false)
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [submitError, setSubmitError] = useState("")
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false)
+  const [rsvpToDelete, setRsvpToDelete] = useState<RSVP | null>(null)
+  const [isDeleting, setIsDeleting] = useState(false)
   const [formData, setFormData] = useState({
     name: "",
     attendance: "Sí",
@@ -258,6 +261,47 @@ export default function AdminDashboard({ username }: AdminDashboardProps) {
         dietaryPreferences: prev.dietaryPreferences.filter((p) => p !== value),
       }
     })
+  }
+
+  const handleDeleteClick = (rsvp: RSVP, e: React.MouseEvent) => {
+    e.stopPropagation()
+    setRsvpToDelete(rsvp)
+    setIsDeleteModalOpen(true)
+  }
+
+  const handleDeleteConfirm = async () => {
+    if (!rsvpToDelete || !rsvpToDelete.id) {
+      return
+    }
+
+    setIsDeleting(true)
+    try {
+      const response = await fetch("/api/admin/delete-rsvp", {
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          id: rsvpToDelete.id,
+        }),
+      })
+
+      const data = await response.json()
+
+      if (!response.ok) {
+        throw new Error(data.error || "Error al eliminar el invitado")
+      }
+
+      // Cerrar modal y recargar la lista
+      setIsDeleteModalOpen(false)
+      setRsvpToDelete(null)
+      await fetchRSVPs()
+    } catch (err) {
+      console.error("Error deleting RSVP:", err)
+      alert(err instanceof Error ? err.message : "Error al eliminar el invitado")
+    } finally {
+      setIsDeleting(false)
+    }
   }
 
   // Función para descargar CSV
@@ -475,7 +519,17 @@ export default function AdminDashboard({ username }: AdminDashboardProps) {
                         <CardContent className="p-4 py-0">
                           <div className="flex items-center justify-between">
                             <div className="flex-1">
-                              <p className="font-medium text-base">{rsvp.name}</p>
+                              <div className="flex items-center justify-between">
+                                <p className="font-medium text-base">{rsvp.name}</p>
+                                <Button
+                                  variant="ghost"
+                                  size="sm"
+                                  className="h-8 w-8 p-0 text-red-600 hover:text-red-700 hover:bg-red-50"
+                                  onClick={(e) => handleDeleteClick(rsvp, e)}
+                                >
+                                  <Trash2 className="h-4 w-4" />
+                                </Button>
+                              </div>
                               {isExpanded && (
                                 <div className="mt-3 space-y-2 pt-3 border-t">
                                   <div>
@@ -539,6 +593,7 @@ export default function AdminDashboard({ username }: AdminDashboardProps) {
                         <TableHead>Preferencias Dietéticas</TableHead>
                         {hasFavoriteSong && <TableHead>Canción Favorita</TableHead>}
                         <TableHead>Fecha de Respuesta</TableHead>
+                        <TableHead className="w-[100px]">Acciones</TableHead>
                       </TableRow>
                     </TableHeader>
                     <TableBody>
@@ -574,6 +629,16 @@ export default function AdminDashboard({ username }: AdminDashboardProps) {
                             <TableCell className="text-sm text-muted-foreground">
                               {formatDate(rsvp.created_at)}
                             </TableCell>
+                            <TableCell>
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                className="h-8 w-8 p-0 text-red-600 hover:text-red-700 hover:bg-red-50"
+                                onClick={(e) => handleDeleteClick(rsvp, e)}
+                              >
+                                <Trash2 className="h-4 w-4" />
+                              </Button>
+                            </TableCell>
                           </TableRow>
                         )
                       })}
@@ -584,6 +649,37 @@ export default function AdminDashboard({ username }: AdminDashboardProps) {
             )}
           </CardContent>
         </Card>
+
+        {/* Modal para confirmar eliminación */}
+        <Dialog open={isDeleteModalOpen} onOpenChange={setIsDeleteModalOpen}>
+          <DialogContent className="max-w-md">
+            <DialogHeader>
+              <DialogTitle>Eliminar Invitado</DialogTitle>
+              <DialogDescription>
+                ¿Estás seguro de que deseas eliminar a <strong>{rsvpToDelete?.name}</strong>? Esta acción no se puede deshacer.
+              </DialogDescription>
+            </DialogHeader>
+            <DialogFooter>
+              <Button
+                variant="outline"
+                onClick={() => {
+                  setIsDeleteModalOpen(false)
+                  setRsvpToDelete(null)
+                }}
+                disabled={isDeleting}
+              >
+                Cancelar
+              </Button>
+              <Button
+                variant="destructive"
+                onClick={handleDeleteConfirm}
+                disabled={isDeleting}
+              >
+                {isDeleting ? "Eliminando..." : "Eliminar"}
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
 
         {/* Modal para agregar invitado */}
         <Dialog open={isAddModalOpen} onOpenChange={setIsAddModalOpen}>
