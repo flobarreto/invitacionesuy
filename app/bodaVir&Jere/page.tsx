@@ -28,6 +28,7 @@ export default function BodaVirJere() {
   const [guestName, setGuestName] = useState("");
   const [attendanceResponse, setAttendanceResponse] = useState<"si" | "no">("si");
   const [dietaryPreferences, setDietaryPreferences] = useState<string[]>(["no"]);
+  const [otroText, setOtroText] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submissionFeedback, setSubmissionFeedback] = useState<{ type: "success" | "error"; message: string } | null>(
     null
@@ -118,6 +119,16 @@ export default function BodaVirJere() {
     setIsSubmitting(true);
 
     try {
+      // Procesar dietaryPreferences: solo valores válidos (celiaco, veggie) y el texto de "otro" sin duplicados
+      const validPreferences = dietaryPreferences
+        .filter((p) => p !== "no" && p !== "otro" && !p.startsWith("otro:"))
+        .filter((value, index, self) => self.indexOf(value) === index); // Eliminar duplicados
+      
+      // Agregar el texto de "otro" si existe
+      const finalPreferences = otroText.trim()
+        ? [...validPreferences, otroText.trim()].filter((value, index, self) => self.indexOf(value) === index)
+        : validPreferences;
+
       const response = await fetch("/api/rsvp/bodaVirJere", {
         method: "POST",
         headers: {
@@ -126,7 +137,7 @@ export default function BodaVirJere() {
         body: JSON.stringify({
           name: guestName.trim(),
           attendance: attendanceResponse,
-          dietaryPreferences,
+          dietaryPreferences: finalPreferences,
         }),
       });
 
@@ -142,6 +153,7 @@ export default function BodaVirJere() {
       setGuestName("");
       setAttendanceResponse("si");
       setDietaryPreferences(["no"]);
+      setOtroText("");
 
       setTimeout(() => setSubmissionFeedback(null), 5000);
     } catch (error) {
@@ -385,6 +397,13 @@ export default function BodaVirJere() {
                   </label>
                 );
               })}
+              <input
+                type="text"
+                value={otroText}
+                onChange={(event) => setOtroText(event.target.value)}
+                placeholder="Otra restricción"
+                className="w-full border-b border-[#596047]/30 pl-0 px-4 py-3 text-[#596047] focus:outline-none focus:border-b-2 focus:border-[#596047] transition"
+              />
             </div>
 
             <Button
