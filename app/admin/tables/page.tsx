@@ -95,7 +95,17 @@ export default function TablesPage() {
   }
 
   const handleTableNumberChange = async (rsvpId: string, tableNumber: number | null) => {
+    if (!rsvpId) {
+      console.error("No se proporcionó un ID de RSVP")
+      return
+    }
+
     try {
+      // Normalizar el valor: si es 0 o negativo, convertirlo a null
+      const normalizedValue = (tableNumber !== null && tableNumber !== undefined && tableNumber > 0) 
+        ? Number(tableNumber) 
+        : null
+
       const response = await fetch("/api/admin/update-rsvp-table-number", {
         method: "PUT",
         headers: {
@@ -103,7 +113,7 @@ export default function TablesPage() {
         },
         body: JSON.stringify({
           rsvpId,
-          tableNumber: tableNumber === null || tableNumber === undefined ? null : Number(tableNumber),
+          tableNumber: normalizedValue,
         }),
       })
 
@@ -113,15 +123,18 @@ export default function TablesPage() {
         throw new Error(data.error || "Error al actualizar el número de mesa")
       }
 
-      // Actualizar el RSVP localmente
+      // Actualizar el RSVP localmente con el valor que viene del servidor
+      const updatedTableNumber = data.rsvp?.table_number ?? normalizedValue
       setRsvps((prev) =>
         prev.map((rsvp) =>
-          rsvp.id === rsvpId ? { ...rsvp, table_number: data.rsvp?.table_number ?? null } : rsvp
+          rsvp.id === rsvpId ? { ...rsvp, table_number: updatedTableNumber } : rsvp
         )
       )
     } catch (err) {
       console.error("Error updating table number:", err)
       alert(err instanceof Error ? err.message : "Error al actualizar el número de mesa")
+      // Recargar los datos en caso de error
+      await fetchRSVPs()
     }
   }
 
@@ -301,16 +314,30 @@ export default function TablesPage() {
                                 type="number"
                                 value={rsvp.table_number ?? ""}
                                 onChange={(e) => {
-                                  const value = e.target.value === "" ? null : parseInt(e.target.value, 10)
+                                  const inputValue = e.target.value
+                                  const numValue = inputValue === "" ? null : parseInt(inputValue, 10)
+                                  const finalValue = (numValue !== null && !isNaN(numValue) && numValue > 0) ? numValue : null
                                   setRsvps((prev) =>
                                     prev.map((r) =>
-                                      r.id === rsvp.id ? { ...r, table_number: isNaN(value as number) ? null : value } : r
+                                      r.id === rsvp.id ? { ...r, table_number: finalValue } : r
                                     )
                                   )
                                 }}
-                                onBlur={(e) => {
-                                  const value = e.target.value === "" ? null : parseInt(e.target.value, 10)
-                                  handleTableNumberChange(rsvp.id || "", isNaN(value as number) ? null : value)
+                                onBlur={async (e) => {
+                                  const inputValue = e.target.value.trim()
+                                  let finalValue: number | null = null
+                                  
+                                  if (inputValue !== "") {
+                                    const numValue = parseInt(inputValue, 10)
+                                    if (!isNaN(numValue) && numValue > 0) {
+                                      finalValue = numValue
+                                    }
+                                  }
+                                  
+                                  // Solo actualizar si el valor cambió
+                                  if (finalValue !== rsvp.table_number) {
+                                    await handleTableNumberChange(rsvp.id || "", finalValue)
+                                  }
                                 }}
                                 onKeyDown={(e) => {
                                   if (e.key === "Enter") {
@@ -319,7 +346,7 @@ export default function TablesPage() {
                                 }}
                                 className="w-20 h-8 border-0 shadow-none focus-visible:ring-1 focus-visible:ring-ring text-center"
                                 placeholder="—"
-                                min="0"
+                                min="1"
                               />
                             </TableCell>
                           </TableRow>
