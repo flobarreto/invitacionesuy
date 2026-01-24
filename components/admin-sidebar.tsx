@@ -5,7 +5,7 @@ import { useRouter, usePathname } from "next/navigation"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
-import { LogOut, Menu, Home, Tag } from "lucide-react"
+import { LogOut, Menu, Home, Tag, Users } from "lucide-react"
 import { cn } from "@/lib/utils"
 
 interface AdminSidebarProps {
@@ -37,6 +37,11 @@ export default function AdminSidebar({ username }: AdminSidebarProps) {
       href: "/admin/tags",
       label: "Etiquetas",
       icon: Tag,
+    },
+    {
+      href: "/admin/tables",
+      label: "Mesas",
+      icon: Users,
     },
   ]
 

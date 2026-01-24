@@ -43,6 +43,7 @@ interface RSVP {
   favorite_song?: string
   created_at?: string
   tags?: string[]
+  table_number?: number | null
 }
 
 interface AdminDashboardProps {
@@ -383,6 +384,37 @@ export default function AdminDashboard({ username }: AdminDashboardProps) {
     return tag
   }
 
+  const handleTableNumberChange = async (rsvpId: string, tableNumber: number | null) => {
+    try {
+      const response = await fetch("/api/admin/update-rsvp-table-number", {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          rsvpId,
+          tableNumber: tableNumber === null || tableNumber === undefined ? null : Number(tableNumber),
+        }),
+      })
+
+      const data = await response.json()
+
+      if (!response.ok) {
+        throw new Error(data.error || "Error al actualizar el número de mesa")
+      }
+
+      // Actualizar el RSVP localmente
+      setRsvps((prev) =>
+        prev.map((rsvp) =>
+          rsvp.id === rsvpId ? { ...rsvp, table_number: data.rsvp?.table_number ?? null } : rsvp
+        )
+      )
+    } catch (err) {
+      console.error("Error updating table number:", err)
+      alert(err instanceof Error ? err.message : "Error al actualizar el número de mesa")
+    }
+  }
+
   // Función para descargar CSV
   const handleDownloadCSV = () => {
     const headers = hasFavoriteSong
@@ -539,15 +571,15 @@ export default function AdminDashboard({ username }: AdminDashboardProps) {
               <div className="mb-4">
                 <div className="flex gap-2">
                   <div className="relative flex-1">
-                    <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                    <Input
-                      type="text"
-                      placeholder="Buscar por nombre..."
-                      value={searchQuery}
-                      onChange={(e) => setSearchQuery(e.target.value)}
-                      className="pl-10"
-                    />
-                  </div>
+                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                  <Input
+                    type="text"
+                    placeholder="Buscar por nombre..."
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    className="pl-10"
+                  />
+                </div>
                   <Button
                     variant={selectedFilterTags.length > 0 ? "default" : "outline"}
                     onClick={() => setIsFilterModalOpen(true)}
@@ -712,6 +744,33 @@ export default function AdminDashboard({ username }: AdminDashboardProps) {
                                       )}
                                     </div>
                                   </div>
+                                  <div>
+                                    <p className="text-xs text-muted-foreground mb-1">Mesa</p>
+                                    <Input
+                                      type="number"
+                                      value={rsvp.table_number ?? ""}
+                                      onChange={(e) => {
+                                        const value = e.target.value === "" ? null : parseInt(e.target.value, 10)
+                                        setRsvps((prev) =>
+                                          prev.map((r) =>
+                                            r.id === rsvp.id ? { ...r, table_number: isNaN(value as number) ? null : value } : r
+                                          )
+                                        )
+                                      }}
+                                      onBlur={(e) => {
+                                        const value = e.target.value === "" ? null : parseInt(e.target.value, 10)
+                                        handleTableNumberChange(rsvp.id || "", isNaN(value as number) ? null : value)
+                                      }}
+                                      onKeyDown={(e) => {
+                                        if (e.key === "Enter") {
+                                          e.currentTarget.blur()
+                                        }
+                                      }}
+                                      className="w-20 h-8 border-0 shadow-none focus-visible:ring-1 focus-visible:ring-ring text-center text-sm"
+                                      placeholder="—"
+                                      min="0"
+                                    />
+                                  </div>
                                 </div>
                               )}
                             </div>
@@ -739,6 +798,7 @@ export default function AdminDashboard({ username }: AdminDashboardProps) {
                         <TableHead>Preferencias Dietéticas</TableHead>
                         {hasFavoriteSong && <TableHead>Canción Favorita</TableHead>}
                         <TableHead>Etiquetas</TableHead>
+                        <TableHead>Mesa</TableHead>
                         <TableHead className="w-[100px]">Acciones</TableHead>
                       </TableRow>
                     </TableHeader>
@@ -872,6 +932,32 @@ export default function AdminDashboard({ username }: AdminDashboardProps) {
                                   </div>
                                 </PopoverContent>
                               </Popover>
+                            </TableCell>
+                            <TableCell>
+                              <Input
+                                type="number"
+                                value={rsvp.table_number ?? ""}
+                                onChange={(e) => {
+                                  const value = e.target.value === "" ? null : parseInt(e.target.value, 10)
+                                  setRsvps((prev) =>
+                                    prev.map((r) =>
+                                      r.id === rsvp.id ? { ...r, table_number: isNaN(value as number) ? null : value } : r
+                                    )
+                                  )
+                                }}
+                                onBlur={(e) => {
+                                  const value = e.target.value === "" ? null : parseInt(e.target.value, 10)
+                                  handleTableNumberChange(rsvp.id || "", isNaN(value as number) ? null : value)
+                                }}
+                                onKeyDown={(e) => {
+                                  if (e.key === "Enter") {
+                                    e.currentTarget.blur()
+                                  }
+                                }}
+                                className="w-20 h-8 border-0 shadow-none focus-visible:ring-1 focus-visible:ring-ring text-center"
+                                placeholder="—"
+                                min="0"
+                              />
                             </TableCell>
                             <TableCell>
                               <Button
@@ -1080,11 +1166,11 @@ export default function AdminDashboard({ username }: AdminDashboardProps) {
                 >
                   Ver solo confirmados
                 </Label>
-              </div>
+      </div>
 
               <div className="border-t pt-4">
                 <Label className="text-sm font-medium mb-3 block">Filtrar por Etiquetas</Label>
-              </div>
+    </div>
 
               {tagsLoading ? (
                 <div className="flex items-center justify-center py-8">
