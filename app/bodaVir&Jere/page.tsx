@@ -35,10 +35,36 @@ export default function BodaVirJere() {
 
   useEffect(() => {
     const calculateTimeLeft = () => {
-      const weddingDate = new Date("2026-03-14T17:00:00");
+      // Crear la fecha de la boda en hora de Uruguay (UTC-3)
+      // 14 de marzo de 2026 a las 17:00 hora de Uruguay
+      const weddingDate = new Date("2026-03-14T17:00:00-03:00");
+      
+      // Obtener la fecha y hora actual en hora de Uruguay
       const now = new Date();
-      now.setMonth(now.getMonth() - 1);
-      const difference = weddingDate.getTime() - now.getTime();
+      const formatter = new Intl.DateTimeFormat("en-CA", {
+        timeZone: "America/Montevideo",
+        year: "numeric",
+        month: "2-digit",
+        day: "2-digit",
+        hour: "2-digit",
+        minute: "2-digit",
+        second: "2-digit",
+        hour12: false,
+      });
+      
+      const parts = formatter.formatToParts(now);
+      const year = parseInt(parts.find(p => p.type === "year")!.value);
+      const month = parseInt(parts.find(p => p.type === "month")!.value) - 1;
+      const day = parseInt(parts.find(p => p.type === "day")!.value);
+      const hour = parseInt(parts.find(p => p.type === "hour")!.value);
+      const minute = parseInt(parts.find(p => p.type === "minute")!.value);
+      const second = parseInt(parts.find(p => p.type === "second")!.value);
+      
+      // Crear fecha actual en hora de Uruguay (UTC-3)
+      const nowUruguay = new Date(`${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}T${String(hour).padStart(2, '0')}:${String(minute).padStart(2, '0')}:${String(second).padStart(2, '0')}-03:00`);
+      
+      // Calcular la diferencia en milisegundos
+      const difference = weddingDate.getTime() - nowUruguay.getTime();
 
       if (difference > 0) {
         const days = Math.floor(
@@ -69,7 +95,7 @@ export default function BodaVirJere() {
 
   const copyAccountNumber = async () => {
     try {
-      await navigator.clipboard.writeText("2607207");
+      await navigator.clipboard.writeText("1313033");
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
     } catch (err) {
@@ -164,9 +190,9 @@ export default function BodaVirJere() {
 
 
       <section
-        className="bg-gray-200 pt-25 pb-4 md:py-60 md:pb-10"
+        className="pt-25 pb-4 md:py-60 md:pb-10"
         style={{
-          background: "linear-gradient(180deg, #56544c 0%, #e5e7eb 250px, #e5e7eb 100%)"
+          background: "linear-gradient(180deg, #4c4b46 0px, #e6e7eb 100px, #e6e7eb 100%)"
         }}
       >
         <div className="max-w-6xl mx-auto px-6">
@@ -210,7 +236,7 @@ export default function BodaVirJere() {
 
             <div className="order-2 flex justify-center">
               <img
-                src="/FotosVir&Jere/ceremony-couple.jpg"
+                src="/FotosVir&Jere/ceremony-couple.webp"
                 alt="Vir y Jere"
                 className="w-full h-80 md:h-96 object-cover rounded-lg shadow-lg"
               />
@@ -258,7 +284,7 @@ export default function BodaVirJere() {
 
         <div className="order-2 flex justify-center px-5 items-center mt-10 md:hidden">
           <img
-            src="/FotosVir&Jere/rsvp-couple.jpg"
+            src="/FotosVir&Jere/rsvp-couple.webp"
             alt="Vir y Jere"
             className="w-full h-80 md:h-96 object-cover rounded-lg shadow-lg md:h-[700px] md:w-auto md:mt-20"
           />
@@ -383,7 +409,7 @@ export default function BodaVirJere() {
 
           <div className="order-2 flex justify-center px-5 items-center mt-10 hidden md:block">
           <img
-            src="/FotosVir&Jere/rsvp-couple.jpg"
+            src="/FotosVir&Jere/rsvp-couple.webp"
             alt="Vir y Jere"
             className="w-full h-80 md:h-96 object-cover rounded-lg shadow-lg md:h-[700px] md:w-auto md:mt-20"
           />
@@ -434,7 +460,7 @@ export default function BodaVirJere() {
         </div>
       </section>
 
-      <section className="bg-gray-200 py-8 h-[300px]"
+      <section className="bg-[rgba(229,231,235,1)] py-8 h-[300px]"
       >
         <div className="max-w-5xl mx-auto px-6 text-center">
           <div className="mb-8">
@@ -446,13 +472,10 @@ export default function BodaVirJere() {
           <div className="space-y-6 mb-2">
             <ul className="space-y-2 text-sm text-[#9e1d2c] md:text-lg">
               <li>
-                <strong>Titular:</strong> Virginia Mazzoni
+                <strong>Titular:</strong> Jeremías Berro
               </li>
               <li>
-                <strong>Banco:</strong> Banco Itaú
-              </li>
-              <li>
-                <strong>Tipo:</strong> Caja de Ahorro USD
+                <strong>Banco:</strong> Prex
               </li>
               <li>
                 <strong>Cuenta:</strong>
@@ -460,7 +483,7 @@ export default function BodaVirJere() {
                   className="cursor-pointer hover:text-white transition-colors underline ml-1"
                   onClick={copyAccountNumber}
                 >
-                  1234567890
+                  1313033
                 </span>
 
                 <p className="ml-2 text-sm h-[30px]">
@@ -472,7 +495,7 @@ export default function BodaVirJere() {
           </div>
         </div>
       </section>
-      <section className="py-15 md:py-12"
+      <section className="py-15 md:py-12 md:pb-[150px]"
       style={{
         background: "linear-gradient(180deg, rgba(229, 231, 235, 1) 0%, rgba(86, 83, 75, 1) 100%)"
       }}
@@ -771,7 +794,7 @@ export default function BodaVirJere() {
       <footer className="bg-[#56534b] text-white py-12 md:py-16" onClick={() => { window.location.href = 'https://invitaciones.uy'; }}>
         <div className="max-w-6xl mx-auto px-auto text-center">
             <p className="text-lg">invitaciones.uy</p>
-            <p className="text-sm mt-2">Páginas web para eventos</p>
+            <p className="text-sm mt-2">Páginas web unicas para eventos</p>
             <p className="text-xs">Click para conocer más</p>
         </div>
       </footer>
