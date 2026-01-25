@@ -277,11 +277,6 @@ export default function Home() {
                     />
                   </div>
                 </div>
-
-                <p className="text-sm text-foreground/70">
-                  Tip: si todavía no tenés capturas, poné imágenes “placeholder” ahora y las reemplazás cuando tengas el
-                  panel listo.
-                </p>
               </div>
             </div>
           </div>
