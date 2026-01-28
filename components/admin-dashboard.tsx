@@ -59,6 +59,7 @@ export default function AdminDashboard({ username }: AdminDashboardProps) {
   const [eventName, setEventName] = useState<string | null>(null)
   const [searchQuery, setSearchQuery] = useState("")
   const [showOnlyConfirmed, setShowOnlyConfirmed] = useState(false)
+  const [showOnlyUnconfirmed, setShowOnlyUnconfirmed] = useState(false)
   const [expandedRows, setExpandedRows] = useState<Set<string>>(new Set())
   const [isAddModalOpen, setIsAddModalOpen] = useState(false)
   const [isSubmitting, setIsSubmitting] = useState(false)
@@ -69,8 +70,12 @@ export default function AdminDashboard({ username }: AdminDashboardProps) {
   const [availableTags, setAvailableTags] = useState<Tag[]>([])
   const [tagsLoading, setTagsLoading] = useState(false)
   const [editingTagsForRsvp, setEditingTagsForRsvp] = useState<string | null>(null)
+  const [editingTagsForRsvpMobile, setEditingTagsForRsvpMobile] = useState<string | null>(null)
   const [isFilterModalOpen, setIsFilterModalOpen] = useState(false)
   const [selectedFilterTags, setSelectedFilterTags] = useState<string[]>([])
+  const [isTableNumberModalOpen, setIsTableNumberModalOpen] = useState(false)
+  const [rsvpForTableNumber, setRsvpForTableNumber] = useState<RSVP | null>(null)
+  const [tempTableNumber, setTempTableNumber] = useState<string>("")
   const [formData, setFormData] = useState({
     name: "",
     attendance: "Sí",
@@ -182,6 +187,11 @@ export default function AdminDashboard({ username }: AdminDashboardProps) {
       filtered = filtered.filter(isConfirmed)
     }
 
+    // Filtrar solo no confirmados si está activo
+    if (showOnlyUnconfirmed) {
+      filtered = filtered.filter((rsvp) => !isConfirmed(rsvp))
+    }
+
     // Filtrar por etiquetas seleccionadas
     if (selectedFilterTags.length > 0) {
       filtered = filtered.filter((rsvp) => {
@@ -194,7 +204,7 @@ export default function AdminDashboard({ username }: AdminDashboardProps) {
     }
 
     return filtered
-  }, [rsvps, searchQuery, showOnlyConfirmed, selectedFilterTags])
+  }, [rsvps, searchQuery, showOnlyConfirmed, showOnlyUnconfirmed, selectedFilterTags])
 
   // Detectar si la tabla tiene la columna favorite_song
   const hasFavoriteSong = useMemo(() => {
@@ -415,6 +425,27 @@ export default function AdminDashboard({ username }: AdminDashboardProps) {
     }
   }
 
+  const handleOpenTableNumberDialog = (rsvp: RSVP, e?: React.MouseEvent) => {
+    if (e) {
+      e.stopPropagation()
+    }
+    setRsvpForTableNumber(rsvp)
+    setTempTableNumber(rsvp.table_number?.toString() || "")
+    setIsTableNumberModalOpen(true)
+  }
+
+  const handleSaveTableNumber = async () => {
+    if (!rsvpForTableNumber?.id) return
+
+    const value = tempTableNumber.trim() === "" ? null : parseInt(tempTableNumber, 10)
+    const tableNumber = isNaN(value as number) ? null : value
+
+    await handleTableNumberChange(rsvpForTableNumber.id, tableNumber)
+    setIsTableNumberModalOpen(false)
+    setRsvpForTableNumber(null)
+    setTempTableNumber("")
+  }
+
   // Función para descargar CSV
   const handleDownloadCSV = () => {
     const headers = hasFavoriteSong
@@ -629,10 +660,11 @@ export default function AdminDashboard({ username }: AdminDashboardProps) {
                     </Button>
                   </div>
                 )}
-                {(searchQuery || showOnlyConfirmed || selectedFilterTags.length > 0) && (
+                {(searchQuery || showOnlyConfirmed || showOnlyUnconfirmed || selectedFilterTags.length > 0) && (
                   <p className="text-sm text-muted-foreground mt-2">
                     Mostrando {filteredRsvps.length} de {rsvps.length} resultados
                     {showOnlyConfirmed && " (solo confirmados)"}
+                    {showOnlyUnconfirmed && " (solo no confirmados)"}
                     {selectedFilterTags.length > 0 && ` (filtrado por ${selectedFilterTags.length} etiqueta${selectedFilterTags.length > 1 ? 's' : ''})`}
                   </p>
                 )}
@@ -717,59 +749,61 @@ export default function AdminDashboard({ username }: AdminDashboardProps) {
                                   )}
                                   <div>
                                     <p className="text-xs text-muted-foreground mb-1">Etiquetas</p>
-                                    <div className="flex flex-wrap gap-1 mt-1">
+                                    <div
+                                      onClick={(e) => {
+                                        e.stopPropagation()
+                                        setEditingTagsForRsvpMobile(rsvp.id || null)
+                                      }}
+                                      className="cursor-pointer"
+                                    >
                                       {rsvp.tags && rsvp.tags.length > 0 ? (
-                                        rsvp.tags.map((tagId) => {
-                                          const tag = getTagById(tagId)
-                                          return tag ? (
-                                            <Badge
-                                              key={tagId}
-                                              style={{ backgroundColor: tag.color }}
-                                              className="text-white border-0"
-                                            >
-                                              {tag.name}
-                                            </Badge>
-                                          ) : (
-                                            <Badge
-                                              key={tagId}
-                                              variant="outline"
-                                              className="text-xs"
-                                            >
-                                              ID: {tagId}
-                                            </Badge>
-                                          )
-                                        })
+                                        <div className="flex flex-wrap gap-1 mt-1">
+                                          {rsvp.tags.map((tagId) => {
+                                            const tag = getTagById(tagId)
+                                            return tag ? (
+                                              <Badge
+                                                key={tagId}
+                                                style={{ backgroundColor: tag.color }}
+                                                className="text-white border-0"
+                                              >
+                                                {tag.name}
+                                              </Badge>
+                                            ) : (
+                                              <Badge
+                                                key={tagId}
+                                                variant="outline"
+                                                className="text-xs"
+                                              >
+                                                ID: {tagId}
+                                              </Badge>
+                                            )
+                                          })}
+                                        </div>
                                       ) : (
-                                        <span className="text-sm text-muted-foreground">Sin etiquetas</span>
+                                        <Button
+                                          variant="outline"
+                                          size="sm"
+                                          className="mt-1 h-8 text-xs"
+                                          onClick={(e) => {
+                                            e.stopPropagation()
+                                            setEditingTagsForRsvpMobile(rsvp.id || null)
+                                          }}
+                                        >
+                                          <Tag className="h-3 w-3 mr-1" />
+                                          Agregar etiquetas
+                                        </Button>
                                       )}
                                     </div>
                                   </div>
-                                  <div>
+                                  <div onClick={(e) => e.stopPropagation()}>
                                     <p className="text-xs text-muted-foreground mb-1">Mesa</p>
-                                    <Input
-                                      type="number"
-                                      value={rsvp.table_number ?? ""}
-                                      onChange={(e) => {
-                                        const value = e.target.value === "" ? null : parseInt(e.target.value, 10)
-                                        setRsvps((prev) =>
-                                          prev.map((r) =>
-                                            r.id === rsvp.id ? { ...r, table_number: isNaN(value as number) ? null : value } : r
-                                          )
-                                        )
-                                      }}
-                                      onBlur={(e) => {
-                                        const value = e.target.value === "" ? null : parseInt(e.target.value, 10)
-                                        handleTableNumberChange(rsvp.id || "", isNaN(value as number) ? null : value)
-                                      }}
-                                      onKeyDown={(e) => {
-                                        if (e.key === "Enter") {
-                                          e.currentTarget.blur()
-                                        }
-                                      }}
-                                      className="w-20 h-8 border-0 shadow-none focus-visible:ring-1 focus-visible:ring-ring text-center text-sm"
-                                      placeholder="—"
-                                      min="0"
-                                    />
+                                    <button
+                                      type="button"
+                                      onClick={(e) => handleOpenTableNumberDialog(rsvp, e)}
+                                      className="w-20 h-8 border-0 shadow-none focus-visible:ring-1 focus-visible:ring-ring text-center text-sm bg-transparent hover:bg-accent rounded cursor-pointer flex items-center justify-center"
+                                    >
+                                      {rsvp.table_number ?? "—"}
+                                    </button>
                                   </div>
                                 </div>
                               )}
@@ -934,30 +968,13 @@ export default function AdminDashboard({ username }: AdminDashboardProps) {
                               </Popover>
                             </TableCell>
                             <TableCell>
-                              <Input
-                                type="number"
-                                value={rsvp.table_number ?? ""}
-                                onChange={(e) => {
-                                  const value = e.target.value === "" ? null : parseInt(e.target.value, 10)
-                                  setRsvps((prev) =>
-                                    prev.map((r) =>
-                                      r.id === rsvp.id ? { ...r, table_number: isNaN(value as number) ? null : value } : r
-                                    )
-                                  )
-                                }}
-                                onBlur={(e) => {
-                                  const value = e.target.value === "" ? null : parseInt(e.target.value, 10)
-                                  handleTableNumberChange(rsvp.id || "", isNaN(value as number) ? null : value)
-                                }}
-                                onKeyDown={(e) => {
-                                  if (e.key === "Enter") {
-                                    e.currentTarget.blur()
-                                  }
-                                }}
-                                className="w-20 h-8 border-0 shadow-none focus-visible:ring-1 focus-visible:ring-ring text-center"
-                                placeholder="—"
-                                min="0"
-                              />
+                              <button
+                                type="button"
+                                onClick={(e) => handleOpenTableNumberDialog(rsvp, e)}
+                                className="w-20 h-8 border-0 shadow-none focus-visible:ring-1 focus-visible:ring-ring text-center bg-transparent hover:bg-accent rounded cursor-pointer flex items-center justify-center"
+                              >
+                                {rsvp.table_number ?? "—"}
+                              </button>
                             </TableCell>
                             <TableCell>
                               <Button
@@ -1147,18 +1164,18 @@ export default function AdminDashboard({ username }: AdminDashboardProps) {
         <Dialog open={isFilterModalOpen} onOpenChange={setIsFilterModalOpen}>
           <DialogContent className="max-w-md">
             <DialogHeader>
-              <DialogTitle>Filtrar por Etiquetas</DialogTitle>
-              <DialogDescription>
-                Selecciona las etiquetas para filtrar la lista de invitados
-              </DialogDescription>
+              <DialogTitle>Filtros</DialogTitle>
             </DialogHeader>
             <div className="space-y-4 py-4">
               {/* Filtro de solo confirmados */}
-              <div className="flex items-center space-x-2 p-3 border rounded-lg">
+              <div className="flex items-center space-x-2 p-3 rounded-lg">
                 <Checkbox
                   id="show-only-confirmed-filter"
                   checked={showOnlyConfirmed}
-                  onCheckedChange={(checked) => setShowOnlyConfirmed(checked === true)}
+                  onCheckedChange={(checked) => {
+                    setShowOnlyConfirmed(checked === true)
+                    if (checked) setShowOnlyUnconfirmed(false)
+                  }}
                 />
                 <Label
                   htmlFor="show-only-confirmed-filter"
@@ -1166,7 +1183,24 @@ export default function AdminDashboard({ username }: AdminDashboardProps) {
                 >
                   Ver solo confirmados
                 </Label>
-      </div>
+              </div>
+              {/* Filtro de solo no confirmados */}
+              <div className="flex items-center space-x-2 p-3 rounded-lg">
+                <Checkbox
+                  id="show-only-unconfirmed-filter"
+                  checked={showOnlyUnconfirmed}
+                  onCheckedChange={(checked) => {
+                    setShowOnlyUnconfirmed(checked === true)
+                    if (checked) setShowOnlyConfirmed(false)
+                  }}
+                />
+                <Label
+                  htmlFor="show-only-unconfirmed-filter"
+                  className="text-sm font-medium cursor-pointer flex-1"
+                >
+                  Ver solo no confirmados
+                </Label>
+              </div>
 
               <div className="border-t pt-4">
                 <Label className="text-sm font-medium mb-3 block">Filtrar por Etiquetas</Label>
@@ -1233,13 +1267,144 @@ export default function AdminDashboard({ username }: AdminDashboardProps) {
                 onClick={() => {
                   setSelectedFilterTags([])
                   setShowOnlyConfirmed(false)
+                  setShowOnlyUnconfirmed(false)
                 }}
-                disabled={selectedFilterTags.length === 0 && !showOnlyConfirmed}
+                disabled={selectedFilterTags.length === 0 && !showOnlyConfirmed && !showOnlyUnconfirmed}
               >
                 Limpiar Todo
               </Button>
               <Button onClick={() => setIsFilterModalOpen(false)}>
-                Aplicar Filtros
+                Cerrar
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
+
+        {/* Modal para editar etiquetas en móvil */}
+        <Dialog open={editingTagsForRsvpMobile !== null} onOpenChange={(open) => {
+          if (!open) {
+            setEditingTagsForRsvpMobile(null)
+          }
+        }}>
+          <DialogContent className="max-w-md">
+            <DialogHeader>
+              <DialogTitle>Editar Etiquetas</DialogTitle>
+              <DialogDescription>
+                {(() => {
+                  const rsvp = rsvps.find((r) => r.id === editingTagsForRsvpMobile)
+                  return rsvp ? `Etiquetas para ${rsvp.name}` : "Selecciona las etiquetas"
+                })()}
+              </DialogDescription>
+            </DialogHeader>
+            <div className="space-y-4 py-4">
+              {tagsLoading ? (
+                <div className="flex items-center justify-center py-8">
+                  <RefreshCw className="h-5 w-5 animate-spin text-muted-foreground mr-2" />
+                  <span className="text-sm text-muted-foreground">Cargando etiquetas...</span>
+                </div>
+              ) : availableTags.length === 0 ? (
+                <div className="text-center py-8">
+                  <p className="text-sm text-muted-foreground">
+                    No hay etiquetas disponibles
+                  </p>
+                </div>
+              ) : (
+                <div className="space-y-2 max-h-96 overflow-y-auto">
+                  {availableTags.map((tag) => {
+                    const rsvp = rsvps.find((r) => r.id === editingTagsForRsvpMobile)
+                    const isSelected = rsvp?.tags?.some(
+                      (tagId) => String(tagId) === String(tag.id)
+                    ) || false
+                    return (
+                      <div
+                        key={tag.id}
+                        className="flex items-center space-x-2 cursor-pointer hover:bg-accent p-2 rounded"
+                        onClick={() => {
+                          if (rsvp?.id) {
+                            handleTagToggle(rsvp.id, tag.id, rsvp.tags || [])
+                          }
+                        }}
+                      >
+                        <Checkbox
+                          checked={isSelected}
+                          onCheckedChange={() => {
+                            if (rsvp?.id) {
+                              handleTagToggle(rsvp.id, tag.id, rsvp.tags || [])
+                            }
+                          }}
+                        />
+                        <Badge
+                          style={{ backgroundColor: tag.color }}
+                          className="text-white border-0 flex-1"
+                        >
+                          {tag.name}
+                        </Badge>
+                      </div>
+                    )
+                  })}
+                </div>
+              )}
+            </div>
+            <DialogFooter>
+              <Button
+                variant="outline"
+                onClick={() => setEditingTagsForRsvpMobile(null)}
+              >
+                Cerrar
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
+
+        {/* Modal para editar número de mesa */}
+        <Dialog open={isTableNumberModalOpen} onOpenChange={setIsTableNumberModalOpen}>
+          <DialogContent className="max-w-md">
+            <DialogHeader>
+              <DialogTitle>Asignar Mesa</DialogTitle>
+              <DialogDescription>
+                ¿En qué mesa se sienta <strong>{rsvpForTableNumber?.name}</strong>?
+              </DialogDescription>
+            </DialogHeader>
+            <div className="space-y-4 py-4">
+              <div className="space-y-2">
+                <Label htmlFor="table-number">Número de Mesa</Label>
+                <Input
+                  id="table-number"
+                  type="text"
+                  inputMode="numeric"
+                  pattern="[0-9]*"
+                  value={tempTableNumber}
+                  onChange={(e) => {
+                    const inputValue = e.target.value
+                    // Permitir solo números o string vacío
+                    if (inputValue === "" || /^\d+$/.test(inputValue)) {
+                      setTempTableNumber(inputValue)
+                    }
+                  }}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter") {
+                      handleSaveTableNumber()
+                    }
+                  }}
+                  placeholder="Ej: 11"
+                  className="text-center text-lg"
+                  autoFocus
+                />
+              </div>
+            </div>
+            <DialogFooter>
+              <Button
+                variant="outline"
+                onClick={() => {
+                  setIsTableNumberModalOpen(false)
+                  setRsvpForTableNumber(null)
+                  setTempTableNumber("")
+                }}
+              >
+                Cancelar
+              </Button>
+              <Button onClick={handleSaveTableNumber}>
+                Guardar
               </Button>
             </DialogFooter>
           </DialogContent>
