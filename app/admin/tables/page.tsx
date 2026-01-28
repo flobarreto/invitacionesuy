@@ -223,11 +223,13 @@ export default function TablesPage() {
     return grouped
   }, [rsvps])
 
-  // RSVPs sin mesa asignada
+  // RSVPs sin mesa asignada (solo confirmados)
   const rsvpsWithoutTable = useMemo(() => {
-    return rsvps.filter(
-      (rsvp) => rsvp.table_number === null || rsvp.table_number === undefined
-    )
+    return rsvps.filter((rsvp) => {
+      const hasNoTable = rsvp.table_number === null || rsvp.table_number === undefined
+      const isConfirmed = rsvp.attendance?.toLowerCase().includes("sí") || rsvp.attendance?.toLowerCase().includes("si")
+      return hasNoTable && isConfirmed
+    })
   }, [rsvps])
 
   // Ordenar las mesas numéricamente
