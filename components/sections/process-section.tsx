@@ -11,7 +11,7 @@ export function ProcessSection() {
       data-section
       className="flex min-h-screen items-center px-6 py-20 md:px-12 lg:px-16 font-umeko text-[#4d3022]"
       style={{
-        backgroundImage: "url('/landing/process3.png')",
+        backgroundImage: "url('/landing/process3.webp')",
         backgroundSize: "cover",
         backgroundPosition: "center",
         backgroundRepeat: "no-repeat",

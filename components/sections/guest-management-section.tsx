@@ -1,79 +1,109 @@
 "use client"
 
-import { useReveal } from "@/hooks/use-reveal"
 import { MagneticButton } from "@/components/magnetic-button"
 
 export function GuestManagementSection() {
-  const { ref, isVisible } = useReveal(0.3)
-
   return (
-    <section
-      ref={ref}
-      data-section
-      className="flex min-h-screen items-center px-6 py-20 md:px-12 lg:px-16"
-    >
-      <div className="mx-auto w-full max-w-7xl">
-        <div className="grid gap-8 md:grid-cols-2 md:gap-16 lg:gap-24">
-          <div
-            className={`transition-all duration-700 ${
-              isVisible ? "translate-y-0 opacity-100" : "-translate-y-16 opacity-0"
-            }`}
-          >
-            <h2 className="mb-4 font-sans text-4xl font-light leading-[1.1] tracking-tight text-foreground md:text-5xl lg:text-6xl">
-              Gestión de
+    <section data-section className="px-6 py-20 md:px-12 md:py-28 bg-[#fefce7] font-umeko">
+      <div className="mx-auto max-w-6xl">
+        <div className="grid items-center gap-10 lg:grid-cols-2 text-[#4d3022]">
+          <div>
+            <span className="font-montserrat ">
+              La forma más inteligente de gestionar invitados.
+            </span>
+
+            <h2 className="mb-4 text-3xl font-light leading-tight tracking-tight text-[#cc5b57] md:text-4xl">
+              Todo bajo control,
               <br />
-              invitados
+              sin planillas ni mensajes
             </h2>
-            <p className="mt-4 max-w-md text-sm leading-relaxed text-foreground/80 md:text-lg">
-              Organizar un evento puede ser un caos.
-              <br />
-              Por eso, tu página incluye una base de datos donde podés:
+
+            <p className="mb-7 max-w-lg text-base leading-relaxed md:text-lg">
+              Además de una invitación única, accedés a una plataforma privada para administrar confirmaciones, invitados y mesas en tiempo real.
             </p>
+
+            <ul className="mb-8 space-y-3 font-montserrat">
+              <li className="flex gap-3">
+                <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-foreground/70" />
+                Confirmaciones en tiempo real
+              </li>
+              <li className="flex gap-3">
+                <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-foreground/70" />
+                Base de datos de invitados editable
+              </li>
+              <li className="flex gap-3">
+                <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-foreground/70" />
+                Segmentación por etiquetas personalizables (familia, amigos, grupos)
+              </li>
+              <li className="flex gap-3">
+                <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-foreground/70" />
+                Gestión visual de mesas
+              </li>
+              <li className="flex gap-3">
+                <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-foreground/70" />
+                Exportación en CSV/Excel cuando lo necesites
+              </li>
+            </ul>
+
+            <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
+              <MagneticButton
+                size="lg"
+                variant="primary"
+                onClick={() => window.open("https://wa.me/59898630797", "_blank")}
+                className="!bg-[#b3d3f6] !text-[#4d3022] hover:!bg-[#b84a46]"
+              >
+                Quiero ver cómo funciona
+              </MagneticButton>
+            </div>
           </div>
 
-          <div
-            className={`space-y-6 transition-all duration-700 ${
-              isVisible ? "translate-y-0 opacity-100" : "translate-y-16 opacity-0"
-            }`}
-            style={{ transitionDelay: "200ms" }}
-          >
-            <div className="space-y-4">
-              {[
-                { title: "Ver quién confirmó", description: "Lista de invitados" },
-                { title: "Registrar preferencias", description: "Alimentación, alergias y necesidades" },
-                // { title: "Organizar listas", description: "Grupos, mesas y categorías" },
-                { title: "Exportar datos", description: "Para compartir con proveedores" },
-              ].map((item, i) => (
-                <div
-                  key={i}
-                  className={`rounded-xl border border-foreground/10 bg-foreground/5 p-6 backdrop-blur-xl transition-all duration-700 hover:border-foreground/20 hover:bg-foreground/10 ${
-                    isVisible ? "translate-x-0 opacity-100" : "translate-x-16 opacity-0"
-                  }`}
-                  style={{ transitionDelay: `${300 + i * 100}ms` }}
-                >
-                  <h3 className="mb-1 font-sans text-lg font-light text-foreground md:text-xl">{item.title}</h3>
-                  <p className="font-mono text-xs text-foreground/60 md:text-sm">{item.description}</p>
+          {/* Screenshots */}
+          <div className="grid gap-4">
+            {/* Screenshot principal */}
+            <div className="overflow-hidden rounded-2xl border border-[#cc5b57] bg-foreground/5 backdrop-blur">
+              <div className="flex items-center gap-2 border-b border-foreground/10 bg-foreground/5 px-4 py-3">
+                <div className="flex gap-1.5">
+                  <span className="h-2.5 w-2.5 rounded-full bg-foreground/25" />
+                  <span className="h-2.5 w-2.5 rounded-full bg-foreground/25" />
+                  <span className="h-2.5 w-2.5 rounded-full bg-foreground/25" />
                 </div>
-              ))}
+                <p className="ml-2 text-xs text-foreground/70">Admin · Invitados</p>
+              </div>
+              <img
+                src="/screens/admin-guest-list.webp"
+                alt="Captura del panel de administración: lista de invitados"
+                className="h-auto w-full object-cover"
+                loading="lazy"
+              />
             </div>
-            <p className="pt-4 text-sm leading-relaxed text-foreground/90 md:text-lg">
-              Es tu propio centro de organización.
-            </p>
+
+            {/* 2 screenshots chicas */}
+            <div className="grid gap-4 sm:grid-cols-2">
+              <div className="overflow-hidden rounded-2xl border border-[#cc5b57] bg-foreground/5 backdrop-blur">
+                <div className="border-b border-foreground/10 bg-foreground/5 px-4 py-3">
+                  <p className="text-xs text-foreground/70">Admin · Mesas</p>
+                </div>
+                <img
+                  src="/screens/admin-tables.webp"
+                  alt="Captura del panel de administración: gestión de mesas"
+                  className="h-auto w-full object-cover"
+                  loading="lazy"
+                />
+              </div>
+
+              <div className="overflow-hidden rounded-2xl border border-[#cc5b57] bg-foreground/5 backdrop-blur">
+                <div className="border-b border-foreground/10 bg-foreground/5 px-4 py-3">
+                  <p className="text-xs text-foreground/70">Admin · Etiquetas</p>
+                </div>
+                <img
+                  src="/screens/admin-tags.webp"
+                  alt="Captura del panel de administración: etiquetas de invitados"
+                  className="h-auto w-full object-cover"
+                  loading="lazy"
+                />
+              </div>
+            </div>
           </div>
-        </div>
-        <div
-          className={`mt-8 flex justify-center transition-all duration-700 md:mt-12 ${
-            isVisible ? "translate-y-0 opacity-100" : "translate-y-12 opacity-0"
-          }`}
-          style={{ transitionDelay: "600ms" }}
-        >
-          <MagneticButton
-            size="lg"
-            variant="primary"
-            onClick={() => window.open("https://wa.me/59898630797", "_blank")}
-          >
-            Consultar por WhatsApp
-          </MagneticButton>
         </div>
       </div>
     </section>
