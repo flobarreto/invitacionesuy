@@ -99,7 +99,12 @@
   .font-italianno {
     font-family: var(--font-italianno), cursive;
   }
-  
+  .font-umeko {
+    font-family: var(--font-umeko), cursive;
+  }
+  .font-montserrat {
+    font-family: var(--font-montserrat), sans-serif;
+  }
   .dynalight-regular {
     font-family: "Dynalight", cursive;
     font-weight: 400;

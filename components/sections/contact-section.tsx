@@ -66,12 +66,12 @@ export function ContactSection() {
             <div className="text-center">
               <p className="mb-1 font-mono text-xs text-foreground/60">Instagram</p>
               <a
-                href="https://instagram.com/invitaciones.uy_"
+                href="https://instagram.com/invitia.uy"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="text-sm text-foreground/90 transition-colors hover:text-foreground"
               >
-                @invitaciones.uy_
+                @invitia.uy
               </a>
             </div>
           </div>

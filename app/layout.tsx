@@ -1,5 +1,6 @@
 import type React from "react"
 import { Montserrat, Italianno } from "next/font/google"
+import localFont from "next/font/local";
 import "./globals.css"
 
 const montserrat = Montserrat({
@@ -15,6 +16,12 @@ const italianno = Italianno({
   display: "swap",
 })
 
+const umekoPlum = localFont({
+  src: "../public/fonts/Umeko Plum.otf",
+  variable: "--font-umeko",
+  display: "swap",
+})
+
 export const metadata = {
   title: "Invitaciones.uy - Invitaciones digitales personalizadas",
   description: "Diseñamos invitaciones digitales a medida para casamientos y fiestas en Uruguay",
@@ -27,7 +34,7 @@ export default function RootLayout({
   children: React.ReactNode
 }) {
   return (
-    <html lang="es" className={`${montserrat.variable} ${italianno.variable} antialiased`}>
+    <html lang="es" className={`${montserrat.variable} ${italianno.variable} ${umekoPlum.variable} antialiased`}>
       <head>
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />

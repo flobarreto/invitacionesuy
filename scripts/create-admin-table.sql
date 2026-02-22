@@ -1,6 +1,8 @@
 -- Script SQL para crear la tabla admin en Supabase
 -- Ejecuta este script en el SQL Editor de Supabase
 
+npx tsx scripts/create-admin-user.ts username "password" tabla
+
 CREATE TABLE IF NOT EXISTS admin (
   id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
   username TEXT UNIQUE NOT NULL,
