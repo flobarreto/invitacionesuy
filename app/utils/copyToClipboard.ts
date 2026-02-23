@@ -1,10 +1,3 @@
-import { clsx, type ClassValue } from 'clsx'
-import { twMerge } from 'tailwind-merge'
-
-export function cn(...inputs: ClassValue[]) {
-  return twMerge(clsx(inputs))
-}
-
 /**
  * Copia un texto al portapapeles
  * @param text - El texto a copiar
@@ -15,6 +8,7 @@ export async function copyToClipboard(text: string): Promise<void> {
     if (navigator.clipboard && navigator.clipboard.writeText) {
       await navigator.clipboard.writeText(text);
     } else {
+      // Fallback for browsers that don't support clipboard API
       const textArea = document.createElement("textarea");
       textArea.value = text;
       textArea.style.position = "fixed";

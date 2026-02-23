@@ -73,7 +73,7 @@ export default function Home() {
   }, [])
 
   return (
-    <main className="relative min-h-screen w-full bg-background">
+    <main className="relative min-h-screen w-full overflow-x-hidden bg-background">
 
       <div
         className={`relative z-10 transition-opacity duration-700 ${isLoaded ? "opacity-100" : "opacity-0"

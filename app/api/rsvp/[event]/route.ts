@@ -8,6 +8,7 @@ const EVENT_TABLES: Record<string, string> = {
   bodaSofiGonchi: "boda_sofi_gonchi_rsvps",
   bodaMicaTincho: "boda_mica_tincho_rsvps",
   bodaVirJere: "boda_vir_jere",
+  bodaAndresLucre: "boda_andres_lucre",
 }
 
 const FALLBACK_DIR = path.join(process.cwd(), "data")
