@@ -432,6 +432,7 @@ export default function BodaAndresLucre() {
           </div>
         </div>
       </section>
+      
       <footer className="bg-black text-[#fffaf4] py-5 md:py-10 font-montserrat" onClick={() => { window.location.href = '/'; }}>
         <div className="max-w-6xl mx-auto px-auto text-center">
             <p className="text-lg">invitaciones.uy</p>
