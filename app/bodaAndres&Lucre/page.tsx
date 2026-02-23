@@ -155,7 +155,7 @@ export default function BodaAndresLucre() {
               <div
               className="w-[100px] h-[100px] md:w-[200px] md:h-[200px]"
                 style={{
-                  backgroundImage: "url('/FotosAndres&Lucre/candles.webp')",
+                  backgroundImage: "url('/fotosAndres&Lucre/candles.webp')",
                   backgroundSize: "contain",
                   backgroundPosition: "center",
                   backgroundRepeat: "no-repeat",
@@ -187,7 +187,7 @@ export default function BodaAndresLucre() {
               <div
                 className="w-[100px] h-[100px] md:w-[200px] md:h-[200px]"
                 style={{
-                  backgroundImage: "url('/FotosAndres&Lucre/calendar.webp')",
+                  backgroundImage: "url('/fotosAndres&Lucre/calendar.webp')",
                   backgroundSize: "contain",
                   backgroundPosition: "center",
                   backgroundRepeat: "no-repeat",
@@ -203,7 +203,7 @@ export default function BodaAndresLucre() {
               <div
                 className="w-[100px] h-[100px] md:w-[200px] md:h-[200px]"
                 style={{
-                  backgroundImage: "url('/FotosAndres&Lucre/swan.webp')",
+                  backgroundImage: "url('/fotosAndres&Lucre/swan.webp')",
                   backgroundSize: "contain",
                   backgroundPosition: "center",
                   backgroundRepeat: "no-repeat",
@@ -221,7 +221,7 @@ export default function BodaAndresLucre() {
         data-section
         className="px-6 py-20 md:px-12 md:py-28 bg-[#fffaf4]"
         style={{
-          backgroundImage: "url('/FotosAndres&Lucre/test.webp')",
+          backgroundImage: "url('/fotosAndres&Lucre/test.webp')",
           backgroundSize: "cover",
           backgroundPosition: "center",
           backgroundRepeat: "no-repeat",
@@ -366,7 +366,7 @@ export default function BodaAndresLucre() {
       <section
         className="px-6 py-20 md:px-12 md:py-28 bg-[#fffaf4]  md:px-[30%]"
         style={{
-          backgroundImage: "url('/FotosAndres&Lucre/car.webp')",
+          backgroundImage: "url('/fotosAndres&Lucre/car.webp')",
           backgroundSize: "cover",
           backgroundPosition: "center",
           backgroundRepeat: "no-repeat",
@@ -374,7 +374,7 @@ export default function BodaAndresLucre() {
       >
          <div className="absolute mt-[-38px] md:mt-[-45px] md:right-[22%] right-[-60px]">
           <Image
-            src="/FotosAndres&Lucre/bow.webp"
+            src="/fotosAndres&Lucre/bow.webp"
             alt=""
             width={120}
             height={180}
@@ -413,7 +413,7 @@ export default function BodaAndresLucre() {
       <section
         className="px-6 py-20 md:px-12 md:py-28 bg-[#fffaf4] md:h-[800px] h-[500px] flex items-center justify-center"
         style={{
-          backgroundImage: "url('/FotosAndres&Lucre/them.webp')",
+          backgroundImage: "url('/fotosAndres&Lucre/them.webp')",
           backgroundSize: "cover",
           backgroundPosition: "center right",
           backgroundRepeat: "no-repeat",
@@ -432,7 +432,7 @@ export default function BodaAndresLucre() {
           </div>
         </div>
       </section>
-      
+
       <footer className="bg-black text-[#fffaf4] py-5 md:py-10 font-montserrat" onClick={() => { window.location.href = '/'; }}>
         <div className="max-w-6xl mx-auto px-auto text-center">
             <p className="text-lg">invitaciones.uy</p>
