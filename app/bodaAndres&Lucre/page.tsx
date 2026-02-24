@@ -171,7 +171,7 @@ export default function BodaAndresLucre() {
               }}
             />
             <div className="flex flex-col ml-[5px] w-full md:w-[300px] justify-start text-left">
-              19 de marzo, 2026 <br />
+              21 de marzo, 2026 <br />
               19:00 - 3:00
             </div>
           </div>
@@ -381,13 +381,16 @@ export default function BodaAndresLucre() {
           </div>
           <div className="h-[0.5px] w-full bg-black mx-auto mb-10"></div>
           <p>
-            <b className="font-bold">Titular:</b> Andrés XXXXX
+            <b className="font-bold">Titular:</b> Andrés Chemavonian
           </p>
           <p>
             <b className="font-bold">Banco:</b> BROU{" "}
           </p>
           <p>
             <b className="font-bold">Tipo:</b> Caja de ahorro
+          </p>
+          <p>
+            <b className="font-bold">Moneda:</b> Dólares
           </p>
           <p>
             <b className="font-bold">Cuenta:</b>{" "}
@@ -456,7 +459,7 @@ export default function BodaAndresLucre() {
         }}
       >
         <div className="text-center md:text-2xl text-xl mt-12 bg-[#fffaf4]/90 p-4 rounded-lg w-[90%] md:w-[50%] mx-auto py-6 md:mb-60">
-        
+
           A disfrutar este momento
           <br /> especial con nosotros
           <div className="md:text-6xl text-4xl font-bold mt-6 font-allura text-2xl">
