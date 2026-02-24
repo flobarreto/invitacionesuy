@@ -43,7 +43,7 @@ export default function BodaAndresLucre() {
   useEffect(() => {
     const update = () => {
       // 21 de marzo de 2026 a las 19:00 hora de Uruguay
-      setTimeLeft(getTimeLeftToUruguayDate("2026-03-21T19:00:00-03:00"));
+      setTimeLeft(getTimeLeftToUruguayDate("2026-03-21T20:00:00-04:00"));
     };
 
     update();
@@ -172,7 +172,7 @@ export default function BodaAndresLucre() {
             />
             <div className="flex flex-col ml-[5px] w-full md:w-[300px] justify-start text-left">
               21 de marzo, 2026 <br />
-              19:00 - 3:00
+              20:00 - 4:00
             </div>
           </div>
           <div className="space-y-4 flex flex-col items-center justify-start ">
@@ -436,7 +436,7 @@ export default function BodaAndresLucre() {
             </div>
           </div>
             <a
-              href="https://calendar.google.com/calendar/u/0/r/eventedit?text=Boda+Andres+%26+Lucre&dates=20260321T220000Z/20260322T060000Z&details=¡Te+esperamos+en+nuestra+boda%21+Confirmá+tu+asistencia+y+agendalo+acá%21"
+              href="https://calendar.google.com/calendar/u/0/r/eventedit?text=Boda+Andres+%26+Lucre&dates=20260321T230000Z/20260322T070000Z&details=¡Te+esperamos+en+nuestra+boda%21+Confirmá+tu+asistencia+y+agendalo+acá%21"
               target="_blank"
                   rel="noopener noreferrer"
                   className="flex mx-auto w-[150px] justify-center h-[40px] items-center flex-row gap-2 text-md md:text-2xl font-normal mb-4 border-1 border-[#fffaf4] rounded-md px-2 py-1 mr-auto mt-6"
