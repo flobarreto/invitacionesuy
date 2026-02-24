@@ -359,7 +359,7 @@ export default function BodaAndresLucre() {
           backgroundRepeat: "no-repeat",
         }}
       >
-         <div className="absolute mt-[-38px] md:mt-[-45px] right-0 md:right-[22%]">
+         <div className="absolute mt-[-20px] md:mt-[-38px] md:mt-[-45px] right-0 md:right-[22%] w-[156px] md:w-auto">
           <Image
             src="/fotosAndres&Lucre/bow.webp"
             alt=""
@@ -398,7 +398,7 @@ export default function BodaAndresLucre() {
        
       </section>
       <section
-        className="px-6 py-20 md:px-12 md:py-28 bg-[#fffaf4] md:h-[800px] h-[500px] flex items-center justify-center"
+        className="px-6 py-20 md:px-12 md:py-28 bg-[#fffaf4] md:h-[800px] h-[500px] flex items-start md:items-center justify-center"
         style={{
           backgroundImage: "url('/fotosAndres&Lucre/them.webp')",
           backgroundSize: "cover",
