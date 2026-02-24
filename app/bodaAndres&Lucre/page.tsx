@@ -1,18 +1,7 @@
 "use client";
 
-import {
-  CalendarHeart,
-  Clock,
-  MapPin,
-  CalendarIcon,
-  PartyPopper,
-  Church,
-  Shirt,
-  MessageCircleHeart,
-} from "lucide-react";
 import { Button } from "@/components/ui/button";
 import Image from "next/image";
-import Link from "next/link";
 import { FormEvent, useState } from "react";
 import { toast } from "sonner";
 import { copyToClipboard } from "@/lib/utils";
@@ -24,7 +13,7 @@ export default function BodaAndresLucre() {
     try {
       await copyToClipboard(accountNumber);
       setCopied(true);
-      setTimeout(() => setCopied(false), 2000); // Reset after 2 seconds
+      setTimeout(() => setCopied(false), 3000);
     } catch (err) {
       console.error("Failed to copy: ", err);
     }
@@ -59,12 +48,10 @@ export default function BodaAndresLucre() {
     setIsSubmitting(true);
 
     try {
-      // Procesar dietaryPreferences: solo valores válidos (celiaco, veggie) y el texto de "otro" sin duplicados
       const validPreferences = dietaryPreferences
         .filter((p) => p !== "no" && p !== "otro" && !p.startsWith("otro:"))
-        .filter((value, index, self) => self.indexOf(value) === index); // Eliminar duplicados
+        .filter((value, index, self) => self.indexOf(value) === index); 
 
-      // Agregar el texto de "otro" si existe
       const finalPreferences = otroText.trim()
         ? [...validPreferences, otroText.trim()].filter(
             (value, index, self) => self.indexOf(value) === index,
@@ -121,7 +108,7 @@ export default function BodaAndresLucre() {
   return (
     <main className="min-h-screen w-full min-w-0 max-w-full overflow-x-clip bg-[#fffaf4] font-cormorant-garamond">
       <Toaster position="top-center" />
-      <section className="relative min-h-screen flex items-center justify-center px- py-20 bg-black">
+      <section className="relative min-h-screen flex items-center justify-center px-6 py-20 bg-black">
         <div className="max-w-4xl mx-auto text-center">
           <div className="mb-4">
             <div className="text-8xl  text-[#fffaf4]  text-balance">Andrés</div>
@@ -364,7 +351,7 @@ export default function BodaAndresLucre() {
       </section>
 
       <section
-        className="px-6 py-20 md:px-12 md:py-28 bg-[#fffaf4]  md:px-[30%]"
+        className="relative overflow-x-clip px-6 py-20 md:px-12 md:py-28 bg-[#fffaf4] md:px-[30%]"
         style={{
           backgroundImage: "url('/fotosAndres&Lucre/car.webp')",
           backgroundSize: "cover",
@@ -372,7 +359,7 @@ export default function BodaAndresLucre() {
           backgroundRepeat: "no-repeat",
         }}
       >
-         <div className="absolute mt-[-38px] md:mt-[-45px] md:right-[22%] right-[-60px]">
+         <div className="absolute mt-[-38px] md:mt-[-45px] right-0 md:right-[22%]">
           <Image
             src="/fotosAndres&Lucre/bow.webp"
             alt=""
