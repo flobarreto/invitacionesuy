@@ -449,19 +449,19 @@ export default function BodaAndresLucre() {
       <section
         className="px-6 py-20 md:px-12 md:py-28 bg-[#fffaf4] md:h-[800px] h-[500px] flex items-start md:items-center justify-center"
         style={{
-          backgroundImage: "url('/fotosAndres&Lucre/them.webp')",
+          backgroundImage: "url('/fotosAndres&Lucre/them.png')",
           backgroundSize: "cover",
           backgroundPosition: "center right",
           backgroundRepeat: "no-repeat",
         }}
       >
-        <div className="md:hidden w-[50%] ml-auto text-right text-xl">
+        <div className="lg:hidden w-[50%] ml-auto text-right text-xl text-[#fffaf4]">
           A disfrutar este momento especial con nosotros
           <div className="text-4xl font-bold mt-6 font-allura text-4xl">
             Es lo que nos merecemos ♥
           </div>
         </div>
-        <div className="hidden md:block mx-auto text-center text-2xl mt-[-60px] text-[#fffaf4]">
+        <div className="hidden lg:block mx-auto text-center text-2xl mt-[-60px] ">
           A disfrutar este momento
           <br /> especial con nosotros
           <div className="text-6xl font-bold mt-6 font-allura text-4xl text-left">
