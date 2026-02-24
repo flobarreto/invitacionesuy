@@ -456,6 +456,7 @@ export default function BodaAndresLucre() {
         }}
       >
         <div className="text-center md:text-2xl text-xl mt-12 bg-[#fffaf4]/90 p-4 rounded-lg w-[90%] md:w-[50%] mx-auto py-6 md:mb-60">
+        
           A disfrutar este momento
           <br /> especial con nosotros
           <div className="md:text-6xl text-4xl font-bold mt-6 font-allura text-2xl">
