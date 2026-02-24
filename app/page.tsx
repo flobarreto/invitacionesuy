@@ -73,10 +73,10 @@ export default function Home() {
   }, [])
 
   return (
-    <main className="relative min-h-screen w-full overflow-x-hidden bg-background">
+    <main className="relative min-h-screen w-full min-w-0 max-w-full overflow-x-clip bg-background">
 
       <div
-        className={`relative z-10 transition-opacity duration-700 ${isLoaded ? "opacity-100" : "opacity-0"
+        className={`relative z-10 transition-opacity duration-700 min-w-0 max-w-full ${isLoaded ? "opacity-100" : "opacity-0"
           }`}
       >
         <HeroSection />

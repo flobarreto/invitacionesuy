@@ -92,7 +92,7 @@ export default function BodaMicaTincho() {
   };
 
   return (
-    <main className="min-h-screen bg-soft-white">
+    <main className="min-h-screen w-full min-w-0 max-w-full overflow-x-clip bg-soft-white">
       {/* Hero Section */}
       <section
         className="relative min-h-screen flex items-center justify-center px-4 py-20"

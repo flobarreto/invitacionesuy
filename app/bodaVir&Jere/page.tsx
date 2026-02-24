@@ -165,7 +165,7 @@ export default function BodaVirJere() {
     }
   };
   return (
-    <div className="min-h-screen">
+    <div className="min-h-screen w-full min-w-0 max-w-full overflow-x-clip">
       <div className="min-h-screen relative overflow-hidden">
         <div
           className="absolute inset-0 bg-cover bg-center bg-no-repeat"

@@ -198,7 +198,7 @@ export default function BodaSofiGonchi() {
   const isSuccessState = submissionFeedback?.type === "success"
 
   return (
-    <main className="source-sans-3-font h-[100vh] w-[100vw] bg-[#532C0A]">
+    <main className="source-sans-3-font h-[100vh] w-full min-w-0 max-w-full overflow-x-clip bg-[#532C0A]">
       <section className="relative h-full bg-[#F9F7EB] py-[40px] px-[8px] flex flex-col justify-between border-b border-[#532C0A]">
         <div
           className="absolute bottom-0 left-0 w-full rounded-[166px_166px_0px_0px]"

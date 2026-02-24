@@ -119,7 +119,7 @@ export default function BodaAndresLucre() {
   };
 
   return (
-    <main className="min-h-screen bg-[#fffaf4] font-cormorant-garamond">
+    <main className="min-h-screen w-full min-w-0 max-w-full overflow-x-clip bg-[#fffaf4] font-cormorant-garamond">
       <Toaster position="top-center" />
       <section className="relative min-h-screen flex items-center justify-center px- py-20 bg-black">
         <div className="max-w-4xl mx-auto text-center">
