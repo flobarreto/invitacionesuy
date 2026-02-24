@@ -447,24 +447,18 @@ export default function BodaAndresLucre() {
       </section>
 
       <section
-        className="px-6 py-20 md:px-12 md:py-28 bg-[#fffaf4] md:h-[800px] h-[500px] flex items-start md:items-center justify-center"
+        className="relative px-6 md:py-30 md:px-12 md:py-28 bg-[#fffaf4] md:h-[800px] h-[500px] flex items-start md:items-center justify-center bg-[url('/fotosAndres&Lucre/them2.png')] md:bg-[url('/fotosAndres&Lucre/them2Web.png')]"
         style={{
-          backgroundImage: "url('/fotosAndres&Lucre/them.png')",
+
           backgroundSize: "cover",
-          backgroundPosition: "center right",
+          backgroundPosition: "center bottom",
           backgroundRepeat: "no-repeat",
         }}
       >
-        <div className="lg:hidden w-[50%] ml-auto text-right text-xl text-[#fffaf4]">
-          A disfrutar este momento especial con nosotros
-          <div className="text-4xl font-bold mt-6 font-allura text-4xl">
-            Es lo que nos merecemos ♥
-          </div>
-        </div>
-        <div className="hidden lg:block mx-auto text-center text-2xl mt-[-60px] ">
+        <div className="text-center md:text-2xl text-xl mt-12 bg-[#fffaf4]/90 p-4 rounded-lg w-[90%] md:w-[50%] mx-auto py-6 md:mb-60">
           A disfrutar este momento
           <br /> especial con nosotros
-          <div className="text-6xl font-bold mt-6 font-allura text-4xl text-left">
+          <div className="md:text-6xl text-4xl font-bold mt-6 font-allura text-2xl">
             Es lo que nos <br />
             merecemos ♥
           </div>
