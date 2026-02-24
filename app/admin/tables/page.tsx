@@ -13,7 +13,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table"
-import { RefreshCw, Users, X, Tag } from "lucide-react"
+import { RefreshCw, Users, X, Tag, LayoutGrid } from "lucide-react"
 import { Badge } from "@/components/ui/badge"
 import { Checkbox } from "@/components/ui/checkbox"
 import { Label } from "@/components/ui/label"
@@ -27,6 +27,12 @@ import {
 } from "@/components/ui/dialog"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs"
+import dynamic from "next/dynamic"
+
+const FloorPlanner = dynamic(
+  () => import("@/components/floor-planner/FloorPlanner").then((m) => m.FloorPlanner),
+  { ssr: false }
+)
 
 interface Tag {
   id: string
@@ -288,6 +294,10 @@ export default function TablesPage() {
               <TabsTrigger value="sin-mesa">
                 <Users className="h-4 w-4 mr-2" />
                 Sin Mesa ({rsvpsWithoutTable.length})
+              </TabsTrigger>
+              <TabsTrigger value="plano">
+                <LayoutGrid className="h-4 w-4 mr-2" />
+                Plano
               </TabsTrigger>
             </TabsList>
 
@@ -643,6 +653,12 @@ export default function TablesPage() {
                   </CardContent>
                 </Card>
               )}
+            </TabsContent>
+
+            <TabsContent value="plano" className="mt-0">
+              <div className="rounded-lg border border-border overflow-hidden bg-background h-[calc(100vh-12rem)] min-h-[600px]">
+                <FloorPlanner venueId="admin" stageWidth={1100} stageHeight={640} embedded useAdminApi />
+              </div>
             </TabsContent>
           </Tabs>
         )}
