@@ -535,7 +535,15 @@ export default function AdminDashboard({ username }: AdminDashboardProps) {
 
         {/* Stats Cards */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <Card>
+          <Card
+            className={`cursor-pointer transition-all hover:shadow-md ${
+              !showOnlyConfirmed && !showOnlyUnconfirmed ? "ring-2 ring-primary ring-offset-2 dark:ring-offset-gray-900" : ""
+            }`}
+            onClick={() => {
+              setShowOnlyConfirmed(false)
+              setShowOnlyUnconfirmed(false)
+            }}
+          >
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium">Total de Respuestas</CardTitle>
               <Users className="h-4 w-4 text-muted-foreground" />
@@ -543,28 +551,48 @@ export default function AdminDashboard({ username }: AdminDashboardProps) {
             <CardContent>
               <div className="text-2xl font-bold">{rsvps.length}</div>
               <p className="text-xs text-muted-foreground">
-                Personas que respondieron
+                {!showOnlyConfirmed && !showOnlyUnconfirmed ? "Mostrando todas · Clic para ver todas" : "Personas que respondieron · Clic para ver todas"}
               </p>
             </CardContent>
           </Card>
-          <Card>
+          <Card
+            className={`cursor-pointer transition-all hover:shadow-md ${
+              showOnlyConfirmed ? "ring-2 ring-green-500 ring-offset-2 dark:ring-offset-gray-900" : ""
+            }`}
+            onClick={() => {
+              setShowOnlyConfirmed((prev) => !prev)
+              if (!showOnlyConfirmed) setShowOnlyUnconfirmed(false)
+            }}
+          >
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium">Confirmados</CardTitle>
               <Users className="h-4 w-4 text-green-600" />
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold text-green-600">{totalConfirmedCount}</div>
-              <p className="text-xs text-muted-foreground">Asistirán al evento</p>
+              <p className="text-xs text-muted-foreground">
+                {showOnlyConfirmed ? "Mostrando solo confirmados · Clic para quitar filtro" : "Asistirán al evento · Clic para filtrar"}
+              </p>
             </CardContent>
           </Card>
-          <Card>
+          <Card
+            className={`cursor-pointer transition-all hover:shadow-md ${
+              showOnlyUnconfirmed ? "ring-2 ring-red-500 ring-offset-2 dark:ring-offset-gray-900" : ""
+            }`}
+            onClick={() => {
+              setShowOnlyUnconfirmed((prev) => !prev)
+              if (!showOnlyUnconfirmed) setShowOnlyConfirmed(false)
+            }}
+          >
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium">No Confirmados</CardTitle>
               <Users className="h-4 w-4 text-red-600" />
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold text-red-600">{totalDeclinedCount}</div>
-              <p className="text-xs text-muted-foreground">No asistirán</p>
+              <p className="text-xs text-muted-foreground">
+                {showOnlyUnconfirmed ? "Mostrando solo no confirmados · Clic para quitar filtro" : "No asistirán · Clic para filtrar"}
+              </p>
             </CardContent>
           </Card>
         </div>
@@ -1164,48 +1192,9 @@ export default function AdminDashboard({ username }: AdminDashboardProps) {
         <Dialog open={isFilterModalOpen} onOpenChange={setIsFilterModalOpen}>
           <DialogContent className="max-w-md">
             <DialogHeader>
-              <DialogTitle>Filtros</DialogTitle>
+              <DialogTitle>Filtros por Etiquetas</DialogTitle>
             </DialogHeader>
             <div className="space-y-4 py-4">
-              {/* Filtro de solo confirmados */}
-              <div className="flex items-center space-x-2 p-3 rounded-lg">
-                <Checkbox
-                  id="show-only-confirmed-filter"
-                  checked={showOnlyConfirmed}
-                  onCheckedChange={(checked) => {
-                    setShowOnlyConfirmed(checked === true)
-                    if (checked) setShowOnlyUnconfirmed(false)
-                  }}
-                />
-                <Label
-                  htmlFor="show-only-confirmed-filter"
-                  className="text-sm font-medium cursor-pointer flex-1"
-                >
-                  Ver solo confirmados
-                </Label>
-              </div>
-              {/* Filtro de solo no confirmados */}
-              <div className="flex items-center space-x-2 p-3 rounded-lg">
-                <Checkbox
-                  id="show-only-unconfirmed-filter"
-                  checked={showOnlyUnconfirmed}
-                  onCheckedChange={(checked) => {
-                    setShowOnlyUnconfirmed(checked === true)
-                    if (checked) setShowOnlyConfirmed(false)
-                  }}
-                />
-                <Label
-                  htmlFor="show-only-unconfirmed-filter"
-                  className="text-sm font-medium cursor-pointer flex-1"
-                >
-                  Ver solo no confirmados
-                </Label>
-              </div>
-
-              <div className="border-t pt-4">
-                <Label className="text-sm font-medium mb-3 block">Filtrar por Etiquetas</Label>
-    </div>
-
               {tagsLoading ? (
                 <div className="flex items-center justify-center py-8">
                   <RefreshCw className="h-5 w-5 animate-spin text-muted-foreground mr-2" />
