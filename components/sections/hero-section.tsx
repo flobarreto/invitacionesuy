@@ -12,7 +12,7 @@ export function HeroSection() {
         backgroundRepeat: "no-repeat",
       }}
     >
-      <div className="bg-[#fefce7] w-full h-full text-[#4d3022]">
+      <div className="bg-[#fefce7] w-full h-full text-[#4d3022] shadow-lg">
         <div className="p-6">
           <h1 className="mb-6 animate-in fade-in slide-in-from-bottom-8 font-sans text-6xl font-light leading-[1.1] tracking-tight duration-1000 md:text-7xl lg:text-8xl">
             <span className=" font-umeko">

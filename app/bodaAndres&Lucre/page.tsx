@@ -2,10 +2,12 @@
 
 import { Button } from "@/components/ui/button";
 import Image from "next/image";
-import { FormEvent, useState } from "react";
+import { FormEvent, useEffect, useState } from "react";
+import { CalendarIcon, MapPinIcon } from "lucide-react";
 import { toast } from "sonner";
 import { copyToClipboard } from "@/lib/utils";
 import { Toaster } from "@/components/ui/sonner";
+import { getTimeLeftToUruguayDate, TimeLeft } from "@/app/utils/countdown";
 
 export default function BodaAndresLucre() {
   const [copied, setCopied] = useState(false);
@@ -32,6 +34,23 @@ export default function BodaAndresLucre() {
     type: "success" | "error";
     message: string;
   } | null>(null);
+  const [timeLeft, setTimeLeft] = useState<TimeLeft>({
+    days: 0,
+    hours: 0,
+    minutes: 0,
+  });
+
+  useEffect(() => {
+    const update = () => {
+      // 21 de marzo de 2026 a las 19:00 hora de Uruguay
+      setTimeLeft(getTimeLeftToUruguayDate("2026-03-21T19:00:00-03:00"));
+    };
+
+    update();
+    const timer = setInterval(update, 1000);
+
+    return () => clearInterval(timer);
+  }, []);
 
   const handleRsvpSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -50,7 +69,7 @@ export default function BodaAndresLucre() {
     try {
       const validPreferences = dietaryPreferences
         .filter((p) => p !== "no" && p !== "otro" && !p.startsWith("otro:"))
-        .filter((value, index, self) => self.indexOf(value) === index); 
+        .filter((value, index, self) => self.indexOf(value) === index);
 
       const finalPreferences = otroText.trim()
         ? [...validPreferences, otroText.trim()].filter(
@@ -82,10 +101,15 @@ export default function BodaAndresLucre() {
         type: "success",
         message: "¡Gracias! Registramos tu respuesta.",
       });
-      toast.success(attendanceResponse === "si" ? "¡Te esperamos!" : "¡Gracias por tu respuesta!", {
-        position: "bottom-center",
-        duration: 7000,
-      });
+      toast.success(
+        attendanceResponse === "si"
+          ? "¡Te esperamos!"
+          : "¡Gracias por tu respuesta!",
+        {
+          position: "bottom-center",
+          duration: 7000,
+        },
+      );
       setGuestName("");
       setAttendanceResponse("si");
       setDietaryPreferences(["no"]);
@@ -136,11 +160,25 @@ export default function BodaAndresLucre() {
             Nuestro Día
           </div>
           <div className="h-[0.5px] w-full bg-black mx-auto mb-10"></div>
-
+          <div className="flex items-center text-xl w-full justify-center md:gap-12 md:text-2xl">
+            <div
+              className="w-[100px] h-[100px] md:w-[200px] md:h-[200px]"
+              style={{
+                backgroundImage: "url('/fotosAndres&Lucre/calendar.webp')",
+                backgroundSize: "contain",
+                backgroundPosition: "center",
+                backgroundRepeat: "no-repeat",
+              }}
+            />
+            <div className="flex flex-col ml-[5px] w-full md:w-[300px] justify-start text-left">
+              19 de marzo, 2026 <br />
+              19:00 - 3:00
+            </div>
+          </div>
           <div className="space-y-4 flex flex-col items-center justify-start ">
             <div className="flex items-center text-xl md:gap-12 md:text-2xl">
               <div
-              className="w-[100px] h-[100px] md:w-[200px] md:h-[200px]"
+                className="w-[100px] h-[100px] md:w-[200px] md:h-[200px]"
                 style={{
                   backgroundImage: "url('/fotosAndres&Lucre/candles.webp')",
                   backgroundSize: "contain",
@@ -149,7 +187,7 @@ export default function BodaAndresLucre() {
                 }}
               />
               <div className="flex flex-col mt-[5px] ml-[5px] w-full md:w-[300px] justify-start text-left">
-              <p className="font-bold">Aras Dilema</p>
+                <p className="font-bold">Aras Dilema</p>
                 <a
                   href="https://maps.app.goo.gl/LKjGNnx53HZs3u9V6"
                   target="_blank"
@@ -158,46 +196,15 @@ export default function BodaAndresLucre() {
                 >
                   Alfredo Zitarrosa, 15000 Ciudad de la Costa
                 </a>
-                <a 
+                <a
                   href="https://ul.waze.com/ul?place=ChIJNZ83cdOJn5URGherrdKsQvE&ll=-34.82847510%2C-55.97936180&navigate=yes&utm_campaign=default&utm_source=waze_website&utm_medium=lm_share_location"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className=" text-sm md:text-2xl font-normal mb-2 inline-block text-left border-1 border-black/50 rounded-md px-2 py-1 ml-auto mb-[-20px]"
+                  className="flex items-center flex-row gap-2 text-sm md:text-xl font-normal mb-2 border-1 border-black/50 rounded-md px-2 py-1 mr-auto mb-[-20px]"
                 >
+                  <MapPinIcon className="w-5 h-5 text-black/50" strokeWidth={1} />
                   Cómo ir?
                 </a>
-              </div>
-
-            </div>
-
-            <div className="flex items-center text-xl w-full justify-center md:gap-12 md:text-2xl">
-              <div
-                className="w-[100px] h-[100px] md:w-[200px] md:h-[200px]"
-                style={{
-                  backgroundImage: "url('/fotosAndres&Lucre/calendar.webp')",
-                  backgroundSize: "contain",
-                  backgroundPosition: "center",
-                  backgroundRepeat: "no-repeat",
-                }}
-              />
-              <div className="flex flex-col mt-[5px] ml-[5px] w-full md:w-[300px] justify-start text-left">
-                19 de marzo, 2026 <br />
-                19:00 - 3:00
-              </div>
-            </div>
-
-            <div className="flex items-center text-lg w-full justify-center md:gap-12 md:text-2xl">
-              <div
-                className="w-[100px] h-[100px] md:w-[200px] md:h-[200px]"
-                style={{
-                  backgroundImage: "url('/fotosAndres&Lucre/swan.webp')",
-                  backgroundSize: "contain",
-                  backgroundPosition: "center",
-                  backgroundRepeat: "no-repeat",
-                }}
-              />
-              <div className="flex flex-col mt-[5px] ml-[5px]  w-full md:w-[300px] justify-start text-left">
-                Vestimenta Formal
               </div>
             </div>
           </div>
@@ -359,7 +366,7 @@ export default function BodaAndresLucre() {
           backgroundRepeat: "no-repeat",
         }}
       >
-         <div className="absolute mt-[-20px] md:mt-[-38px] md:mt-[-45px] right-0 md:right-[22%] w-[156px] md:w-auto">
+        <div className="absolute mt-[-20px] md:mt-[-38px] md:mt-[-45px] right-0 md:right-[22%] w-[156px] md:w-auto">
           <Image
             src="/fotosAndres&Lucre/bow.webp"
             alt=""
@@ -369,35 +376,76 @@ export default function BodaAndresLucre() {
           />
         </div>
         <div className="flex flex-col text-center bg-[#fffaf4]/90 p-4 rounded-lg text-black text-lg">
-        <div className="text-6xl font-semibold mb-2 mt-4 font-allura">
+          <div className="text-6xl font-semibold mb-2 mt-4 font-allura">
             Regalos
           </div>
           <div className="h-[0.5px] w-full bg-black mx-auto mb-10"></div>
-        <p><b className="font-bold">Titular:</b> Andrés XXXXX</p>
-        <p><b className="font-bold">Banco:</b> BROU </p>
-        <p><b className="font-bold">Tipo:</b> Caja de ahorro</p>
-        <p>
-          <b className="font-bold">Cuenta:</b>{" "}
-          <span
-            role="button"
-            tabIndex={0}
-            className="cursor-pointer underline hover:opacity-80"
-            onClick={() => copyAccountNumber("000403106-00001")}
-            onKeyDown={(e) => {
-              if (e.key === "Enter" || e.key === " ") {
-                e.preventDefault();
-                copyAccountNumber("000403106-00001");
-              }
-            }}
-          >
-            000403106-00001
-          </span>
-        </p>
-        <p className="text-sm min-h-[24px]">{copied && "✓ Copiado!"}</p>
+          <p>
+            <b className="font-bold">Titular:</b> Andrés XXXXX
+          </p>
+          <p>
+            <b className="font-bold">Banco:</b> BROU{" "}
+          </p>
+          <p>
+            <b className="font-bold">Tipo:</b> Caja de ahorro
+          </p>
+          <p>
+            <b className="font-bold">Cuenta:</b>{" "}
+            <span
+              role="button"
+              tabIndex={0}
+              className="cursor-pointer underline hover:opacity-80"
+              onClick={() => copyAccountNumber("000403106-00001")}
+              onKeyDown={(e) => {
+                if (e.key === "Enter" || e.key === " ") {
+                  e.preventDefault();
+                  copyAccountNumber("000403106-00001");
+                }
+              }}
+            >
+              000403106-00001
+            </span>
+          </p>
+          <p className="text-sm min-h-[24px]">{copied && "✓ Copiado!"}</p>
         </div>
-       
       </section>
-      
+
+      <section className="py-25 md:py-18 mt-[-2px] z-100 bg-black text-[#fffaf4]">
+        <div className="max-w-4xl mx-auto px-6 text-center text-lg">
+          Nos vemos en
+          <div className="flex justify-center items-center gap-4 font-allura mt-4">
+            <div className="text-center">
+              <div className=" text-6xl md:text-6xl mb-2">
+                {timeLeft.days} d.
+              </div>
+            </div>
+
+            <div className="text-center">
+              <div className=" text-6xl md:text-6xl mb-2">
+                {timeLeft.hours} h.
+              </div>
+            </div>
+
+            <div className="text-center">
+              <div className=" text-6xl md:text-6xl mb-2">
+                {timeLeft.minutes} m.
+              </div>
+            </div>
+          </div>
+            <a
+              href="https://calendar.google.com/calendar/u/0/r/eventedit?text=Boda+Andres+%26+Lucre&dates=20260321T220000Z/20260322T060000Z&details=¡Te+esperamos+en+nuestra+boda%21+Confirmá+tu+asistencia+y+agendalo+acá%21"
+              target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex mx-auto w-[150px] justify-center h-[40px] items-center flex-row gap-2 text-md md:text-2xl font-normal mb-4 border-1 border-[#fffaf4] rounded-md px-2 py-1 mr-auto mt-6"
+                >
+                  <CalendarIcon className="w-5 h-5 text-[#fffaf4]" strokeWidth={1} />
+                  Agendar
+                </a>
+
+          <p className=" text-sm mt-2">Vestimenta Formal</p>
+        </div>
+      </section>
+
       <section
         className="px-6 py-20 md:px-12 md:py-28 bg-[#fffaf4] md:h-[800px] h-[500px] flex items-start md:items-center justify-center"
         style={{
@@ -413,19 +461,26 @@ export default function BodaAndresLucre() {
             Es lo que nos merecemos ♥
           </div>
         </div>
-        <div className="hidden md:block mx-auto text-center text-2xl mt-[-60px] text-[#fffaf4]" >
-          A disfrutar este momento<br/> especial con nosotros
+        <div className="hidden md:block mx-auto text-center text-2xl mt-[-60px] text-[#fffaf4]">
+          A disfrutar este momento
+          <br /> especial con nosotros
           <div className="text-6xl font-bold mt-6 font-allura text-4xl text-left">
-            Es lo que nos <br/>merecemos ♥
+            Es lo que nos <br />
+            merecemos ♥
           </div>
         </div>
       </section>
 
-      <footer className="bg-black text-[#fffaf4] py-5 md:py-10 font-montserrat" onClick={() => { window.location.href = '/'; }}>
+      <footer
+        className="bg-black text-[#fffaf4] py-5 md:py-10 font-montserrat"
+        onClick={() => {
+          window.location.href = "/";
+        }}
+      >
         <div className="max-w-6xl mx-auto px-auto text-center">
-            <p className="text-lg">invitaciones.uy</p>
-            <p className="text-sm mt-2">Páginas web unicas para eventos</p>
-            <p className="text-xs">Click para conocer más</p>
+          <p className="text-lg">invitaciones.uy</p>
+          <p className="text-sm mt-2">Páginas web unicas para eventos</p>
+          <p className="text-xs">Click para conocer más</p>
         </div>
       </footer>
     </main>
