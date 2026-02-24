@@ -397,6 +397,7 @@ export default function BodaAndresLucre() {
         </div>
        
       </section>
+      
       <section
         className="px-6 py-20 md:px-12 md:py-28 bg-[#fffaf4] md:h-[800px] h-[500px] flex items-start md:items-center justify-center"
         style={{
