@@ -303,6 +303,42 @@ export default function BodaVirJere() {
 
       </section>
 
+      <section className="bg-[rgba(229,231,235,1)] py-8 md:h-[300px] h-[200px]"
+      >
+        <div className="max-w-5xl mx-auto px-6 text-center">
+          <div className="mb-8">
+            <p className="text-[#9e1d2c] font-italianno text-3xl md:text-[55px] leading-relaxed text-center max-w-full sm:max-w-[80ch] mx-auto">
+              Si estas pensando en hacernos un regalo
+            </p>
+          </div>
+
+          <div className="space-y-6 mb-2">
+            <ul className="space-y-2 text-sm text-[#9e1d2c] md:text-lg">
+              <li>
+                <strong>Titular:</strong> Jeremías Berro
+              </li>
+              <li>
+                <strong>Banco:</strong> Prex
+              </li>
+              <li>
+                <strong>Cuenta:</strong>
+                <span
+                  className="cursor-pointer hover:text-white transition-colors underline ml-1"
+                  onClick={copyAccountNumber}
+                >
+                  1313033
+                </span>
+
+                <p className="ml-2 text-sm h-[30px]">
+                  {copied && '✓ Copiado!'}
+                </p>
+
+              </li>
+            </ul>
+          </div>
+        </div>
+      </section>
+
       <section className="w-full justify-around gap-6 px-6 pb-25 bg-[linear-gradient(180deg,rgba(229,231,235,1)_0%,rgba(229,231,235,1)_80%,rgba(89,96,71,1)_100%)] flex flex-col items-center">
 
         <div className="relative z-10 max-w-2xl mx-auto text-center">
@@ -478,41 +514,6 @@ export default function BodaVirJere() {
         </div>
       </section>
 
-      <section className="bg-[rgba(229,231,235,1)] py-8 h-[300px]"
-      >
-        <div className="max-w-5xl mx-auto px-6 text-center">
-          <div className="mb-8">
-            <p className="text-[#9e1d2c] font-italianno text-3xl md:text-[55px] leading-relaxed text-center max-w-full sm:max-w-[80ch] mx-auto">
-              Si estas pensando en hacernos un regalo
-            </p>
-          </div>
-
-          <div className="space-y-6 mb-2">
-            <ul className="space-y-2 text-sm text-[#9e1d2c] md:text-lg">
-              <li>
-                <strong>Titular:</strong> Jeremías Berro
-              </li>
-              <li>
-                <strong>Banco:</strong> Prex
-              </li>
-              <li>
-                <strong>Cuenta:</strong>
-                <span
-                  className="cursor-pointer hover:text-white transition-colors underline ml-1"
-                  onClick={copyAccountNumber}
-                >
-                  1313033
-                </span>
-
-                <p className="ml-2 text-sm h-[30px]">
-                  {copied && '✓ Copiado!'}
-                </p>
-
-              </li>
-            </ul>
-          </div>
-        </div>
-      </section>
       <section className="py-15 md:py-12 md:pb-[150px]"
       style={{
         background: "linear-gradient(180deg, rgba(229, 231, 235, 1) 0%, rgba(86, 83, 75, 1) 100%)"
