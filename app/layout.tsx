@@ -37,9 +37,8 @@ const cormorantGaramond = CormorantGaramond({
 })
 
 export const metadata = {
-  title: "Invitaciones.uy - Invitaciones digitales personalizadas",
-  description: "Diseñamos invitaciones digitales a medida para casamientos y fiestas en Uruguay",
-  generator: 'v0.app'
+  title: "invitia.uy - Invitaciones digitales personalizadas",
+  description: "Diseñamos invitaciones digitales a medida para eventos",
 }
 
 export default function RootLayout({

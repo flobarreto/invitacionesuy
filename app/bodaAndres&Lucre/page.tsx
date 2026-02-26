@@ -476,7 +476,7 @@ export default function BodaAndresLucre() {
         }}
       >
         <div className="max-w-6xl mx-auto px-auto text-center">
-          <p className="text-lg">invitaciones.uy</p>
+          <p className="text-lg">invitia.uy</p>
           <p className="text-sm mt-2">Páginas web unicas para eventos</p>
           <p className="text-xs">Click para conocer más</p>
         </div>
