@@ -676,7 +676,7 @@ export default function BodaVirJere() {
                         href="https://www.google.com/maps/place/Si%C3%B1eriz+Shopping/@-30.9000187,-55.5251471,17z/data=!3m1!4b1!4m6!3m5!1s0x95a9fe42c9ecd189:0xcdab2c3cbd336877!8m2!3d-30.9000187!4d-55.5251471!16s%2Fg%2F12323j9_v?entry=ttu&g_ep=EgoyMDI1MDkyNC4wIKXMDSoASAFQAw%3D%3D"
                         target="_blank"
                         className=" mb-3 text-[#56534b] font-sans text-xs hover:text-white transition-colors hover:underline">
-                        João Goulart, 55, Santana do Livramento
+                        Avenida Sepé 51, Rivera
                       </a>
                     </div>
                     <div className="flex flex-col gap-2 pb-3">
@@ -725,6 +725,22 @@ export default function BodaVirJere() {
                         target="_blank"
                         className=" mb-3 text-[#56534b] font-sans text-xs hover:text-white transition-colors hover:underline">
                         Paysandú 1071, Rivera
+                      </a>
+                    </div>
+                    <div className="flex flex-col gap-2 pb-3">
+                      <a
+                        href="https://www.instagram.com/nepalfreeshop/"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-[#56534b] font-sans text-md md:text-lg leading-relaxed text-left max-w-full sm:max-w-[80ch] hover:text-white transition-colors underline"
+                      >
+                        Nepal
+                      </a>
+                      <a
+                        href="https://www.google.com/maps/place/Nepal+Free+Shop/@-30.8984747,-55.5427719,15.72z/data=!4m6!3m5!1s0x95a9ff61d0a5dd5f:0x354553c84433c7a3!8m2!3d-30.8977146!4d-55.538172!16s%2Fg%2F11sjy3pml9?entry=ttu&g_ep=EgoyMDI2MDIyNS4wIKXMDSoASAFQAw%3D%3D"
+                        target="_blank"
+                        className=" mb-3 text-[#56534b] font-sans text-xs hover:text-white transition-colors hover:underline">
+                        Av. Sarandí 401, Rivera
                       </a>
                     </div>
                   </div>
