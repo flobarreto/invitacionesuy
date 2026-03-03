@@ -254,6 +254,11 @@ export default function BodaVirJere() {
             </div>
 
             <div className="order-3 flex flex-col justify-center items-center text-center">
+            <p className="flex font-italianno items-center text-[#9e1d2c] text-[40px] font-medium w-full mt-2">
+                <span className="flex-1 h-px bg-[#9e1d2c] mr-3" />
+                tras la ceremonia
+                <span className="flex-1 h-px bg-[#9e1d2c] ml-3" />
+              </p>
               <h2 className="font-italianno text-[60px] md:text-5xl text-[#9e1d2c] ">
                 Fiesta
               </h2>
@@ -283,23 +288,19 @@ export default function BodaVirJere() {
                 </Button>
 
               </div>
-              <p className="flex font-italianno items-center text-[#9e1d2c] text-[40px] font-medium w-full mt-2">
-                <span className="flex-1 h-px bg-[#9e1d2c] mr-3" />
-                tras la ceremonia
-                <span className="flex-1 h-px bg-[#9e1d2c] ml-3" />
-              </p>
+     
             </div>
           </div>
         </div>
 
 
-        <div className="order-2 flex justify-center px-5 items-center mt-10 md:hidden">
+        {/* <div className="order-2 flex justify-center px-5 items-center mt-10 md:hidden">
           <img
             src="/FotosVir&Jere/rsvp-couple.webp"
             alt="Vir y Jere"
             className="w-full h-80 md:h-96 object-cover rounded-lg shadow-lg md:h-[700px] md:w-auto md:mt-20"
           />
-        </div>
+        </div> */}
 
       </section>
 
@@ -461,13 +462,13 @@ export default function BodaVirJere() {
             )}
           </form>
 
-          <div className="order-2 flex justify-center px-5 items-center mt-10 hidden md:block">
+          {/* <div className="order-2 flex justify-center px-5 items-center mt-10 hidden md:block">
           <img
             src="/FotosVir&Jere/rsvp-couple.webp"
             alt="Vir y Jere"
             className="w-full h-80 md:h-96 object-cover rounded-lg shadow-lg md:h-[700px] md:w-auto md:mt-20"
           />
-        </div>
+        </div> */}
 
         </div>
       </section>
