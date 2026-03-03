@@ -28,6 +28,7 @@ import { Textarea } from "@/components/ui/textarea"
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 import { Badge } from "@/components/ui/badge"
+import TableNumberDialog from "@/components/table-number-dialog"
 
 interface Tag {
   id: string
@@ -43,7 +44,7 @@ interface RSVP {
   favorite_song?: string
   created_at?: string
   tags?: string[]
-  table_number?: number | null
+  table_number?: string | null
 }
 
 interface AdminDashboardProps {
@@ -75,7 +76,6 @@ export default function AdminDashboard({ username }: AdminDashboardProps) {
   const [selectedFilterTags, setSelectedFilterTags] = useState<string[]>([])
   const [isTableNumberModalOpen, setIsTableNumberModalOpen] = useState(false)
   const [rsvpForTableNumber, setRsvpForTableNumber] = useState<RSVP | null>(null)
-  const [tempTableNumber, setTempTableNumber] = useState<string>("")
   const [formData, setFormData] = useState({
     name: "",
     attendance: "Sí",
@@ -222,6 +222,32 @@ export default function AdminDashboard({ username }: AdminDashboardProps) {
   // Estadísticas filtradas (solo para mostrar en la tabla)
   const confirmedCount = filteredRsvps.filter(isConfirmed).length
   const declinedCount = filteredRsvps.length - confirmedCount
+
+  const tableNumbers = useMemo(() => {
+    const set = new Set<string>()
+    rsvps.forEach((rsvp) => {
+      const value = (rsvp.table_number ?? "").toString().trim()
+      if (value) {
+        set.add(value)
+      }
+    })
+    return Array.from(set).sort((a, b) =>
+      a.localeCompare(b, "es", { numeric: true, sensitivity: "base" })
+    )
+  }, [rsvps])
+
+  const handleCloseTableNumberDialog = () => {
+    setIsTableNumberModalOpen(false)
+    setRsvpForTableNumber(null)
+  }
+
+  const handleTableDialogOpenChange = (open: boolean) => {
+    if (!open) {
+      handleCloseTableNumberDialog()
+    } else {
+      setIsTableNumberModalOpen(true)
+    }
+  }
 
   const handleAddGuest = async () => {
     setSubmitError("")
@@ -394,7 +420,7 @@ export default function AdminDashboard({ username }: AdminDashboardProps) {
     return tag
   }
 
-  const handleTableNumberChange = async (rsvpId: string, tableNumber: number | null) => {
+  const handleTableNumberChange = async (rsvpId: string, tableNumber: string | null) => {
     try {
       const response = await fetch("/api/admin/update-rsvp-table-number", {
         method: "PUT",
@@ -403,7 +429,7 @@ export default function AdminDashboard({ username }: AdminDashboardProps) {
         },
         body: JSON.stringify({
           rsvpId,
-          tableNumber: tableNumber === null || tableNumber === undefined ? null : Number(tableNumber),
+          tableNumber: tableNumber === null || tableNumber === undefined ? null : tableNumber,
         }),
       })
 
@@ -430,20 +456,18 @@ export default function AdminDashboard({ username }: AdminDashboardProps) {
       e.stopPropagation()
     }
     setRsvpForTableNumber(rsvp)
-    setTempTableNumber(rsvp.table_number?.toString() || "")
     setIsTableNumberModalOpen(true)
   }
 
-  const handleSaveTableNumber = async () => {
+  const handleSaveTableNumber = async (value: string) => {
     if (!rsvpForTableNumber?.id) return
 
-    const value = tempTableNumber.trim() === "" ? null : parseInt(tempTableNumber, 10)
-    const tableNumber = isNaN(value as number) ? null : value
+    const trimmed = value.trim()
+    const tableNumber = trimmed === "" ? null : trimmed.toUpperCase()
 
     await handleTableNumberChange(rsvpForTableNumber.id, tableNumber)
     setIsTableNumberModalOpen(false)
     setRsvpForTableNumber(null)
-    setTempTableNumber("")
   }
 
   // Función para descargar CSV
@@ -1345,59 +1369,14 @@ export default function AdminDashboard({ username }: AdminDashboardProps) {
           </DialogContent>
         </Dialog>
 
-        {/* Modal para editar número de mesa */}
-        <Dialog open={isTableNumberModalOpen} onOpenChange={setIsTableNumberModalOpen}>
-          <DialogContent className="max-w-md">
-            <DialogHeader>
-              <DialogTitle>Asignar Mesa</DialogTitle>
-              <DialogDescription>
-                ¿En qué mesa se sienta <strong>{rsvpForTableNumber?.name}</strong>?
-              </DialogDescription>
-            </DialogHeader>
-            <div className="space-y-4 py-4">
-              <div className="space-y-2">
-                <Label htmlFor="table-number">Número de Mesa</Label>
-                <Input
-                  id="table-number"
-                  type="text"
-                  inputMode="numeric"
-                  pattern="[0-9]*"
-                  value={tempTableNumber}
-                  onChange={(e) => {
-                    const inputValue = e.target.value
-                    // Permitir solo números o string vacío
-                    if (inputValue === "" || /^\d+$/.test(inputValue)) {
-                      setTempTableNumber(inputValue)
-                    }
-                  }}
-                  onKeyDown={(e) => {
-                    if (e.key === "Enter") {
-                      handleSaveTableNumber()
-                    }
-                  }}
-                  placeholder="Ej: 11"
-                  className="text-center text-lg"
-                  autoFocus
-                />
-              </div>
-            </div>
-            <DialogFooter>
-              <Button
-                variant="outline"
-                onClick={() => {
-                  setIsTableNumberModalOpen(false)
-                  setRsvpForTableNumber(null)
-                  setTempTableNumber("")
-                }}
-              >
-                Cancelar
-              </Button>
-              <Button onClick={handleSaveTableNumber}>
-                Guardar
-              </Button>
-            </DialogFooter>
-          </DialogContent>
-        </Dialog>
+        <TableNumberDialog
+          open={isTableNumberModalOpen}
+          onOpenChange={handleTableDialogOpenChange}
+          rsvpName={rsvpForTableNumber?.name}
+          initialTableNumber={rsvpForTableNumber?.table_number?.toString() || ""}
+          onSave={handleSaveTableNumber}
+          tableNumbers={tableNumbers}
+        />
       </div>
     </div>
   )

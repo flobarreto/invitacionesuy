@@ -27,6 +27,7 @@ import {
 } from "@/components/ui/dialog"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs"
+import TableNumberDialog from "@/components/table-number-dialog"
 
 interface Tag {
   id: string
@@ -42,7 +43,7 @@ interface RSVP {
   favorite_song?: string
   created_at?: string
   tags?: string[]
-  table_number?: number | null
+  table_number?: string | null
 }
 
 export default function TablesPage() {
@@ -56,7 +57,6 @@ export default function TablesPage() {
   const [editingTagsForRsvpMobile, setEditingTagsForRsvpMobile] = useState<string | null>(null)
   const [isTableNumberModalOpen, setIsTableNumberModalOpen] = useState(false)
   const [rsvpForTableNumber, setRsvpForTableNumber] = useState<RSVP | null>(null)
-  const [tempTableNumber, setTempTableNumber] = useState<string>("")
 
   const fetchRSVPs = async () => {
     setLoading(true)
@@ -149,7 +149,7 @@ export default function TablesPage() {
     }
   }
 
-  const handleTableNumberChange = async (rsvpId: string, tableNumber: number | null) => {
+  const handleTableNumberChange = async (rsvpId: string, tableNumber: string | null) => {
     if (!rsvpId) {
       console.error("No se proporcionó un ID de RSVP")
       return
@@ -163,7 +163,7 @@ export default function TablesPage() {
         },
         body: JSON.stringify({
           rsvpId,
-          tableNumber: tableNumber === null || tableNumber === undefined ? null : Number(tableNumber),
+          tableNumber: tableNumber === null || tableNumber === undefined ? null : tableNumber,
         }),
       })
 
@@ -192,33 +192,33 @@ export default function TablesPage() {
       e.stopPropagation()
     }
     setRsvpForTableNumber(rsvp)
-    setTempTableNumber(rsvp.table_number?.toString() || "")
     setIsTableNumberModalOpen(true)
   }
 
-  const handleSaveTableNumber = async () => {
+  const handleSaveTableNumber = async (value: string) => {
     if (!rsvpForTableNumber?.id) return
 
-    const value = tempTableNumber.trim() === "" ? null : parseInt(tempTableNumber, 10)
-    const tableNumber = isNaN(value as number) ? null : value
+    const trimmed = value.trim()
+    const tableNumber = trimmed === "" ? null : trimmed.toUpperCase()
 
     await handleTableNumberChange(rsvpForTableNumber.id, tableNumber)
     setIsTableNumberModalOpen(false)
     setRsvpForTableNumber(null)
-    setTempTableNumber("")
   }
 
-  // Agrupar RSVPs por mesa
+  // Agrupar RSVPs por mesa (clave de agrupación = string de mesa)
   const rsvpsByTable = useMemo(() => {
-    const grouped: Record<number, RSVP[]> = {}
+    const grouped: Record<string, RSVP[]> = {}
     rsvps.forEach((rsvp) => {
-      if (rsvp.table_number !== null && rsvp.table_number !== undefined) {
-        const tableNum = Number(rsvp.table_number)
-        if (!grouped[tableNum]) {
-          grouped[tableNum] = []
-        }
-        grouped[tableNum].push(rsvp)
+      const rawTable = rsvp.table_number
+      const key = typeof rawTable === "string" ? rawTable.trim() : null
+      if (!key) {
+        return
       }
+      if (!grouped[key]) {
+        grouped[key] = []
+      }
+      grouped[key].push(rsvp)
     })
     return grouped
   }, [rsvps])
@@ -232,12 +232,39 @@ export default function TablesPage() {
     })
   }, [rsvps])
 
-  // Ordenar las mesas numéricamente
+  // Ordenar las mesas: primero numéricas (1,2,3...), luego alfabéticas (VIP, A, B...)
   const sortedTableNumbers = useMemo(() => {
-    return Object.keys(rsvpsByTable)
-      .map(Number)
-      .sort((a, b) => a - b)
+    const keys = Object.keys(rsvpsByTable)
+    const numericKeys: string[] = []
+    const nonNumericKeys: string[] = []
+
+    keys.forEach((key) => {
+      const num = Number(key)
+      if (!Number.isNaN(num)) {
+        numericKeys.push(key)
+      } else {
+        nonNumericKeys.push(key)
+      }
+    })
+
+    numericKeys.sort((a, b) => Number(a) - Number(b))
+    nonNumericKeys.sort((a, b) => a.localeCompare(b, "es"))
+
+    return [...numericKeys, ...nonNumericKeys]
   }, [rsvpsByTable])
+
+  const handleCloseTableNumberDialog = () => {
+    setIsTableNumberModalOpen(false)
+    setRsvpForTableNumber(null)
+  }
+
+  const handleTableDialogOpenChange = (open: boolean) => {
+    if (!open) {
+      handleCloseTableNumberDialog()
+    } else {
+      setIsTableNumberModalOpen(true)
+    }
+  }
 
   return (
     <div className="min-h-screen w-full min-w-0 max-w-full overflow-x-clip bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800 p-4 pt-16 md:pt-8 md:p-8">
@@ -723,59 +750,14 @@ export default function TablesPage() {
           </DialogContent>
         </Dialog>
 
-        {/* Modal para editar número de mesa */}
-        <Dialog open={isTableNumberModalOpen} onOpenChange={setIsTableNumberModalOpen}>
-          <DialogContent className="max-w-md">
-            <DialogHeader>
-              <DialogTitle>Asignar Mesa</DialogTitle>
-              <DialogDescription>
-                ¿En qué mesa se sienta <strong>{rsvpForTableNumber?.name}</strong>?
-              </DialogDescription>
-            </DialogHeader>
-            <div className="space-y-4 py-4">
-              <div className="space-y-2">
-                <Label htmlFor="table-number">Número de Mesa</Label>
-                <Input
-                  id="table-number"
-                  type="text"
-                  inputMode="numeric"
-                  pattern="[0-9]*"
-                  value={tempTableNumber}
-                  onChange={(e) => {
-                    const inputValue = e.target.value
-                    // Permitir solo números o string vacío
-                    if (inputValue === "" || /^\d+$/.test(inputValue)) {
-                      setTempTableNumber(inputValue)
-                    }
-                  }}
-                  onKeyDown={(e) => {
-                    if (e.key === "Enter") {
-                      handleSaveTableNumber()
-                    }
-                  }}
-                  placeholder="Ej: 11"
-                  className="text-center text-lg"
-                  autoFocus
-                />
-              </div>
-            </div>
-            <DialogFooter>
-              <Button
-                variant="outline"
-                onClick={() => {
-                  setIsTableNumberModalOpen(false)
-                  setRsvpForTableNumber(null)
-                  setTempTableNumber("")
-                }}
-              >
-                Cancelar
-              </Button>
-              <Button onClick={handleSaveTableNumber}>
-                Guardar
-              </Button>
-            </DialogFooter>
-          </DialogContent>
-        </Dialog>
+        <TableNumberDialog
+          open={isTableNumberModalOpen}
+          onOpenChange={handleTableDialogOpenChange}
+          rsvpName={rsvpForTableNumber?.name}
+          initialTableNumber={rsvpForTableNumber?.table_number?.toString() || ""}
+          onSave={handleSaveTableNumber}
+          tableNumbers={sortedTableNumbers}
+        />
       </div>
     </div>
   )

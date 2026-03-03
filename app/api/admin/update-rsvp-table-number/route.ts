@@ -15,7 +15,7 @@ export async function PUT(request: Request) {
 
     let payload: {
       rsvpId?: string
-      tableNumber?: number | null
+      tableNumber?: string | null
     }
 
     try {
@@ -36,10 +36,18 @@ export async function PUT(request: Request) {
       )
     }
 
+    // Normalizar el número de mesa (case-insensitive, guardando en mayúsculas)
+    const normalizedTableNumber =
+      typeof tableNumber === "string"
+        ? tableNumber.trim().toUpperCase()
+        : null
+
     // Actualizar el número de mesa del RSVP
     const { data: updatedData, error } = await supabaseAdmin
       .from(tableName)
-      .update({ table_number: tableNumber === null || tableNumber === undefined ? null : Number(tableNumber) })
+      .update({
+        table_number: normalizedTableNumber && normalizedTableNumber.length > 0 ? normalizedTableNumber : null,
+      })
       .eq("id", rsvpId)
       .select()
       .single()
