@@ -95,7 +95,7 @@ export default function BodaVirJere() {
 
   const copyAccountNumber = async () => {
     try {
-      await navigator.clipboard.writeText("1313033");
+      await navigator.clipboard.writeText("001895968-00004");
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
     } catch (err) {
@@ -304,9 +304,9 @@ export default function BodaVirJere() {
 
       </section>
 
-      <section className="bg-[rgba(229,231,235,1)] py-8 md:h-[300px] h-[200px]"
+      <section className="bg-[rgba(229,231,235,1)] py-8"
       >
-        <div className="max-w-5xl mx-auto px-6 text-center">
+        <div className="max-w-5xl mx-auto px-6 text-center pb-6">
           <div className="mb-8">
             <p className="text-[#9e1d2c] font-italianno text-3xl md:text-[55px] leading-relaxed text-center max-w-full sm:max-w-[80ch] mx-auto">
               Si estas pensando en hacernos un regalo
@@ -316,18 +316,21 @@ export default function BodaVirJere() {
           <div className="space-y-6 mb-2">
             <ul className="space-y-2 text-sm text-[#9e1d2c] md:text-lg">
               <li>
-                <strong>Titular:</strong> Jeremías Berro
+                <strong>Titular:</strong> Virginia Mazzoni
               </li>
               <li>
-                <strong>Banco:</strong> Prex
+                <strong>Banco:</strong> BROU
               </li>
+                <li>
+                  <strong>Tipo:</strong> Caja de ahorro pesos
+                </li>
               <li>
-                <strong>Cuenta:</strong>
+                <strong>Número:</strong>
                 <span
                   className="cursor-pointer hover:text-white transition-colors underline ml-1"
                   onClick={copyAccountNumber}
                 >
-                  1313033
+                  001895968-00004
                 </span>
 
                 <p className="ml-2 text-sm h-[30px]">
@@ -340,7 +343,7 @@ export default function BodaVirJere() {
         </div>
       </section>
 
-      <section className="w-full justify-around gap-6 px-6 pb-25 bg-[linear-gradient(180deg,rgba(229,231,235,1)_0%,rgba(229,231,235,1)_80%,rgba(89,96,71,1)_100%)] flex flex-col items-center">
+      {/* <section className="w-full justify-around gap-6 px-6 pb-25 bg-[linear-gradient(180deg,rgba(229,231,235,1)_0%,rgba(229,231,235,1)_80%,rgba(89,96,71,1)_100%)] flex flex-col items-center">
 
         <div className="relative z-10 max-w-2xl mx-auto text-center">
 
@@ -468,10 +471,10 @@ export default function BodaVirJere() {
             alt="Vir y Jere"
             className="w-full h-80 md:h-96 object-cover rounded-lg shadow-lg md:h-[700px] md:w-auto md:mt-20"
           />
-        </div> */}
+        </div> 
 
         </div>
-      </section>
+      </section> */}
 
       <section
         className="py-25 md:py-18 mt-[-2px] z-100"
@@ -511,7 +514,7 @@ export default function BodaVirJere() {
               </span>
             </a>
           </Button>
-          <p className="text-[#596047] font-sans text-sm mt-2">Vestimenta Formal</p>
+          <p className="text-[#596047] font-sans text-md mt-2">Vestimenta Formal</p>
         </div>
       </section>
 
