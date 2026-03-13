@@ -322,7 +322,7 @@ export default function BodaVirJere() {
                 <strong>Banco:</strong> BROU
               </li>
                 <li>
-                  <strong>Tipo:</strong> Caja de ahorro pesos
+                  <strong>Tipo:</strong> Caja de ahorro USD
                 </li>
               <li>
                 <strong>Número:</strong>
