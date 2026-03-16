@@ -200,6 +200,7 @@ export default function BodaVirJere() {
 
 
 
+
       <section
         className="pt-25 pb-4 md:py-60 md:pb-10"
         style={{
@@ -294,13 +295,7 @@ export default function BodaVirJere() {
         </div>
 
 
-        {/* <div className="order-2 flex justify-center px-5 items-center mt-10 md:hidden">
-          <img
-            src="/FotosVir&Jere/rsvp-couple.webp"
-            alt="Vir y Jere"
-            className="w-full h-80 md:h-96 object-cover rounded-lg shadow-lg md:h-[700px] md:w-auto md:mt-20"
-          />
-        </div> */}
+
 
       </section>
 
@@ -343,8 +338,24 @@ export default function BodaVirJere() {
         </div>
       </section>
 
-      {/* <section className="w-full justify-around gap-6 px-6 pb-25 bg-[linear-gradient(180deg,rgba(229,231,235,1)_0%,rgba(229,231,235,1)_80%,rgba(89,96,71,1)_100%)] flex flex-col items-center">
 
+       <section className="w-full justify-around gap-6 px-6 pb-25 bg-[linear-gradient(180deg,rgba(229,231,235,1)_0%,rgba(229,231,235,1)_80%,rgba(89,96,71,1)_100%)] flex flex-col items-center">
+
+
+       <div className="order-2 flex justify-center px-5 items-center mt-10 hidden md:block">
+          <img
+            src="/FotosVir&Jere/rsvp-couple.webp"
+            alt="Vir y Jere"
+            className="w-full h-80 md:h-96 object-cover rounded-lg shadow-lg md:h-[700px] md:w-auto md:mt-20"
+          />
+        </div> 
+        <div className="order-2 flex justify-center px-5 items-center mt-10 md:hidden">
+          <img
+            src="/FotosVir&Jere/rsvp-couple.webp"
+            alt="Vir y Jere"
+            className="w-full h-80 md:h-96 object-cover rounded-lg shadow-lg md:h-[700px] md:w-auto md:mt-20"
+          />
+        </div>
         <div className="relative z-10 max-w-2xl mx-auto text-center">
 
           <form
@@ -447,7 +458,7 @@ export default function BodaVirJere() {
 
             <Button
               type="submit"
-              disabled={isSubmitting || !guestName.trim()}
+              disabled={true}
               className="w-full bg-[#596047] hover:bg-[#596047] disabled:bg-[#596047] disabled:cursor-not-allowed disabled:text-white text-white font-semibold text-lg py-3 rounded-lg transition-colors"
             >
               {isSubmitting ? "Enviando..." : "Confirmar asistencia"}
@@ -465,16 +476,12 @@ export default function BodaVirJere() {
             )}
           </form>
 
-          {/* <div className="order-2 flex justify-center px-5 items-center mt-10 hidden md:block">
-          <img
-            src="/FotosVir&Jere/rsvp-couple.webp"
-            alt="Vir y Jere"
-            className="w-full h-80 md:h-96 object-cover rounded-lg shadow-lg md:h-[700px] md:w-auto md:mt-20"
-          />
-        </div> 
+         
 
         </div>
-      </section> */}
+      </section> 
+
+
 
       <section
         className="py-25 md:py-18 mt-[-2px] z-100"

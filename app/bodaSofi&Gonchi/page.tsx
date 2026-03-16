@@ -456,7 +456,7 @@ export default function BodaSofiGonchi() {
               <div className="flex flex-col sm:flex-row w-full gap-3">
                 <Button
                   type="submit"
-                  disabled={isSubmitting || !guestName.trim()}
+                  disabled={true}
                   className={`flex-1 flex items-center justify-center gap-2 pl-3 pr-4 py-3 rounded-[100px] font-light text-[#f9f7eb] text-xl text-center tracking-[0] leading-[normal] whitespace-nowrap h-[40px] transition-colors disabled:opacity-60 disabled:cursor-not-allowed ${
                     isSuccessState ? "bg-[#532C0A] hover:bg-[#532C0A]" : "bg-[#0c4256] hover:bg-[#0c4256]"
                   }`}
