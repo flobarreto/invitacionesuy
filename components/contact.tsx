@@ -90,7 +90,7 @@ export function Contact() {
                   </a>
 
                   <a
-                    href="mailto:hola@invitaciones.uy"
+                    href="mailto:hola@invitia.uy"
                     className="flex items-center gap-4 p-4 bg-card rounded-2xl border border-border hover:border-primary transition-colors group"
                   >
                     <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center group-hover:bg-primary/20 transition-colors">
@@ -98,12 +98,12 @@ export function Contact() {
                     </div>
                     <div>
                       <p className="font-medium">Email</p>
-                      <p className="text-sm text-muted-foreground">hola@invitaciones.uy</p>
+                      <p className="text-sm text-muted-foreground">hola@invitia.uy</p>
                     </div>
                   </a>
 
                   <a
-                    href="https://instagram.com/invitaciones.uy"
+                    href="https://instagram.com/invitia.uy"
                     className="flex items-center gap-4 p-4 bg-card rounded-2xl border border-border hover:border-primary transition-colors group"
                   >
                     <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center group-hover:bg-primary/20 transition-colors">
@@ -111,7 +111,7 @@ export function Contact() {
                     </div>
                     <div>
                       <p className="font-medium">Instagram</p>
-                      <p className="text-sm text-muted-foreground">@invitaciones.uy</p>
+                      <p className="text-sm text-muted-foreground">@invitia.uy</p>
                     </div>
                   </a>
                 </div>

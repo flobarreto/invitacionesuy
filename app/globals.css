@@ -40,7 +40,7 @@
 }
 
 @theme inline {
-  /* Color Palette - Invitaciones.uy */
+  /* Color Palette - invitia.uy */
   --color-deep-green: #0f3d4b;
   --color-mint-tech: #30e89b;
   --color-soft-white: #ffffff;
@@ -159,6 +159,14 @@
     font-family: var(--font-cormorant-garamond), serif;
     font-weight: 400;
     font-style: normal;
+  }
+
+  .font-bodoni {
+    font-family: var(--font-bodoni), serif;
+  }
+
+  .font-dancing {
+    font-family: var(--font-dancing), cursive;
   }
 }
 

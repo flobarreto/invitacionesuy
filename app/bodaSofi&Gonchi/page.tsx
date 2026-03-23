@@ -538,7 +538,7 @@ export default function BodaSofiGonchi() {
       <footer className="bg-[#0c4256] text-white py-5 md:py-10">
         <div className="max-w-6xl mx-auto px-">
           <div className="text-center mt-2">
-            <p className="text-sm">Invitaciones.uy - Diseño de páginas web para eventos.</p>
+            <p className="text-sm">Invitia.uy - Diseño de páginas web para eventos.</p>
             <Button
               variant="link"
               asChild

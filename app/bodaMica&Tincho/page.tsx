@@ -127,11 +127,11 @@ export default function BodaMicaTincho() {
       </section>
 
 
-      <section className="py-20 px-4 bg-[#827a71]/50">
+      <section className="py-20 px-4 bg-white">
         <div className="max-w-6xl mx-auto">
 
           <div className="grid md:grid-cols-2 gap-8">
-            <div className="bg-white rounded-lg p-8 shadow-lg hover:shadow-xl transition-shadow flex flex-col items-center text-center">
+            <div className="rounded-lg p-8 transition-shadow flex flex-col items-center text-center">
               <div className="w-16 h-16 bg-[#688268]/10 rounded-full flex items-center justify-center mb-2">
                 <Church className="w-8 h-8 text-[#688268]" />
               </div>
@@ -165,7 +165,7 @@ export default function BodaMicaTincho() {
               </div>
             </div>
 
-            <div className="bg-white rounded-lg p-8 shadow-lg hover:shadow-xl transition-shadow flex flex-col items-center text-center">
+            <div className="rounded-lg p-8 transition-shadow flex flex-col items-center text-center">
               <div className="w-16 h-16 bg-[#688268]/20 rounded-full flex items-center justify-center mb-2">
                 <PartyPopper className="w-8 h-8 text-[#688268]" />
               </div>
@@ -292,10 +292,10 @@ export default function BodaMicaTincho() {
         </div>
       </section>
 
-      <section className="bg-[#688268]/50 py-8 md:py-10">
+      <section className="bg-[#688268]/20 py-8 md:py-10">
         <div className="max-w-5xl mx-auto px-6 text-center items-center justify-center flex">
 
-          <div className="bg-white rounded-lg p-8 shadow-lg hover:shadow-xl transition-shadow flex flex-col items-center text-center pb-2 max-w-[400px]">
+          <div className=" rounded-lg p-8 transition-shadow flex flex-col items-center text-center pb-2 max-w-[400px]">
             <div className="w-16 h-16 bg-[#688268]/10 rounded-full flex items-center justify-center mb-6">
               <div className="inline-block text-white text-4xl">
                 <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" style={{ color: "#688268" }} className="lucide lucide-gift-icon lucide-gift"><rect x="3" y="8" width="18" height="4" rx="1" /><path d="M12 8v13" /><path d="M19 12v7a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2v-7" /><path d="M7.5 8a2.5 2.5 0 0 1 0-5A4.8 8 0 0 1 12 8a4.8 8 0 0 1 4.5-5 2.5 2.5 0 0 1 0 5" /></svg>
@@ -338,7 +338,7 @@ export default function BodaMicaTincho() {
 
       <section className="px-4 bg-[url('/FotosMartin&Mica/confirmarPresenciaMobile.png')] md:bg-[url('/FotosMartin&Mica/confirmarPresenciaDesktop.png')] bg-cover bg-top bg-no-repeat py-[150px] md:py-20"  >
         <div className="max-w-2xl mx-auto text-center">
-          <h2 className="text-4xl md:text-5xl font-bold text-[#827a71] mb-3 mt-6 text-balance">Confirmá tu presencia</h2>
+          <h2 className="text-4xl md:text-5xl font-bold text-[#827a71] mb-3 mt-12 mb:mt-6 text-balance">Confirmá tu presencia</h2>
           <p className="text-xl text-[#827a71]/70 mb-8 leading-relaxed">
             Nos vemos el 31 de enero!
           </p>
@@ -438,7 +438,7 @@ export default function BodaMicaTincho() {
 
             <Button
               type="submit"
-              disabled={isSubmitting || !guestName.trim()}
+              disabled={true}
               className="w-full bg-[#688268] hover:bg-[#827a71] disabled:bg-[#827a71]/30 disabled:cursor-not-allowed disabled:text-white/60 text-white font-semibold text-lg py-3 rounded-lg transition-colors"
             >
               {isSubmitting ? "Enviando..." : "Confirmar asistencia"}
@@ -464,7 +464,7 @@ export default function BodaMicaTincho() {
       <footer className="bg-[#827a71]/50 text-soft-white py-12 px-4 pb-15">
         <div className="max-w-4xl mx-auto text-center">
           <p className="text-xl md:text-2xl font-bold mb-2 text-[#827a71]">No tenes como ir?</p>
-          <p className=" text-[#827a71] text-md mb-3">
+          <p className=" text-[#827a71] text-md mb-3 mx-3">
           Hicimos un grupo de whatsapp para que puedan coordinar transporte
           </p>
           <Button
@@ -481,7 +481,7 @@ export default function BodaMicaTincho() {
       <footer className="bg-gray-200 py-5 md:py-10">
         <div className="max-w-6xl mx-auto px-">
           <div className="text-center text-gray-600 mt-2">
-            <p className="text-sm">Invitaciones.uy - Diseño de páginas web para eventos.</p>
+            <p className="text-sm">invitia.uy - Diseño de páginas web para eventos.</p>
             <Button
               variant="link"
               asChild

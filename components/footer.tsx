@@ -7,7 +7,7 @@ export function Footer() {
         <div className="grid md:grid-cols-4 gap-12 mb-12">
           {/* Brand */}
           <div className="md:col-span-2 space-y-4">
-            <h3 className="text-2xl font-bold">Invitaciones.uy</h3>
+            <h3 className="text-2xl font-bold">invitia.uy</h3>
             <p className="text-secondary-foreground/80 leading-relaxed max-w-md">
               Diseñamos invitaciones digitales con alma, donde la tecnología se une con lo artesanal.
             </p>
@@ -51,7 +51,7 @@ export function Footer() {
             <ul className="space-y-2 text-secondary-foreground/80">
               <li>Montevideo, Uruguay</li>
               <li>+598 99 123 456</li>
-              <li>hola@invitaciones.uy</li>
+              <li>hola@invitia.uy</li>
             </ul>
           </div>
         </div>
@@ -59,7 +59,7 @@ export function Footer() {
         {/* Bottom */}
         <div className="pt-8 border-t border-secondary-foreground/20 text-center">
           <p className="text-secondary-foreground/80 flex items-center justify-center gap-2 flex-wrap">
-            <span>Invitaciones.uy — Hecho con</span>
+            <span>invitia.uy — Hecho con</span>
             <Heart className="w-4 h-4 text-primary fill-primary" />
             <span>en Uruguay</span>
           </p>

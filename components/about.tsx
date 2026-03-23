@@ -31,7 +31,7 @@ export function About() {
           <div className="grid md:grid-cols-2 gap-12 items-center">
             <div className="space-y-6">
               <p className="text-lg leading-relaxed text-muted-foreground">
-                En <span className="font-semibold text-foreground">Invitaciones.uy</span> creemos que cada historia
+                En <span className="font-semibold text-foreground">invitia.uy</span> creemos que cada historia
                 merece su propio diseño. Creamos invitaciones digitales con alma, donde la tecnología se une con lo
                 artesanal.
               </p>
@@ -57,7 +57,7 @@ export function About() {
               <div className="aspect-square rounded-3xl overflow-hidden shadow-xl">
                 <img
                   src="/creative-team-designing-wedding-invitations-in-mod.jpg"
-                  alt="Equipo de Invitaciones.uy"
+                  alt="Equipo de invitia.uy"
                   className="w-full h-full object-cover"
                 />
               </div>

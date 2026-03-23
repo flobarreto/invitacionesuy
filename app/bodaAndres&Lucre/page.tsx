@@ -43,7 +43,7 @@ export default function BodaAndresLucre() {
   useEffect(() => {
     const update = () => {
       // 21 de marzo de 2026 a las 19:00 hora de Uruguay
-      setTimeLeft(getTimeLeftToUruguayDate("2026-03-21T19:00:00-03:00"));
+      setTimeLeft(getTimeLeftToUruguayDate("2026-06-21T19:00:00-03:00"));
     };
 
     update();
@@ -336,7 +336,7 @@ export default function BodaAndresLucre() {
 
             <Button
               type="submit"
-              disabled={isSubmitting || !guestName.trim()}
+              disabled={true}
               className="w-full bg-black hover:bg-black/90 disabled:bg-black/30 disabled:cursor-not-allowed disabled:text-black/60 text-[#fffaf4] font-semibold text-lg py-3 rounded-lg transition-colors"
             >
               {isSubmitting ? "Enviando..." : "Confirmar asistencia"}
@@ -495,7 +495,7 @@ export default function BodaAndresLucre() {
         }}
       >
         <div className="max-w-6xl mx-auto px-auto text-center">
-          <p className="text-lg">invitaciones.uy</p>
+          <p className="text-lg">invitia.uy</p>
           <p className="text-sm mt-2">Páginas web unicas para eventos</p>
           <p className="text-xs">Click para conocer más</p>
         </div>
