@@ -1,5 +1,12 @@
 import type React from "react"
-import { Montserrat, Italianno, Allura, Cormorant_Garamond as CormorantGaramond} from "next/font/google"
+import {
+  Montserrat,
+  Italianno,
+  Allura,
+  Cormorant_Garamond as CormorantGaramond,
+  Bodoni_Moda,
+  Dancing_Script,
+} from "next/font/google"
 import localFont from "next/font/local";
 import "./globals.css"
 
@@ -36,6 +43,18 @@ const cormorantGaramond = CormorantGaramond({
   display: "swap",
 })
 
+const bodoni = Bodoni_Moda({
+  subsets: ["latin"],
+  variable: "--font-bodoni",
+  display: "swap",
+})
+
+const dancing = Dancing_Script({
+  subsets: ["latin"],
+  variable: "--font-dancing",
+  display: "swap",
+})
+
 export const metadata = {
   title: "invitia.uy - Invitaciones digitales personalizadas",
   description: "Diseñamos invitaciones digitales a medida para eventos",
@@ -47,7 +66,10 @@ export default function RootLayout({
   children: React.ReactNode
 }) {
   return (
-    <html lang="es" className={`${montserrat.variable} ${italianno.variable} ${umekoPlum.variable} ${cormorantGaramond.variable} ${allura.variable} antialiased`}>
+    <html
+      lang="es"
+      className={`${montserrat.variable} ${italianno.variable} ${umekoPlum.variable} ${cormorantGaramond.variable} ${allura.variable} ${bodoni.variable} ${dancing.variable} antialiased`}
+    >
       <head>
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
