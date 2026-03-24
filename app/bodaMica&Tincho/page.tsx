@@ -303,7 +303,7 @@ export default function BodaMicaTincho() {
             </div>
             <ul className="space-y-2 text-md text-[#688268]">
               <li>
-                <strong>Titular de la cuenta:</strong> Micaela Botta
+                <strong>Titular de la cuenta:</strong> Micaela Rodriguez
               </li>
               <li>
                 <strong>Banco:</strong> BROU
@@ -312,19 +312,19 @@ export default function BodaMicaTincho() {
                 <strong>Cuenta Dólares:</strong>
                 <span
                   className="cursor-pointer hover:text-[#e9ded0] transition-colors underline ml-1"
-                  onClick={() => copyAccountNumber("001405985-00005")}
+                  onClick={() => copyAccountNumber("1234567")}
                 >
-                  001405985-00005
+                  1234567
                 </span>
               </li>
               <li>
                 <strong>Cuenta Pesos:</strong>  <span
                   className="cursor-pointer hover:text-[#e9ded0] transition-colors underline ml-1"
-                  onClick={() => copyAccountNumber("001405985-00004")}
+                  onClick={() => copyAccountNumber("9876543")}
                 >
 
 
-                  001405985-00004
+                  9876543
                 </span>
               </li>
               <p className="ml-2 text-sm h-[30px]">

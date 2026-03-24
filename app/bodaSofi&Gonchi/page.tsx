@@ -45,9 +45,9 @@ const eventSections = [
     iconHeight: "h-[100px]",
     title: "Regalos",
     giftInformation: {
-      name: "Sofia Symonds",
+      name: "Sofia Rodriguez",
       bank: "Itau",
-      accountNumber: "4203797",
+      accountNumber: "12345",
       accountType: "Caja de ahorro USD"
     }
   },
