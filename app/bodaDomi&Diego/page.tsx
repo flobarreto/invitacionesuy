@@ -158,34 +158,35 @@ export default function BodaDomiDiego() {
         <Toaster position="top-center" />
         <section className="relative flex min-h-screen flex-col items-center justify-center bg-[url('/bodaDomi&Diego/fondo.png')] bg-cover bg-center bg-no-repeat px-5 pt-[60px] text-center md:pt-[0px]">
           <div className="mb-1 mb-6 mt-[-100px] md:mt-[0px]">
-            <span className="block text-[clamp(1.4rem,4.2vw,2.15rem)] italic tracking-[0.05em] text-[#4a4540] [direction:rtl]">
+            <span className="block text-sm italic tracking-[0.05em] text-[#4a4540] [direction:rtl]">
               מצאתי את שאהבה נפשי
             </span>
-            <span className="mt-2 block text-[clamp(1.05rem,2.8vw,1.35rem)] italic text-[#4a4540]">
+            <span className="mt-2 block text-sm italic text-[#4a4540]">
               Encontré al que ama mi alma
             </span>
           </div>
           <div className="my-[18px] h-px w-[60px]" />
           <div className="mb-2 mt-12 flex flex-col items-center leading-[0.88] md:flex-row md:items-baseline md:justify-center md:gap-6">
             <span
-              className="block text-[clamp(5rem,18vw,14rem)] font-bold tracking-[-0.02em] md:text-8xl"
+              className="block text-[clamp(5rem,18vw,14rem) font-bold uppercase tracking-[-0.02em] md:text-8xl"
               style={{ fontFamily: "var(--font-bodoni, serif)" }}
             >
-              DOMI
+              Domi
             </span>
             <span
-              className="my-1 mb-3 mt-[-20px] block text-6xl md:my-0 md:mb-0 md:mt-0 md:mx-[-10px] md:text-[100px]"
-              style={{ fontFamily: "var(--font-dancing, cursive)" }}
+              className="my-1 mb-3block text-6xl md:my-0 md:mb-0 md:mt-0 md:mx-[-10px] md:text-[100px]"
+              style={{ fontFamily: "var(--font-bodoni, cursive)" }}
             >
-              y
+              &
             </span>
             <span
-              className="block text-[clamp(5rem,18vw,14rem)] font-bold tracking-[-0.02em] md:text-8xl"
+              className="block text-[clamp(5rem,18vw,14rem)] uppercase font-bold tracking-[-0.02em] md:text-8xl"
               style={{ fontFamily: "var(--font-bodoni, serif)" }}
             >
-              DIEGO
+              Diego
             </span>
           </div>
+          {/* //viejo 
           <div className="flex h-[200px] w-full items-center justify-center md:mx-auto md:mt-[120px]">
             <Image
               src="/bodaDomi&Diego/illustration.png"
@@ -197,6 +198,21 @@ export default function BodaDomiDiego() {
           </div>
           <div className="mt-8 md:mt-16">
             <div className="text-[#4a4540] text-[clamp(1.8rem,5vw,3rem)] font-light font-bodoni tracking-[0.1em] mt-[-40px] md:mt-[-100px] md:text-4xl">
+              30<span className="px-2 text-[#c8c0b4]">|</span>05
+              <span className="px-2 text-[#c8c0b4]">|</span>26
+            </div>
+          </div> */}
+          <div className="flex h-[200px] w-full items-center justify-center md:mx-auto md:mt-[120px]">
+            <Image
+              src="/bodaDomi&Diego/illustration2.png"
+              alt="Ilustración"
+              className="mt-24 h-full w-full object-cover md:mt-0 md:h-[450px] md:w-[500px] md:object-contain"
+              width={500}
+              height={200}
+            />
+          </div>
+          <div className="mt-8 md:mt-16">
+            <div className="text-[#4a4540] text-[clamp(1.8rem,5vw,3rem)] font-light font-bodoni tracking-[0.1em] mt-[-10px] md:mt-[-50px] md:text-4xl">
               30<span className="px-2 text-[#c8c0b4]">|</span>05
               <span className="px-2 text-[#c8c0b4]">|</span>26
             </div>
@@ -264,7 +280,7 @@ export default function BodaDomiDiego() {
                 className="text-[clamp(1.3rem,3vw,1.8rem)] leading-[1.3] md:text-[clamp(1.75rem,2.2vw,2.35rem)]"
                 style={{ fontFamily: "var(--font-bodoni, serif)" }}
               >
-                Regency park hotel, Jacksonville
+                Regency Park Hotel, Jacksonville
               </div>
               <a
                 href="https://maps.app.goo.gl/1Jg77CGJmnvijbK7A"
@@ -376,7 +392,7 @@ export default function BodaDomiDiego() {
           />
         </div>
           <h2
-            className="mb-12 text-[clamp(2.5rem,7vw,4rem)] leading-none uppercase text-white"
+            className="mb-12 text-[clamp(2.5rem,7vw,4rem)] leading-none text-white"
             style={{ fontFamily: "var(--font-bodoni, serif)" }}
           >
             Regalos
