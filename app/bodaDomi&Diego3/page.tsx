@@ -180,15 +180,18 @@ export default function BodaDomiDiego3() {
 
         {/* DETALLES */}
         <div className="mt-10"></div>
-        <img src="/bodaDomi&Diego/ceremonia34.png" alt="Rings" className="w-auto h-[150px] mx-auto" />
+        {/* <img src="/bodaDomi&Diego/ceremonia34.png" alt="Rings" className="w-auto h-[150px] mx-auto" /> */}
         <section
           id="detalles"
           className=" px-6 pb-5 text-centerx pt-10 bg-[#667b5f] text-[#f1e7db]"
         >
           <div className="mx-auto max-w-[700px]">
-            <h2 className="shadows-into-light-regular mb-6 text-[clamp(2.5rem,7vw,4rem)] leading-none text-center">
+            {/* <h2 className="italiana-regular tracking-[0.4em] uppercase mb-6 text-[clamp(2.5rem,7vw,4rem)] leading-none text-center">
               Ceremonia y Fiesta
-            </h2>
+            </h2> */}
+            <span className="mb-4 block text-[1.5rem] uppercase tracking-[0.4em] italiana-regular !font-bold text-center">
+              Ceremonia y Fiesta
+            </span>
 
             <div className="mb-12 grid grid-cols-1 text-center md:grid-cols-2">
               <div className="p-6 md:border-r md:border-[#c8c0b4]">
@@ -282,7 +285,7 @@ export default function BodaDomiDiego3() {
             </span>
             <div className="flex flex-wrap justify-center gap-[clamp(16px,4vw,48px)]">
               <div className="flex flex-col items-center">
-                <span className="shadows-into-light-regular text-[clamp(3rem,10vw,6rem)] md:text-[clamp(1.5rem,5vw,3rem)] font-bold leading-none text-[#667b5f]">
+                <span className="italiana-regular text-[clamp(3rem,10vw,6rem)] md:text-[clamp(1.5rem,5vw,3rem)] font-bold leading-none text-[#667b5f]">
                   {timeLeft.days}
                 </span>
                 <span className="mt-2 text-[0.65rem] uppercase tracking-[0.35em] text-[#667b5f]">
@@ -295,7 +298,7 @@ export default function BodaDomiDiego3() {
               </span>
 
               <div className="flex flex-col items-center">
-                <span className="shadows-into-light-regular text-[clamp(3rem,10vw,6rem)] md:text-[clamp(1.5rem,5vw,3rem)] font-bold leading-none text-[#667b5f]">
+                <span className="italiana-regular text-[clamp(3rem,10vw,6rem)] md:text-[clamp(1.5rem,5vw,3rem)] font-bold leading-none text-[#667b5f]">
                   {timeLeft.hours}
                 </span>
                 <span className="mt-2 text-[0.65rem] uppercase tracking-[0.35em] text-[#667b5f]">
@@ -308,7 +311,7 @@ export default function BodaDomiDiego3() {
               </span>
 
               <div className="flex flex-col items-center">
-                <span className="shadows-into-light-regular text-[clamp(3rem,10vw,6rem)] md:text-[clamp(1.5rem,5vw,3rem)] font-bold leading-none text-[#667b5f]">
+                <span className="italiana-regular text-[clamp(3rem,10vw,6rem)] md:text-[clamp(1.5rem,5vw,3rem)] font-bold leading-none text-[#667b5f]">
                   {timeLeft.minutes}
                 </span>
                 <span className="mt-2 text-[0.65rem] uppercase tracking-[0.35em] text-[#667b5f]">
@@ -354,11 +357,14 @@ export default function BodaDomiDiego3() {
         </section>
 
         {/* ASISTENCIA / RSVP */}
-        <section id="asistencia" className=" px-6 py-20 text-center bg-[url('/bodaDomi&Diego/confirmafondo4.png')] bg-cover bg-center bg-no-repeat">
+        <section id="asistencia" className=" px-6 py-20 text-center ">
           <div className=" max-w-[700px] bg-[#667b5f] rounded-lg m-5 p-5">
-            <h2 className="shadows-into-light-regular mb-4 text-[clamp(2.5rem,7vw,4rem)] leading-none text-[#f1e7db]">
+            {/* <h2 className="shadows-into-light-regular mb-4 text-[clamp(2.5rem,7vw,4rem)] leading-none text-[#f1e7db]">
               Confirmá tu presencia
-            </h2>
+            </h2> */}
+             <span className="mb-4 block text-[1.5rem] uppercase tracking-[0.4em] italiana-regular !font-bold text-center text-[#f1e7db]">
+              Confirmá tu presencia
+            </span>
             <p className="mb-10 text-sm text-[#f1e7db]">
               * antes del 15 de mayo
             </p>
@@ -507,10 +513,10 @@ export default function BodaDomiDiego3() {
 
         <footer className="py-5 md:py-10">
           <div className=" px-6 py-5 pb-0 text-center">
-            <div className="italiana-regular mb-4 text-[clamp(2rem,6vw,3.5rem)] uppercase text-[#172e19]">
+            <div className="italiana-regular mb-4 text-[clamp(2rem,6vw,3.5rem)] uppercase text-[#3c4439]">
               Domi y Diego
             </div>
-            <p className="text-[0.75rem] uppercase tracking-[0.3em] text-[#172e19]">
+            <p className="text-[0.75rem] uppercase tracking-[0.3em] text-[#3c4439]">
               30 · 05 · 2026 <br />
               Montevideo, Uruguay
             </p>
@@ -522,7 +528,7 @@ export default function BodaDomiDiego3() {
             className="h-full w-full object-cover object-center"
           />
         </div>
-          <div className="max-w-6xl mx-auto text-[#172e19]">
+          <div className="max-w-6xl mx-auto text-[#3c4439]">
             <div className="text-center mt-2">
               <p className="text-xs">
                 Hecho especialmente para Diego y Domi por Invitia.uy
@@ -530,7 +536,7 @@ export default function BodaDomiDiego3() {
               <Button
                 variant="link"
                 asChild
-                className="text-xs underline underline-offset-2 p-0 h-auto text-[#172e19]"
+                className="text-xs underline underline-offset-2 p-0 h-auto text-[#3c4439]"
               >
                 <Link href="/">Conocé más aquí</Link>
               </Button>
