@@ -144,7 +144,7 @@ export default function BodaDomiDiego() {
   };
 
   return (
-    <div className="min-h-screen overflow-x-hidden bg-[#f5f3ef] text-[#1a1816]">
+    <div className="min-h-screen overflow-x-hidden bg-[#f5f3ef] text-[#1a1816] hidden">
       {/* textura/grain opcional */}
       <div
         className="pointer-events-none fixed inset-0 z-0 opacity-[0.04]"
