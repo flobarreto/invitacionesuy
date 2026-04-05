@@ -513,9 +513,12 @@ export default function BodaDomiDiego3() {
 
         <footer className="py-5 md:py-10">
           <div className=" px-6 py-5 pb-0 text-center">
-            <div className="italiana-regular mb-4 text-[clamp(2rem,6vw,3.5rem)] uppercase text-[#3c4439]">
+            {/* <div className="italiana-regular mb-4 text-[clamp(2rem,6vw,3.5rem)] uppercase text-[#3c4439]">
               Domi y Diego
-            </div>
+            </div> */}
+            <span className="mb-4 block text-[1.5rem] uppercase tracking-[0.4em] italiana-regular !font-bold text-center text-[#3c4439]">
+              Domi y Diego
+            </span>
             <p className="text-[0.75rem] uppercase tracking-[0.3em] text-[#3c4439]">
               30 · 05 · 2026 <br />
               Montevideo, Uruguay
