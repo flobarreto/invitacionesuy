@@ -204,7 +204,7 @@ export default function BodaDomiDiego() {
           </div> */}
           <div className="flex h-[200px] w-full items-center justify-center md:mx-auto md:mt-[120px]">
             <Image
-              src="/bodaDomi&Diego/illustration2.png"
+              src="/bodaDomi&Diego/illustration.png"
               alt="Ilustración"
               className="mt-24 h-full w-full object-cover md:mt-0 md:h-[450px] md:w-[500px] md:object-contain"
               width={500}
