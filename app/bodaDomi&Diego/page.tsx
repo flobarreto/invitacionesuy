@@ -147,35 +147,80 @@ export default function BodaDomiDiego() {
     <div className="min-h-screen overflow-x-hidden bg-[#667b5f] md:hidden hanken-grotesk-regular">
       <main className="relative z-10">
         <Toaster position="top-center" />
-        <section className=" border-[20px] border-solid border-[#f1e7db] shadow-[inset_0_0_0_2px_#667b5f] text-[#667b5f] bg-[#f1e7db] relative flex min-h-screen flex-col items-center px-5 pt-[60px] text-center md:pt-[0px]">
-          <div className="flex flex-col items-end justify-end w-full mr-20 text-[20px] text-[#89582b]">ב״ה
-          <span className="block text-sm italic [direction:rtl]">
+        <section className=" text-[#667b5f] bg-[#f1e7db] relative flex min-h-screen flex-col items-center px-5 pt-[60px] text-center md:pt-[0px]">
+        <svg
+          className="pointer-events-none absolute inset-0 h-full w-full text-[#667b5f]/15"
+          viewBox="0 0 300 400"
+          fill="none"
+          xmlns="http://www.w3.org/2000/svg"
+          preserveAspectRatio="none"
+          aria-hidden
+        >
+          <path
+            d="
+      M 24 28
+
+      C 38 14, 58 14, 74 24
+      C 90 34, 110 34, 126 24
+      C 142 14, 158 14, 174 24
+      C 190 34, 210 34, 226 24
+      C 242 14, 262 14, 276 28
+
+      C 288 42, 288 60, 278 76
+      C 268 92, 268 110, 278 126
+      C 288 142, 288 160, 278 176
+      C 268 192, 268 210, 278 226
+      C 288 242, 288 260, 278 276
+      C 268 292, 268 310, 278 326
+      C 288 342, 288 360, 276 372
+
+      C 262 386, 242 386, 226 376
+      C 210 366, 190 366, 174 376
+      C 158 386, 142 386, 126 376
+      C 110 366, 90 366, 74 376
+      C 58 386, 38 386, 24 372
+
+      C 12 360, 12 342, 22 326
+      C 32 310, 32 292, 22 276
+      C 12 260, 12 242, 22 226
+      C 32 210, 32 192, 22 176
+      C 12 160, 12 142, 22 126
+      C 32 110, 32 92, 22 76
+      C 12 60, 12 42, 24 28
+    "
+            stroke="#667b5f"
+            strokeWidth="1.4"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            vectorEffect="non-scaling-stroke"
+          />
+        </svg>
+
+        <div className="flex flex-col items-end justify-end w-full mr-20 mt-10 text-md text-[#89582b]">ב״ה
+          <span className="block text-md italic [direction:rtl]">
               מצאתי את שאהבה נפשי
             </span>
-            <span className="mt-2 block text-xs italic">
+            <span className="block text-md italic">
               Encontré al que ama mi alma
             </span>
           </div>
-       
-          <div className="mb-2 mt-30 flex flex-col items-center my-auto leading-[0.88] md:flex-row md:items-baseline md:justify-center md:gap-6">
+          <div className="relative z-10 mb-2 mt-30 flex flex-col items-center my-auto leading-[0.88] md:mt-12 md:flex-row md:flex-wrap md:items-baseline md:justify-center md:gap-6">
             <span className="instrument-serif-regular block text-[clamp(5rem,18vw,14rem)] uppercase font-bold md:text-8xl">
               Domi
             </span>
             <span className="font-dancing my-1 block text-6xl md:my-0 md:mb-0 md:mt-0 md:mx-[-10px] md:text-[100px]">
               &
             </span>
-            <span className=" instrument-serif-regular block text-[clamp(5rem,18vw,14rem)] uppercase font-bold md:text-8xl">
+            <span className="instrument-serif-regular block text-[clamp(5rem,18vw,14rem)] uppercase font-bold md:text-8xl">
               Diego
             </span>
-            <div className="mt-8 md:mt-16 text-[#89582b]">
-            <div className="text-[clamp(1.8rem,5vw,3rem)] font-light instrument-serif-regularmt-[-10px] md:mt-[-50px] md:text-4xl">
+            <div className="mt-8 w-full text-[#89582b] md:mt-16 md:basis-full">
+            <div className="instrument-serif-regular text-[clamp(1.8rem,5vw,3rem)] font-light mt-[-10px] md:mt-[-50px] md:text-4xl">
               30<span className="px-2 ">|</span>05
               <span className="px-2 ">|</span>26
             </div>
           </div>
           </div>
-        
-
           {/* <img src="/bodaDomi&Diego/hero33.png" alt="Fondo" className="w-auto h-[250px] mb-10 mt-auto" /> */}
         </section>
 
@@ -360,7 +405,7 @@ export default function BodaDomiDiego() {
             {/* <h2 className="instrument-serif-regular mb-4 text-[clamp(2.5rem,7vw,4rem)] leading-none text-[#f1e7db]">
               Confirmá tu presencia
             </h2> */}
-             <span className="mb-4 block text-[2.5rem] instrument-serif-regular text-center text-[#f1e7db]">
+             <span className="leading-none block text-[2.5rem] instrument-serif-regular text-center text-[#f1e7db]">
               Confirmá tu presencia
             </span>
             <p className="mb-10 text-sm text-[#f1e7db]">
