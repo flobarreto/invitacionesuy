@@ -144,102 +144,89 @@ export default function BodaDomiDiego2() {
   };
 
   return (
-    <div className="min-h-screen overflow-x-hidden bg-[#f5f3ef] text-[#1a1816]">
+    <div className="min-h-screen overflow-x-hidden bg-[#000000] md:hidden hanken-grotesk-regular">
       <main className="relative z-10">
         <Toaster position="top-center" />
-        <section className="relative flex min-h-screen flex-col items-center justify-center bg-[url('/bodaDomi&Diego/hero.jpg')] bg-cover bg-center bg-no-repeat px-5 pt-[60px] text-center md:pt-[0px]">
-          <div className="mb-1 mb-6 text-[#f5f3ef]">
-            <span className="block text-md italic tracking-[0.05em] [direction:rtl]">
+        <section className=" border-[20px] border-solid border-[#ffffff] shadow-[inset_0_0_0_2px_#000000] text-[#000000] bg-[#ffffff] relative flex min-h-screen flex-col items-center px-5 pt-[60px] text-center md:pt-[0px]">
+          <div className="flex flex-col items-end justify-end w-full mr-20 text-[20px] text-[#000000]">ב״ה
+          <span className="block text-sm italic [direction:rtl]">
               מצאתי את שאהבה נפשי
             </span>
-            <span className="mt-2 block text-sm italic">
+            <span className="mt-2 block text-xs italic">
               Encontré al que ama mi alma
             </span>
           </div>
-          <div className="mb-2 mt-12 flex flex-col items-center leading-[0.88] md:flex-row md:items-baseline md:justify-center md:gap-6">
-            <span
-              className="block text-[clamp(5rem,18vw,14rem)] uppercase font-bold tracking-[-0.02em] md:text-8xl text-[#f5f3ef]"
-              style={{ fontFamily: "var(--font-bodoni, serif)" }}
-            >
+       
+          <div className="mb-2 mt-30 flex flex-col items-center my-auto leading-[0.88] md:flex-row md:items-baseline md:justify-center md:gap-6">
+            <span className="instrument-serif-regular block text-[clamp(5rem,18vw,14rem)] uppercase font-bold md:text-8xl">
               Domi
             </span>
-            <span
-              className="my-1 mb-3block text-6xl md:my-0 md:mb-0 md:mt-0 md:mx-[-10px] md:text-[100px] text-[#f5f3ef]"
-              style={{ fontFamily: "var(--font-bodoni, cursive)" }}
-            >
+            <span className="font-dancing my-1 block text-6xl md:my-0 md:mb-0 md:mt-0 md:mx-[-10px] md:text-[100px]">
               &
             </span>
-            <span
-              className="block text-[clamp(5rem,18vw,14rem)] uppercase font-bold tracking-[-0.02em] md:text-8xl text-[#f5f3ef]"
-              style={{ fontFamily: "var(--font-bodoni, serif)" }}
-            >
+            <span className=" instrument-serif-regular block text-[clamp(5rem,18vw,14rem)] uppercase font-bold md:text-8xl">
               Diego
             </span>
-          </div>
-          <div className="mt-8 md:mt-16">
-            <div className="text-[#f5f3ef] text-[clamp(1.8rem,5vw,3rem)] font-light font-bodoni tracking-[0.1em] mt-[-10px] md:mt-[-50px] md:text-4xl">
+            <div className="mt-8 md:mt-16 text-[#000000]">
+            <div className="text-[clamp(1.8rem,5vw,3rem)] font-light instrument-serif-regularmt-[-10px] md:mt-[-50px] md:text-4xl">
               30<span className="px-2 ">|</span>05
               <span className="px-2 ">|</span>26
             </div>
           </div>
-          <div className="my-[18px] h-px w-[60px]" />
+          </div>
+        
+
+          {/* <img src="/bodaDomi&Diego/hero33.png" alt="Fondo" className="w-auto h-[250px] mb-10 mt-auto" /> */}
         </section>
 
         {/* DETALLES */}
-        <section id="detalles" className=" px-6 pb-20 text-center mt-20">
+        <div className="mt-10"></div>
+        {/* <img src="/bodaDomi&Diego/ceremonia34.png" alt="Rings" className="w-auto h-[150px] mx-auto" /> */}
+        <section
+          id="detalles"
+          className=" px-6 pb-5 text-center pt-10 bg-[#000000] text-[#ffffff]"
+        >
           <div className="mx-auto max-w-[700px]">
-            <h2
-              className="mb-12 text-[clamp(2.5rem,7vw,4rem)] leading-none"
-              style={{ fontFamily: "var(--font-bodoni, serif)" }}
-            >
-              Ceremonia
-            </h2>
+            {/* <h2 className="instrument-serif-regularuppercase mb-6 text-[clamp(2.5rem,7vw,4rem)] leading-none text-center">
+              Ceremonia y Fiesta
+            </h2> */}
+            <span className="mb-4 block text-[2.5rem] instrument-serif-regular text-center">
+              Ceremonia y Fiesta
+            </span>
 
             <div className="mb-12 grid grid-cols-1 text-center md:grid-cols-2">
               <div className="p-6 md:border-r md:border-[#c8c0b4]">
-                <span className="mb-3 block text-[0.65rem] uppercase tracking-[0.35em] text-black md:text-[0.8rem]">
+                <span className="mb-3 block text-[0.95rem] font-bold uppercase text-[#ffffff] md:text-[0.8rem]">
                   Fecha
                 </span>
-                <div
-                  className="text-[clamp(1.3rem,3vw,1.8rem)] leading-[1.3] md:text-[clamp(1.75rem,2.2vw,2.35rem)]"
-                  style={{ fontFamily: "var(--font-bodoni, serif)" }}
-                >
-                  Sábado
+                <div className="instrument-serif-regular text-[clamp(1.6rem,4vw,2.1rem)] leading-[1.3] md:text-[clamp(1.75rem,2.2vw,2.35rem)]">
+                  Sábado 30 de Mayo, 2026
                   <br />
-                  30 de Mayo
-                </div>
-                <div className="mt-1 text-[0.85rem] text-[#4a4540] md:text-lg">
-                  2026
+                  
                 </div>
               </div>
 
-              <div className="mx-auto h-px w-[60px] bg-[#c8c0b4] md:hidden" />
+              <div className="mx-auto h-px w-[60px] bg-[#ffffff] md:hidden" />
 
               <div className="p-6">
-                <span className="mb-3 block text-[0.65rem] uppercase tracking-[0.35em] text-black md:text-[0.8rem]">
+                <span className="mb-3 block font-bold text-[0.95rem] uppercase text-[#ffffff] md:text-[0.8rem]">
                   Hora
                 </span>
-                <div
-                  className="text-[clamp(1.3rem,3vw,1.8rem)] leading-[1.3] md:text-[clamp(1.75rem,2.2vw,2.35rem)]"
-                  style={{ fontFamily: "var(--font-bodoni, serif)" }}
-                >
+                <div className="instrument-serif-regular text-[clamp(1.6rem,4vw,2.1rem)] leading-[1.3] md:text-[clamp(1.75rem,2.2vw,2.35rem)]">
                   20:00 hs
                 </div>
-                <div className="mt-1 text-[0.85rem] text-[#4a4540] md:text-lg">
+                <div className="mt-1 text-[1.15rem] text-[#ffffff] md:text-lg">
                   Hasta las 4:00 am
                 </div>
               </div>
 
-              <div className="mx-auto h-px w-[60px] bg-[#c8c0b4] md:hidden" />
+              <div className="mx-auto h-px w-[60px] bg-[#ffffff] md:hidden" />
 
               <div className="p-6 md:col-span-2">
-                <span className="mb-3 block text-[0.65rem] uppercase tracking-[0.35em] text-black md:text-[0.8rem]">
+                <span className="mb-3 block font-bold text-[0.95rem] uppercase text-[#ffffff] md:text-[0.8rem]">
                   Lugar
                 </span>
-                <div
-                  className="text-[clamp(1.3rem,3vw,1.8rem)] leading-[1.3] md:text-[clamp(1.75rem,2.2vw,2.35rem)]"
-                  style={{ fontFamily: "var(--font-bodoni, serif)" }}
-                >
+                <div className="instrument-serif-regular text-[clamp(1.6rem,4vw,2.1rem)] leading-[1.3] md:text-[clamp(1.75rem,2.2vw,2.35rem)]">
                   Regency Park Hotel, Jacksonville
                 </div>
                 <a
@@ -250,7 +237,7 @@ export default function BodaDomiDiego2() {
                       ? "noopener noreferrer"
                       : undefined
                   }
-                  className="mt-1 block text-[0.85rem] text-[#4a4540] underline underline-offset-2 transition hover:text-[#1a1816] hover:underline md:text-lg border-none outline-none"
+                  className="mt-1 block text-[0.85rem] text-[#ffffff] underline underline-offset-2 transition hover:text-[#f5f3ef] hover:underline md:text-lg border-none outline-none"
                 >
                   Ruta 8 KM 17, Montevideo, Uruguay
                 </a>
@@ -266,7 +253,7 @@ export default function BodaDomiDiego2() {
                     ? "noopener noreferrer"
                     : undefined
                 }
-                className="inline-block border border-[#1a1816] bg-transparent px-9 py-3.5 text-[0.9rem] uppercase transition hover:bg-[#1a1816] hover:text-[#f5f3ef]"
+                className="inline-block instrument-serif-regular border rounded-full  bg-transparent px-9 py-3.5 text-[1.5rem] uppercase transition hover:bg-[#f5f3ef] hover:text-[#1a1816]"
               >
                 Cómo ir?
               </a>
@@ -279,138 +266,113 @@ export default function BodaDomiDiego2() {
                     ? "noopener noreferrer"
                     : undefined
                 }
-                className="inline-block border border-[#1a1816] bg-transparent px-9 py-3.5 text-[0.9rem] uppercase transition hover:bg-[#1a1816] hover:text-[#f5f3ef]"
+                className="inline-block border rounded-full instrument-serif-regular bg-transparent px-9 py-3.5 text-[1.5rem] uppercase transition hover:bg-[#f5f3ef] hover:text-[#1a1816]"
               >
                 Agendar
               </a>
             </div>
           </div>
         </section>
+        <img src="/bodaDomi&Diego/ceremoniaabajo32.png" alt="Rings" className="w-auto h-[150px] mx-auto mb-20 mt-10" />
 
         {/* COUNTDOWN */}
-        <section className="bg-[#101015] px-6 py-20 pt-10 md:pt-20 text-center text-[#f5f3ef] bg-[url('/bodaDomi&Diego/calabn.png')] bg-cover bg-center bg-no-repeat bg-position-[50%_70px]">
-          <div className="h-[300px]">
-            <span className="mb-4 block text-[0.7rem] uppercase tracking-[0.4em] text-[#c8c0b4]">
+        <section className="bg-[#101015] px-6 py-20 text-center bg-[#ffffff]">
+          <div className="">
+            <span className="mb-4 block text-[2.5rem] text-[#000000] instrument-serif-regular">
               Faltan
             </span>
             <div className="flex flex-wrap justify-center gap-[clamp(16px,4vw,48px)]">
               <div className="flex flex-col items-center">
-                <span
-                  className="text-[clamp(3rem,10vw,6rem)] md:text-[clamp(1.5rem,5vw,3rem)] font-bold leading-none"
-                  style={{ fontFamily: "var(--font-bodoni, serif)" }}
-                >
+                <span className="instrument-serif-regular text-[clamp(3rem,10vw,6rem)] md:text-[clamp(1.5rem,5vw,3rem)] font-bold leading-none text-[#000000]">
                   {timeLeft.days}
                 </span>
-                <span className="mt-2 text-[0.65rem] uppercase tracking-[0.35em] text-[#c8c0b4]">
+                <span className="mt-2 text-[0.65rem] uppercase text-[#000000]">
                   Días
                 </span>
               </div>
 
-              <span
-                className="self-start pt-0.5 text-[clamp(3rem,10vw,6rem)] md:text-[clamp(1.5rem,5vw,3rem)] leading-none"
-                style={{ fontFamily: "var(--font-bodoni, serif)" }}
-              >
+              <span className="text-[#000000] instrument-serif-regular self-start pt-0.5 text-[clamp(3rem,10vw,6rem)] md:text-[clamp(1.5rem,5vw,3rem)] leading-none">
                 :
               </span>
 
               <div className="flex flex-col items-center">
-                <span
-                  className="text-[clamp(3rem,10vw,6rem)] md:text-[clamp(1.5rem,5vw,3rem)] font-bold leading-none"
-                  style={{ fontFamily: "var(--font-bodoni, serif)" }}
-                >
+                <span className="instrument-serif-regular text-[clamp(3rem,10vw,6rem)] md:text-[clamp(1.5rem,5vw,3rem)] font-bold leading-none text-[#000000]">
                   {timeLeft.hours}
                 </span>
-                <span className="mt-2 text-[0.65rem] uppercase tracking-[0.35em] text-[#c8c0b4]">
+                <span className="mt-2 text-[0.65rem] uppercase text-[#000000]">
                   Horas
                 </span>
               </div>
 
-              <span
-                className="self-start pt-0.5 text-[clamp(3rem,10vw,6rem)] md:text-[clamp(1.5rem,5vw,3rem)] leading-none"
-                style={{ fontFamily: "var(--font-bodoni, serif)" }}
-              >
+              <span className="text-[#000000] instrument-serif-regular self-start pt-0.5 text-[clamp(3rem,10vw,6rem)] md:text-[clamp(1.5rem,5vw,3rem)] leading-none">
                 :
               </span>
 
               <div className="flex flex-col items-center">
-                <span
-                  className="text-[clamp(3rem,10vw,6rem)] md:text-[clamp(1.5rem,5vw,3rem)] font-bold leading-none"
-                  style={{ fontFamily: "var(--font-bodoni, serif)" }}
-                >
+                <span className="instrument-serif-regular text-[clamp(3rem,10vw,6rem)] md:text-[clamp(1.5rem,5vw,3rem)] font-bold leading-none text-[#000000]">
                   {timeLeft.minutes}
                 </span>
-                <span className="mt-2 text-[0.65rem] uppercase tracking-[0.35em] text-[#c8c0b4]">
+                <span className="mt-2 text-[0.65rem] uppercase text-[#000000]">
                   Minutos
                 </span>
               </div>
             </div>
           </div>
-          <div className="md:bg-black/30 md:p-10 rounded-lg md:mx-auto">
 
-          
-          <h2
-            className="mb-12 md:mb-6 text-[clamp(2.5rem,7vw,4rem)] leading-none text-[#f5f3ef] mt-[100px]"
-            style={{ fontFamily: "var(--font-bodoni, serif)" }}
-          >
-            Regalos
-          </h2>
+          <img src="/bodaDomi&Diego/regalo.png" alt="Regalos" className="w-auto h-[150px] mx-auto mt-10 mb-5" />
 
           <div className=" px-5 pb-7 sm:px-10 sm:py-10">
-            <div className="text-[0.7rem] uppercase tracking-[0.3em] text-[#f5f3ef] md:text-[0.85rem]">
+            <div className="text-[0.9rem] uppercase text-[#000000] md:text-[0.85rem]">
               Banco Itaú · Cuenta corriente
             </div>
 
             <div className="mt-5 flex flex-col items-center gap-2">
               <div className="flex items-center justify-center gap-3">
-                <div
-                  className="text-[clamp(1.4rem,4vw,2rem)] tracking-[0.08em] text-[#f5f3ef] md:text-[clamp(1.85rem,3vw,2.5rem)]"
-                  style={{ fontFamily: "var(--font-bodoni, serif)" }}
-                >
+                <div className="instrument-serif-regular text-[30px] text-[#000000]">
                   {accountNumber}
                 </div>
                 <button
                   type="button"
                   onClick={copyAccountNumber}
                   aria-label="Copiar número de cuenta"
-                  className="inline-flex shrink-0 text-[#f5f3ef] transition focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#1a1816]"
+                  className="inline-flex shrink-0 text-[#000000] transition focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#f5f3ef]"
                 >
                   <Copy className="h-5 w-5 md:h-6 md:w-6" strokeWidth={1.5} />
                 </button>
               </div>
-              <p className="mb-2 mt-[-10px] min-h-[1.25rem] text-sm text-[#f5f3ef] md:min-h-[1.5rem] md:text-base">
+              <p className="mb-2 mt-[-10px] min-h-[1.25rem] text-sm text-[#000000] md:min-h-[1.5rem] md:text-base">
                 {accountCopied ? "✓ Copiado" : ""}
               </p>
             </div>
 
             <div className="mb-5">
-              <div className="mb-1 text-[0.7rem] uppercase tracking-[0.3em] text-[#f5f3ef] md:text-[0.85rem]">
+              <div className="mb-1 text-[0.7rem] uppercasetext-[#000000] md:text-[0.85rem]">
                 Titular
               </div>
-              <div className="text-[1.1rem] md:text-xl">Dominique Parnas</div>
+              <div className="text-[1.1rem] md:text-xl text-[#000000]">Dominique Parnas</div>
             </div>
-          </div>
           </div>
         </section>
 
         {/* ASISTENCIA / RSVP */}
-        <section id="asistencia" className=" px-6 py-20 text-center">
-          <div className="mx-auto max-w-[700px]">
-            <h2
-              className="mb-4 text-[clamp(2.5rem,7vw,4rem)] leading-none"
-              style={{ fontFamily: "var(--font-bodoni, serif)" }}
-            >
+        <section id="asistencia" className=" px-6 py-20 text-center ">
+          <div className=" max-w-[700px] bg-[#000000] rounded-lg m-5 p-5">
+            {/* <h2 className="instrument-serif-regular mb-4 text-[clamp(2.5rem,7vw,4rem)] leading-none text-[#ffffff]">
               Confirmá tu presencia
-            </h2>
-            <p className="mb-10 text-sm text-[#4a4540]">
+            </h2> */}
+             <span className="mb-4 block text-[2.5rem] instrument-serif-regular text-center text-[#ffffff]">
+              Confirmá tu presencia
+            </span>
+            <p className="mb-10 text-sm text-[#ffffff]">
               * antes del 15 de mayo
             </p>
 
             <div className=" px-5 text-left sm:px-10 sm:py-12">
               <form onSubmit={handleRsvpSubmit} className="space-y-6">
-                <div className="flex flex-col gap-2">
+                <div className="flex flex-col gap-2 text-[#ffffff]">
                   <label
                     htmlFor="guest-name-domi-diego"
-                    className="text-[0.7rem] font-bold uppercase text-[#4a4540]"
+                    className="text-[0.7rem] font-bold uppercase text-[#ffffff]"
                   >
                     Nombre y Apellido
                   </label>
@@ -420,21 +382,21 @@ export default function BodaDomiDiego2() {
                     value={guestName}
                     onChange={(e) => setGuestName(e.target.value)}
                     placeholder="Ej: María Rodríguez"
-                    className="w-full border-b border-[#1a1816]/40 bg-transparent px-0 py-3 text-[#1a1816] placeholder:text-[#4a4540]/50 focus:border-[#1a1816] focus:outline-none"
+                    className="w-full border-b border-[#ffffff]/40 bg-transparent px-0 py-3 text-[#ffffff] placeholder:text-[#ffffff]/70 focus:border-[#ffffff] focus:outline-none"
                   />
                   <label
                     htmlFor="guest-name-domi-diego"
-                    className="text-[0.7rem] font-small text-[#4a4540]"
+                    className="text-[0.7rem] font-small text-[#ffffff]"
                   >
                     * Uno por persona
                   </label>
                 </div>
 
                 <div className="space-y-3">
-                  <p className="text-[0.7rem] font-bold uppercase text-[#4a4540]">
+                  <p className="text-[0.7rem] font-bold uppercase text-[#ffffff]">
                     Confirmar asistencia
                   </p>
-                  <div className="flex flex-col gap-3 text-[#1a1816]">
+                  <div className="flex flex-col gap-3 text-[#ffffff]">
                     {[
                       { value: "si" as const, label: "Sí" },
                       { value: "no" as const, label: "No, lo siento" },
@@ -449,7 +411,7 @@ export default function BodaDomiDiego2() {
                           value={option.value}
                           checked={attendanceResponse === option.value}
                           onChange={() => setAttendanceResponse(option.value)}
-                          className="h-4 w-4 accent-[#1a1816]"
+                          className="h-4 w-4 accent-[#f5f3ef]"
                         />
                         {option.label}
                       </label>
@@ -458,7 +420,7 @@ export default function BodaDomiDiego2() {
                 </div>
 
                 <div className="flex flex-col gap-3">
-                  <p className="text-[0.7rem] font-bold uppercase text-[#4a4540]">
+                  <p className="text-[0.7rem] font-bold uppercase text-[#ffffff]">
                     Restricciones alimentarias
                   </p>
                   {[
@@ -466,12 +428,13 @@ export default function BodaDomiDiego2() {
                     { value: "celiaco", label: "Celíaco/a" },
                     { value: "vegetariano", label: "Vegetariano" },
                     { value: "kosher", label: "Kosher" },
+                    { value: "sin_gluten", label: "Sin gluten" },
                   ].map((option) => {
                     const checked = dietaryPreferences.includes(option.value);
                     return (
                       <label
                         key={option.value}
-                        className="flex items-center gap-3 text-[#1a1816]"
+                        className="flex items-center gap-3 text-[#ffffff]"
                       >
                         <input
                           type="checkbox"
@@ -497,7 +460,7 @@ export default function BodaDomiDiego2() {
                               );
                             });
                           }}
-                          className="h-4 w-4 rounded accent-[#1a1816]"
+                          className="h-4 w-4 rounded accent-[#f5f3ef]"
                         />
                         {option.label}
                       </label>
@@ -508,22 +471,22 @@ export default function BodaDomiDiego2() {
                     value={otroText}
                     onChange={(e) => setOtroText(e.target.value)}
                     placeholder="Otra restricción"
-                    className="w-full border-b border-[#1a1816]/40 bg-transparent px-0 py-3 text-[#1a1816] placeholder:text-[#4a4540]/50 focus:border-[#1a1816] focus:outline-none"
+                    className="w-full border-b border-[#ffffff]/40 bg-transparent px-0 py-3 text-[#ffffff] placeholder:text-[#ffffff]/70 focus:border-[#ffffff] focus:outline-none"
                   />
                 </div>
 
                 <Button
                   type="submit"
-                  disabled={isSubmitting}
-                  className="w-full rounded-none border border-[#1a1816] bg-[#1a1816] py-6 text-[0.9rem] font-normal uppercase text-[#f5f3ef] hover:bg-[#1a1816]/90 disabled:opacity-50"
+                  disabled={true}
+                  className="w-full rounded-full border border-[#f5f3ef] bg-transparent instrument-serif-regular py-6 text-[1.5rem]  font-normal uppercase text-[#ffffff] hover:bg-[#f5f3ef]/90 disabled:opacity-50"
                 >
-                  {isSubmitting ? "Enviando..." : "Confirmar asistencia"}
+                  {isSubmitting ? "Enviando..." : "Confirmar"}
                 </Button>
 
                 {submissionFeedback &&
                   submissionFeedback.type !== "success" && (
                     <p
-                      className="text-center text-sm text-red-600"
+                      className="text-center text-sm text-[#172e19]"
                       role="status"
                       aria-live="polite"
                     >
@@ -534,32 +497,39 @@ export default function BodaDomiDiego2() {
             </div>
           </div>
         </section>
-        <section>
+        {/* <section>
           <Image
-            src="/bodaDomi&Diego/perrobn.png"
+            src="/bodaDomi&Diego/perrodibujo.png"
             alt="Perro"
             width={200}
             height={200}
             className="w-full h-[300px] object-cover object-[50%_30%] md:h-[500px]"
           />
-        </section>
+        </section> */}
 
         {/* FOOTER */}
 
-        <footer className="py-5 md:py-10 px-6">
-          <div className=" px-6 py-12 text-center">
-            <div
-              className="mb-4 text-[clamp(2rem,6vw,3.5rem)] uppercase"
-              style={{ fontFamily: "var(--font-bodoni, serif)" }}
-            >
+        <footer className="py-5 md:py-10">
+          <div className=" px-6 py-5 pb-0 text-center">
+            {/* <div className="instrument-serif-regular mb-4 text-[clamp(2rem,6vw,3.5rem)] uppercase text-[#ffffff]">
               Domi y Diego
-            </div>
-            <p className="text-[0.75rem] uppercase tracking-[0.3em]">
+            </div> */}
+            <span className="mb-4 block text-[2.5rem] uppercase instrument-serif-regular text-center text-[#ffffff]">
+              Domi y Diego
+            </span>
+            <p className="text-[0.75rem] uppercase text-[#ffffff]">
               30 · 05 · 2026 <br />
               Montevideo, Uruguay
             </p>
           </div>
-          <div className="max-w-6xl mx-auto px-">
+          <div className="h-[300px] w-full overflow-hidden">
+          <img
+            src="/bodaDomi&Diego/perro2.png"
+            alt="Perro"
+            className="h-full w-full object-cover object-center"
+          />
+        </div>
+          <div className="max-w-6xl mx-auto text-[#ffffff]">
             <div className="text-center mt-2">
               <p className="text-xs">
                 Hecho especialmente para Diego y Domi por Invitia.uy
@@ -567,7 +537,7 @@ export default function BodaDomiDiego2() {
               <Button
                 variant="link"
                 asChild
-                className="text-xs underline underline-offset-2 p-0 h-auto"
+                className="text-xs underline underline-offset-2 p-0 h-auto text-[#ffffff]"
               >
                 <Link href="/">Conocé más aquí</Link>
               </Button>
