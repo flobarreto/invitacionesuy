@@ -246,35 +246,41 @@ export default function BodaDomiDiego() {
 
             <div className="mb-12 grid grid-cols-1 text-center md:grid-cols-2">
               <div className="p-6 md:border-r md:border-[#c8c0b4]">
-                <span className="mb-3 block text-[0.95rem] font-bold uppercase text-[#3c4439] md:text-[0.8rem]">
+                {/* <span className="mb-3 block text-[0.95rem] font-bold uppercase text-[#3c4439] md:text-[0.8rem]">
                   Fecha
-                </span>
+                </span> */}
                 <div className="instrument-serif-regular text-[clamp(1.6rem,4vw,2.1rem)] leading-[1.3] md:text-[clamp(1.75rem,2.2vw,2.35rem)]">
                   Sábado 30 de Mayo, 2026
                   <br />
                 </div>
               </div>
 
-              <div className="mx-auto h-px w-[60px] bg-[#3c4439] md:hidden" />
+              {/* <div className="mx-auto h-px w-[60px] bg-[#3c4439] md:hidden" /> */}
 
               <div className="p-6">
-                <span className="mb-3 block font-bold text-[0.95rem] uppercase text-[#3c4439] md:text-[0.8rem]">
+                {/* <span className="mb-3 block font-bold text-[0.95rem] uppercase text-[#3c4439] md:text-[0.8rem]">
                   Hora
-                </span>
+                </span> */}
+                <div className="flex items-center gap-2 justify-center">
+
                 <div className="instrument-serif-regular text-[clamp(1.6rem,4vw,2.1rem)] leading-[1.3] md:text-[clamp(1.75rem,2.2vw,2.35rem)]">
-                  20:00 hs
+                  20:00 HS
                 </div>
-                <div className="mt-1 text-[1.15rem] text-[#3c4439] md:text-lg">
-                  Hasta las 4:00 am
+                <div className="shadows-into-light-regular text-xl rotate-[-15deg] mb-[15px]">
+                  Puntual
+                </div>
+                </div>
+                <div className="mt-1 text-[0.85rem] text-[#3c4439] md:text-lg">
+                Hasta las 4:00 am
                 </div>
               </div>
 
-              <div className="mx-auto h-px w-[60px] bg-[#3c4439] md:hidden" />
+              {/* <div className="mx-auto h-px w-[60px] bg-[#3c4439] md:hidden" /> */}
 
               <div className="p-6 md:col-span-2">
-                <span className="mb-3 block font-bold text-[0.95rem] uppercase text-[#3c4439] md:text-[0.8rem]">
+                {/* <span className="mb-3 block font-bold text-[0.95rem] uppercase text-[#3c4439] md:text-[0.8rem]">
                   Lugar
-                </span>
+                </span> */}
                 <div className="instrument-serif-regular text-[clamp(1.6rem,4vw,2.1rem)] leading-[1.3] md:text-[clamp(1.75rem,2.2vw,2.35rem)]">
                   Regency Park Hotel, Jacksonville
                 </div>
@@ -329,7 +335,7 @@ export default function BodaDomiDiego() {
         />
 
         {/* COUNTDOWN */}
-        <section className="bg-[#101015] px-6 py-20 text-center bg-[#fcf5ed]">
+        <section className="bg-[#101015] px-6 pt-20 pb-14 text-center bg-[#fcf5ed]">
           <div className="">
             <span className="mb-4 block text-[2.5rem] text-[#667b5f] instrument-serif-regular">
               Faltan
@@ -373,43 +379,46 @@ export default function BodaDomiDiego() {
           </div>
 
           <img
-            src="/bodaDomi&Diego/regalo.png"
+            src="/bodaDomi&Diego/regalo3.png"
             alt="Regalos"
             className="w-auto h-[150px] mx-auto mt-10 mb-5"
           />
 
-          <div className=" px-5 pb-7 sm:px-10 sm:py-10">
-            <div className="text-[0.9rem] uppercase text-[#b48d64] md:text-[0.85rem]">
-              Banco Itaú · Cuenta corriente · USD
+          <div className=" px-5 sm:px-10 sm:py-10">
+            <div className="text-[0.9rem] uppercase text-[#667b5f] md:text-[0.85rem]">
+              Banco Itaú · Caja de ahorro · USD
             </div>
+            <div className="text-[0.9rem] uppercase md:text-xl text-[#667b5f] mt-5">
+                Dominique Parnas
+              </div>
 
-            <div className="mt-5 flex flex-col items-center gap-2">
+            <div className="mt-3 flex flex-col items-center gap-2">
               <div className="flex items-center justify-center gap-3">
-                <div className="instrument-serif-regular text-[30px] text-[#b48d64]">
+                <div className="instrument-serif-regular text-[30px] text-[#667b5f]">
                   {accountNumber}
                 </div>
                 <button
                   type="button"
                   onClick={copyAccountNumber}
                   aria-label="Copiar número de cuenta"
-                  className="inline-flex shrink-0 text-[#b48d64] transition focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#f5f3ef]"
+                  className="inline-flex shrink-0 text-[#667b5f] transition focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#f5f3ef]"
                 >
                   <Copy className="h-5 w-5 md:h-6 md:w-6" strokeWidth={1.5} />
                 </button>
               </div>
-              <p className="mb-2 mt-[-10px] min-h-[1.25rem] text-sm text-[#b48d64] md:min-h-[1.5rem] md:text-base">
+              <p className="mb-2 mt-[-10px] min-h-[1.25rem] text-sm text-[#667b5f] md:min-h-[1.5rem] md:text-base">
                 {accountCopied ? "✓ Copiado" : ""}
               </p>
             </div>
 
-            <div className="mb-5">
-              <div className="mb-1 text-[0.7rem] uppercasetext-[#b48d64] md:text-[0.85rem]">
+            {/* <div className="mb-5">
+              <div className="mb-1 text-[0.7rem] uppercase text-[#667b5f] md:text-[0.85rem]">
                 Titular
               </div>
-              <div className="text-[1.1rem] md:text-xl text-[#b48d64]">
+              <div className="text-[1.1rem] md:text-xl text-[#667b5f]">
                 Dominique Parnas
               </div>
-            </div>
+            </div> */}
           </div>
         </section>
 
