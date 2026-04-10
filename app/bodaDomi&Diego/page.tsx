@@ -264,11 +264,11 @@ export default function BodaDomiDiego() {
                 <div className="flex items-center gap-2 justify-center">
 
                 <div className="instrument-serif-regular text-[clamp(1.6rem,4vw,2.1rem)] leading-[1.3] md:text-[clamp(1.75rem,2.2vw,2.35rem)]">
-                  20:00 HS
+                  20:00 HS, puntual
                 </div>
-                <div className="shadows-into-light-regular text-xl rotate-[-15deg] mb-[15px]">
+                {/* <div className="shadows-into-light-regular text-xl rotate-[-15deg] mb-[15px]">
                   Puntual
-                </div>
+                </div> */}
                 </div>
                 <div className="mt-1 text-[0.85rem] text-[#3c4439] md:text-lg">
                 Hasta las 4:00 am
