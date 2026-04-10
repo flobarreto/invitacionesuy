@@ -13,7 +13,7 @@ import { getTimeLeftToUruguayDate, type TimeLeft } from "@/app/utils/countdown";
 const WEDDING_DATE_ISO = "2026-05-30T20:00:00-03:00";
 
 export default function BodaDomiDiego() {
-  const accountNumber = "1234567";
+  const accountNumber = "3602397";
   const [timeLeft, setTimeLeft] = useState<TimeLeft>({
     days: 0,
     hours: 0,
@@ -147,7 +147,7 @@ export default function BodaDomiDiego() {
     <div className="min-h-screen overflow-x-hidden bg-[#667b5f] md:hidden hanken-grotesk-regular">
       <main className="relative z-10">
         <Toaster position="top-center" />
-        <section className=" text-[#667b5f] bg-[#f1e7db] relative flex min-h-screen flex-col items-center px-5 pt-[60px] text-center md:pt-[0px]">
+        <section className=" text-[#667b5f] bg-[#fcf5ed] relative flex min-h-screen flex-col items-center text-center md:pt-[0px]">
           <svg
             className="pointer-events-none absolute inset-0 h-full w-full text-[#667b5f]/15"
             viewBox="0 0 300 400"
@@ -195,19 +195,21 @@ export default function BodaDomiDiego() {
               vectorEffect="non-scaling-stroke"
             />
           </svg>
+<div className="flex flex-col justify-around min-h-screen p-5">
 
-          <div className="flex flex-col justify-around h-[70%] mt-[20%]">
-            <span className="[direction:rtl] w-full text-sm text-[#89582b]">
+
+          <div className="flex flex-col mt-[50%]">
+            <span className="[direction:rtl] w-full text-xs text-[#b48d64]">
               ב״ה
             </span>
-            <span className="block text-sm italic [direction:rtl]">
+            <span className="block text-xs [direction:rtl] text-[#b48d64]">
               מצאתי את שאהבה נפשי
             </span>
-            <span className="block text-sm italic">
-              Encontré al que ama mi alma
-            </span>
+            {/* <span className="block text-sm italic text-[#b48d64]">
+              Encontré a quien ama mi alma
+            </span> */}
           </div>
-          <div className="relative z-10 flex flex-col items-center my-auto leading-[0.88] md:mt-12 md:flex-row md:flex-wrap md:items-baseline md:justify-center md:gap-6">
+          <div className="relative z-10 flex flex-col items-center leading-[0.88] md:mt-12 md:flex-row md:flex-wrap md:items-baseline md:justify-center md:gap-6">
             <span className="instrument-serif-regular block text-[clamp(5rem,18vw,14rem)] uppercase font-bold md:text-8xl">
               Domi
             </span>
@@ -218,14 +220,13 @@ export default function BodaDomiDiego() {
               Diego
             </span>
           </div>
-          <div className="w-full text-[#89582b] md:mt-16 md:basis-full mb-[30%]">
-            <div className="instrument-serif-regular text-[clamp(1.8rem,5vw,3rem)] font-light md:mt-[-50px] md:text-4xl">
+          <div className="w-full text-[#b48d64] mb-[50%] md:mt-16 md:basis-full">
+            <div className="instrument-serif-regular text-4xl font-light md:mt-[-50px] md:text-4xl">
               30<span className="px-2 ">|</span>05
               <span className="px-2 ">|</span>26
             </div>
           </div>
-
-          {/* <img src="/bodaDomi&Diego/hero33.png" alt="Fondo" className="w-auto h-[250px] mb-10 mt-auto" /> */}
+          </div>
         </section>
 
         {/* DETALLES */}
@@ -233,7 +234,7 @@ export default function BodaDomiDiego() {
         {/* <img src="/bodaDomi&Diego/ceremonia34.png" alt="Rings" className="w-auto h-[150px] mx-auto" /> */}
         <section
           id="detalles"
-          className=" px-6 pb-5 text-center pt-10 bg-[#667b5f] text-[#f1e7db]"
+          className=" px-6 pb-5 text-center pt-10 bg-[#667b5f] text-[#fcf5ed]"
         >
           <div className="mx-auto max-w-[700px]">
             {/* <h2 className="instrument-serif-regularuppercase mb-6 text-[clamp(2.5rem,7vw,4rem)] leading-none text-center">
@@ -328,7 +329,7 @@ export default function BodaDomiDiego() {
         />
 
         {/* COUNTDOWN */}
-        <section className="bg-[#101015] px-6 py-20 text-center bg-[#f1e7db]">
+        <section className="bg-[#101015] px-6 py-20 text-center bg-[#fcf5ed]">
           <div className="">
             <span className="mb-4 block text-[2.5rem] text-[#667b5f] instrument-serif-regular">
               Faltan
@@ -378,34 +379,34 @@ export default function BodaDomiDiego() {
           />
 
           <div className=" px-5 pb-7 sm:px-10 sm:py-10">
-            <div className="text-[0.9rem] uppercase text-[#89582b] md:text-[0.85rem]">
-              Banco Itaú · Cuenta corriente
+            <div className="text-[0.9rem] uppercase text-[#b48d64] md:text-[0.85rem]">
+              Banco Itaú · Cuenta corriente · USD
             </div>
 
             <div className="mt-5 flex flex-col items-center gap-2">
               <div className="flex items-center justify-center gap-3">
-                <div className="instrument-serif-regular text-[30px] text-[#89582b]">
+                <div className="instrument-serif-regular text-[30px] text-[#b48d64]">
                   {accountNumber}
                 </div>
                 <button
                   type="button"
                   onClick={copyAccountNumber}
                   aria-label="Copiar número de cuenta"
-                  className="inline-flex shrink-0 text-[#89582b] transition focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#f5f3ef]"
+                  className="inline-flex shrink-0 text-[#b48d64] transition focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#f5f3ef]"
                 >
                   <Copy className="h-5 w-5 md:h-6 md:w-6" strokeWidth={1.5} />
                 </button>
               </div>
-              <p className="mb-2 mt-[-10px] min-h-[1.25rem] text-sm text-[#89582b] md:min-h-[1.5rem] md:text-base">
+              <p className="mb-2 mt-[-10px] min-h-[1.25rem] text-sm text-[#b48d64] md:min-h-[1.5rem] md:text-base">
                 {accountCopied ? "✓ Copiado" : ""}
               </p>
             </div>
 
             <div className="mb-5">
-              <div className="mb-1 text-[0.7rem] uppercasetext-[#89582b] md:text-[0.85rem]">
+              <div className="mb-1 text-[0.7rem] uppercasetext-[#b48d64] md:text-[0.85rem]">
                 Titular
               </div>
-              <div className="text-[1.1rem] md:text-xl text-[#89582b]">
+              <div className="text-[1.1rem] md:text-xl text-[#b48d64]">
                 Dominique Parnas
               </div>
             </div>
@@ -413,21 +414,21 @@ export default function BodaDomiDiego() {
         </section>
 
         {/* ASISTENCIA / RSVP */}
-        <section id="asistencia" className=" px-6 py-20 text-center ">
+        <section id="asistencia" className=" px-6 pt-20 text-center ">
           <div className=" max-w-[700px] bg-[#667b5f] rounded-lg m-5 p-5">
-            {/* <h2 className="instrument-serif-regular mb-4 text-[clamp(2.5rem,7vw,4rem)] leading-none text-[#f1e7db]">
+            {/* <h2 className="instrument-serif-regular mb-4 text-[clamp(2.5rem,7vw,4rem)] leading-none text-[#fcf5ed]">
               Confirmá tu presencia
             </h2> */}
-            <span className="leading-none block text-[2.5rem] instrument-serif-regular text-center text-[#f1e7db]">
+            <span className="leading-none block text-[2.5rem] instrument-serif-regular text-center text-[#fcf5ed]">
               Confirmá tu presencia
             </span>
-            <p className="mb-10 mt-2 text-[13px] text-[#f1e7db]">
+            <p className="mb-10 mt-2 text-[13px] text-[#fcf5ed]">
               antes del 15 de mayo
             </p>
 
             <div className=" px-5 text-left sm:px-10 sm:py-12">
               <form onSubmit={handleRsvpSubmit} className="space-y-6">
-                <div className="flex flex-col gap-2 text-[#f1e7db]">
+                <div className="flex flex-col gap-2 text-[#fcf5ed]">
                   <label
                     htmlFor="guest-name-domi-diego"
                     className="text-[0.7rem] font-bold uppercase text-[#3c4439]"
@@ -440,11 +441,11 @@ export default function BodaDomiDiego() {
                     value={guestName}
                     onChange={(e) => setGuestName(e.target.value)}
                     placeholder="Ej: María Rodríguez"
-                    className="w-full border-b border-[#f1e7db]/40 bg-transparent px-0 py-3 text-[#f1e7db] placeholder:text-[#f1e7db]/70 focus:border-[#f1e7db] focus:outline-none"
+                    className="w-full border-b border-[#fcf5ed]/40 bg-transparent px-0 py-3 text-[#fcf5ed] placeholder:text-[#fcf5ed]/70 focus:border-[#fcf5ed] focus:outline-none"
                   />
                   <label
                     htmlFor="guest-name-domi-diego"
-                    className="text-[0.7rem] font-small text-[#f1e7db]"
+                    className="text-[0.7rem] font-small text-[#fcf5ed]"
                   >
                     * Uno por persona
                   </label>
@@ -454,7 +455,7 @@ export default function BodaDomiDiego() {
                   <p className="text-[0.7rem] font-bold uppercase text-[#3c4439]">
                     Confirmar asistencia
                   </p>
-                  <div className="flex flex-col gap-3 text-[#f1e7db]">
+                  <div className="flex flex-col gap-3 text-[#fcf5ed]">
                     {[
                       { value: "si" as const, label: "Sí" },
                       { value: "no" as const, label: "No, lo siento" },
@@ -492,7 +493,7 @@ export default function BodaDomiDiego() {
                     return (
                       <label
                         key={option.value}
-                        className="flex items-center gap-3 text-[#f1e7db]"
+                        className="flex items-center gap-3 text-[#fcf5ed]"
                       >
                         <input
                           type="checkbox"
@@ -529,14 +530,14 @@ export default function BodaDomiDiego() {
                     value={otroText}
                     onChange={(e) => setOtroText(e.target.value)}
                     placeholder="Otra restricción"
-                    className="w-full border-b border-[#f1e7db]/40 bg-transparent px-0 py-3 text-[#f1e7db] placeholder:text-[#f1e7db]/70 focus:border-[#f1e7db] focus:outline-none"
+                    className="w-full border-b border-[#fcf5ed]/40 bg-transparent px-0 py-3 text-[#fcf5ed] placeholder:text-[#fcf5ed]/70 focus:border-[#fcf5ed] focus:outline-none"
                   />
                 </div>
 
                 <Button
                   type="submit"
                   disabled={true}
-                  className="w-full rounded-full border border-[#f5f3ef] bg-transparent instrument-serif-regular py-6 text-[1.5rem]  font-normal uppercase text-[#f1e7db] hover:bg-[#f5f3ef]/90 disabled:opacity-50"
+                  className="w-full rounded-full border border-[#f5f3ef] bg-transparent instrument-serif-regular py-6 text-[1.5rem]  font-normal uppercase text-[#fcf5ed] hover:bg-[#f5f3ef]/90 disabled:opacity-50"
                 >
                   {isSubmitting ? "Enviando..." : "Confirmar"}
                 </Button>
@@ -568,10 +569,7 @@ export default function BodaDomiDiego() {
         {/* FOOTER */}
 
         <footer className="py-5 md:py-10">
-          <div className=" px-6 py-5 pb-0 text-center">
-            {/* <div className="instrument-serif-regular mb-4 text-[clamp(2rem,6vw,3.5rem)] uppercase text-[#3c4439]">
-              Domi y Diego
-            </div> */}
+          {/* <div className=" px-6 py-5 pb-0 text-center">
             <span className="mb-4 block text-[2.5rem] uppercase instrument-serif-regular text-center text-[#3c4439]">
               Domi y Diego
             </span>
@@ -579,7 +577,7 @@ export default function BodaDomiDiego() {
               30 · 05 · 2026 <br />
               Montevideo, Uruguay
             </p>
-          </div>
+          </div> */}
           <div className="h-[300px] w-full overflow-hidden">
             <img
               src="/bodaDomi&Diego/perro2.png"
