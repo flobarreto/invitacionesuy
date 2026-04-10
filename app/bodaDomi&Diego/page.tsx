@@ -205,9 +205,9 @@ export default function BodaDomiDiego() {
             <span className="block text-xs [direction:rtl] text-[#b48d64]">
               מצאתי את שאהבה נפשי
             </span>
-            {/* <span className="block text-sm italic text-[#b48d64]">
+            <span className="block text-sm text-[#b48d64]">
               Encontré a quien ama mi alma
-            </span> */}
+            </span>
           </div>
           <div className="relative z-10 flex flex-col items-center leading-[0.88] md:mt-12 md:flex-row md:flex-wrap md:items-baseline md:justify-center md:gap-6">
             <span className="instrument-serif-regular block text-[clamp(5rem,18vw,14rem)] uppercase font-bold md:text-8xl">
@@ -246,41 +246,41 @@ export default function BodaDomiDiego() {
 
             <div className="mb-12 grid grid-cols-1 text-center md:grid-cols-2">
               <div className="p-6 md:border-r md:border-[#c8c0b4]">
-                <span className="mb-3 block text-[0.95rem] font-bold uppercase text-[#3c4439] md:text-[0.8rem]">
+                {/* <span className="mb-3 block text-[0.95rem] font-bold uppercase text-[#3c4439] md:text-[0.8rem]">
                   Fecha
-                </span>
+                </span> */}
                 <div className="instrument-serif-regular text-[clamp(1.6rem,4vw,2.1rem)] leading-[1.3] md:text-[clamp(1.75rem,2.2vw,2.35rem)]">
                   Sábado 30 de Mayo, 2026
                   <br />
                 </div>
               </div>
 
-              <div className="mx-auto h-px w-[60px] bg-[#3c4439] md:hidden" />
+              {/* <div className="mx-auto h-px w-[60px] bg-[#3c4439] md:hidden" /> */}
 
               <div className="p-6">
-                <span className="mb-3 block font-bold text-[0.95rem] uppercase text-[#3c4439] md:text-[0.8rem]">
+                {/* <span className="mb-3 block font-bold text-[0.95rem] uppercase text-[#3c4439] md:text-[0.8rem]">
                   Hora
-                </span>
+                </span> */}
                 <div className="flex items-center gap-2 justify-center">
 
                 <div className="instrument-serif-regular text-[clamp(1.6rem,4vw,2.1rem)] leading-[1.3] md:text-[clamp(1.75rem,2.2vw,2.35rem)]">
-                  20:00 HS, puntual
+                  20:00 HS
                 </div>
-                {/* <div className="shadows-into-light-regular text-xl rotate-[-15deg] mb-[15px]">
+                <div className="shadows-into-light-regular text-xl rotate-[-15deg] mb-[15px]">
                   Puntual
-                </div> */}
+                </div>
                 </div>
                 <div className="mt-1 text-[0.85rem] text-[#3c4439] md:text-lg">
                 Hasta las 4:00 am
                 </div>
               </div>
 
-              <div className="mx-auto h-px w-[60px] bg-[#3c4439] md:hidden" />
+              {/* <div className="mx-auto h-px w-[60px] bg-[#3c4439] md:hidden" /> */}
 
               <div className="p-6 md:col-span-2">
-                <span className="mb-3 block font-bold text-[0.95rem] uppercase text-[#3c4439] md:text-[0.8rem]">
+                {/* <span className="mb-3 block font-bold text-[0.95rem] uppercase text-[#3c4439] md:text-[0.8rem]">
                   Lugar
-                </span>
+                </span> */}
                 <div className="instrument-serif-regular text-[clamp(1.6rem,4vw,2.1rem)] leading-[1.3] md:text-[clamp(1.75rem,2.2vw,2.35rem)]">
                   Regency Park Hotel, Jacksonville
                 </div>
@@ -577,7 +577,7 @@ export default function BodaDomiDiego() {
 
         {/* FOOTER */}
 
-        <footer className="py-5 md:py-10">
+        <footer className="mt-[-50px] pb-5 md:py-10">
           {/* <div className=" px-6 py-5 pb-0 text-center">
             <span className="mb-4 block text-[2.5rem] uppercase instrument-serif-regular text-center text-[#3c4439]">
               Domi y Diego
