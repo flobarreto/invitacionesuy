@@ -42,6 +42,7 @@ interface RSVP {
   attendance: string
   dietary_preferences?: string[]
   favorite_song?: string
+  email?: string | null
   created_at?: string
   tags?: string[]
   table_number?: string | null
@@ -212,6 +213,15 @@ export default function AdminDashboard({ username }: AdminDashboardProps) {
       rsvp.favorite_song !== undefined && 
       rsvp.favorite_song !== null && 
       rsvp.favorite_song.trim() !== ""
+    )
+  }, [rsvps])
+
+  const hasEmail = useMemo(() => {
+    return rsvps.some(
+      (rsvp) =>
+        rsvp.email !== undefined &&
+        rsvp.email !== null &&
+        String(rsvp.email).trim() !== ""
     )
   }, [rsvps])
 
@@ -472,9 +482,15 @@ export default function AdminDashboard({ username }: AdminDashboardProps) {
 
   // Función para descargar CSV
   const handleDownloadCSV = () => {
-    const headers = hasFavoriteSong
-      ? ["Nombre", "Asistencia", "Preferencias Dietéticas", "Canción Favorita", "Etiquetas", "Fecha de Respuesta"]
-      : ["Nombre", "Asistencia", "Preferencias Dietéticas", "Etiquetas", "Fecha de Respuesta"]
+    const headers = [
+      "Nombre",
+      "Asistencia",
+      "Preferencias Dietéticas",
+      ...(hasFavoriteSong ? ["Canción Favorita"] : []),
+      ...(hasEmail ? ["Email"] : []),
+      "Etiquetas",
+      "Fecha de Respuesta",
+    ]
     
     const csvRows = [
       headers.join(","),
@@ -516,7 +532,11 @@ export default function AdminDashboard({ username }: AdminDashboardProps) {
           const favoriteSong = rsvp.favorite_song || ""
           row.push(escapeCSV(favoriteSong))
         }
-        
+
+        if (hasEmail) {
+          row.push(escapeCSV((rsvp.email ?? "").toString().trim()))
+        }
+
         row.push(escapeCSV(tagNames))
         row.push(escapeCSV(date))
         
@@ -799,6 +819,16 @@ export default function AdminDashboard({ username }: AdminDashboardProps) {
                                       <p className="text-sm">{rsvp.favorite_song || "—"}</p>
                                     </div>
                                   )}
+                                  {hasEmail && (
+                                    <div>
+                                      <p className="text-xs text-muted-foreground mb-1">Email</p>
+                                      <p className="text-sm break-all">
+                                        {rsvp.email?.toString().trim()
+                                          ? rsvp.email.toString().trim()
+                                          : "—"}
+                                      </p>
+                                    </div>
+                                  )}
                                   <div>
                                     <p className="text-xs text-muted-foreground mb-1">Etiquetas</p>
                                     <div
@@ -883,6 +913,7 @@ export default function AdminDashboard({ username }: AdminDashboardProps) {
                         <TableHead>Asistencia</TableHead>
                         <TableHead>Preferencias Dietéticas</TableHead>
                         {hasFavoriteSong && <TableHead>Canción Favorita</TableHead>}
+                        {hasEmail && <TableHead>Email</TableHead>}
                         <TableHead>Etiquetas</TableHead>
                         <TableHead>Mesa</TableHead>
                         <TableHead className="w-[100px]">Acciones</TableHead>
@@ -916,6 +947,11 @@ export default function AdminDashboard({ username }: AdminDashboardProps) {
                             {hasFavoriteSong && (
                               <TableCell className="max-w-xs truncate">
                                 {rsvp.favorite_song || "—"}
+                              </TableCell>
+                            )}
+                            {hasEmail && (
+                              <TableCell className="max-w-[200px] truncate text-sm" title={rsvp.email?.toString().trim() || undefined}>
+                                {rsvp.email?.toString().trim() || "—"}
                               </TableCell>
                             )}
                             <TableCell>
