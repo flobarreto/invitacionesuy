@@ -9,6 +9,7 @@ const EVENT_TABLES: Record<string, string> = {
   bodaMicaTincho: "boda_mica_tincho_rsvps",
   bodaVirJere: "boda_vir_jere",
   bodaAndresLucre: "boda_andres_lucre",
+  bodaDomiDiego: "boda_domi_diego",
 }
 
 const FALLBACK_DIR = path.join(process.cwd(), "data")
@@ -18,6 +19,7 @@ type RsvpPayload = {
   attendance?: string
   dietaryPreferences?: string[]
   favoriteSong?: string
+  email?: string
 }
 
 type RouteContext = {
@@ -30,8 +32,6 @@ export async function POST(request: Request, { params }: RouteContext) {
   const { event } = await params
   const tableName = EVENT_TABLES[event]
 
-  console.log('flo llega aca 0')
-
   let payload: RsvpPayload
 
   try {
@@ -40,7 +40,13 @@ export async function POST(request: Request, { params }: RouteContext) {
     return NextResponse.json({ error: "Formato inválido." }, { status: 400 })
   }
 
-  const { name, attendance, dietaryPreferences = [], favoriteSong = "" } = payload
+  const {
+    name,
+    attendance,
+    dietaryPreferences = [],
+    favoriteSong = "",
+    email = "",
+  } = payload
 
   if (!name || !attendance) {
     return NextResponse.json(
@@ -48,8 +54,6 @@ export async function POST(request: Request, { params }: RouteContext) {
       { status: 400 }
     )
   }
-
-  console.log('flo llega aca 1')
 
   if (tableName && supabaseAdmin) {
     const insertData: Record<string, any> = {
@@ -63,31 +67,62 @@ export async function POST(request: Request, { params }: RouteContext) {
       insertData.favorite_song = favoriteSong.trim()
     }
 
+    if (tableName === "boda_domi_diego" && email && email.trim()) {
+      insertData.email = email.trim()
+    }
+
     const { error } = await supabaseAdmin.from(tableName).insert(insertData)
 
     if (error) {
-      console.log('flo llega aca 2')
-      console.error(`Supabase RSVP insert error for ${event}:`, error)
+      console.error(`Supabase RSVP insert error for ${event}:`, {
+        tableName,
+        code: error.code,
+        message: error.message,
+        details: error.details,
+        hint: error.hint,
+      })
       return NextResponse.json(
-        { error: "Hubo un error al guardar tu respuesta. Intenta nuevamente." },
-        { status: 500 }
+        {
+          error: "Hubo un error al guardar tu respuesta. Intenta nuevamente.",
+          ...(process.env.NODE_ENV === "development" && {
+            debug: {
+              tableName,
+              code: error.code,
+              message: error.message,
+            },
+          }),
+        },
+        { status: 500 },
       )
     }
 
     return NextResponse.json({ ok: true })
   }
 
-  await persistToCsv(event, { name, attendance, dietaryPreferences, favoriteSong })
+  await persistToCsv(event, {
+    name,
+    attendance,
+    dietaryPreferences,
+    favoriteSong,
+    email,
+  })
   return NextResponse.json({ ok: true, fallback: true })
 }
 
 async function persistToCsv(
   eventKey: string,
-  data: { name: string; attendance: string; dietaryPreferences: string[]; favoriteSong: string }
+  data: {
+    name: string
+    attendance: string
+    dietaryPreferences: string[]
+    favoriteSong: string
+    email: string
+  },
 ) {
   await fs.mkdir(FALLBACK_DIR, { recursive: true })
   const filePath = path.join(FALLBACK_DIR, `${eventKey}-rsvps.csv`)
-  const header = "timestamp,name,attendance,dietaryPreferences,favoriteSong\n"
+  const header =
+    "timestamp,name,attendance,dietaryPreferences,favoriteSong,email\n"
   const dietaryValue = data.dietaryPreferences.join("; ")
   const row =
     [
@@ -96,6 +131,7 @@ async function persistToCsv(
       toCsvField(data.attendance),
       toCsvField(dietaryValue),
       toCsvField(data.favoriteSong.trim()),
+      toCsvField(data.email.trim()),
     ].join(",") + "\n"
 
   let prefix = ""

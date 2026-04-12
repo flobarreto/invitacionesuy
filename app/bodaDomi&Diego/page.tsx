@@ -12,6 +12,7 @@ import { getTimeLeftToUruguayDate, type TimeLeft } from "@/app/utils/countdown";
 
 const WEDDING_DATE_ISO = "2026-05-30T20:00:00-03:00";
 
+
 export default function BodaDomiDiego() {
   const accountNumber = "3602397";
   const [timeLeft, setTimeLeft] = useState<TimeLeft>({
@@ -95,6 +96,7 @@ export default function BodaDomiDiego() {
 
       if (!response.ok) {
         const errorBody = await response.json().catch(() => null);
+        console.log("flo error body:", errorBody);
         throw new Error(
           errorBody?.error ??
             "No pudimos guardar tu respuesta. Intenta nuevamente.",
@@ -108,7 +110,7 @@ export default function BodaDomiDiego() {
       toast.success(
         attendanceResponse === "si"
           ? "¡Te esperamos!"
-          : "¡Gracias por tu respuesta!",
+          : "¡Gracias por tu respuesta, te esperamos!",
         {
           position: "bottom-center",
           duration: 7000,
@@ -144,12 +146,12 @@ export default function BodaDomiDiego() {
   };
 
   return (
-    <div className="min-h-screen overflow-x-hidden bg-[#667b5f] md:hidden hanken-grotesk-regular">
+    <div className="min-h-screen overflow-x-hidden bg-[#667b5f] hanken-grotesk-regular">
       <main className="relative z-10">
         <Toaster position="top-center" />
-        <section className=" text-[#667b5f] bg-[#fcf5ed] relative flex min-h-screen flex-col items-center text-center md:pt-[0px]">
+        <section className=" text-[#667b5f] bg-[#fcf5ed] relative flex min-h-screen flex-col items-center text-center md:pt-[0px] md:bg-[url('/bodaDomi&Diego/fondo3.png')] md:bg-contain md:bg-center md:bg-no-repeat">
           <svg
-            className="pointer-events-none absolute inset-0 h-full w-full text-[#667b5f]/15"
+            className="pointer-events-none md:hidden absolute inset-0 h-full w-full text-[#667b5f]/15"
             viewBox="0 0 300 400"
             fill="none"
             xmlns="http://www.w3.org/2000/svg"
@@ -195,21 +197,25 @@ export default function BodaDomiDiego() {
               vectorEffect="non-scaling-stroke"
             />
           </svg>
+         
+
+
+
 <div className="flex flex-col justify-around min-h-screen p-5">
 
 
-          <div className="flex flex-col mt-[50%]">
-            <span className="[direction:rtl] w-full text-xs text-[#b48d64]">
+          <div className="flex flex-col mt-[50%] md:mt-[30%]">
+            <span className="[direction:rtl] w-full text-xs md:text-sm text-[#b48d64]">
               ב״ה
             </span>
-            <span className="block text-xs [direction:rtl] text-[#b48d64]">
+            <span className="block text-xs [direction:rtl] md:text-sm text-[#b48d64]">
               מצאתי את שאהבה נפשי
             </span>
-            <span className="block text-sm text-[#b48d64]">
+            <span className="block text-sm md:text-sm text-[#b48d64]">
               Encontré a quien ama mi alma
             </span>
           </div>
-          <div className="relative z-10 flex flex-col items-center leading-[0.88] md:mt-12 md:flex-row md:flex-wrap md:items-baseline md:justify-center md:gap-6">
+          <div className="relative z-10 flex flex-col items-center leading-[0.88] md:flex-row md:flex-wrap md:items-baseline md:justify-center md:gap-6">
             <span className="instrument-serif-regular block text-[clamp(5rem,18vw,14rem)] uppercase font-bold md:text-8xl">
               Domi
             </span>
@@ -220,8 +226,8 @@ export default function BodaDomiDiego() {
               Diego
             </span>
           </div>
-          <div className="w-full text-[#b48d64] mb-[50%] md:mt-16 md:basis-full">
-            <div className="instrument-serif-regular text-4xl font-light md:mt-[-50px] md:text-4xl">
+          <div className="w-full text-[#b48d64] mb-[50%] md:mb-[30%] md:mt-16 md:basis-full">
+            <div className="instrument-serif-regular text-4xl md:text-6xl font-light md:mt-[-50px] md:text-4xl">
               30<span className="px-2 ">|</span>05
               <span className="px-2 ">|</span>26
             </div>
@@ -240,16 +246,16 @@ export default function BodaDomiDiego() {
             {/* <h2 className="instrument-serif-regularuppercase mb-6 text-[clamp(2.5rem,7vw,4rem)] leading-none text-center">
               Ceremonia y Fiesta
             </h2> */}
-            <span className="mb-4 block text-[2.5rem] instrument-serif-regular text-center">
+            <span className="mb-4 block text-[2.5rem] md:text-[4rem] md:mt-10 instrument-serif-regular text-center">
               Ceremonia y Fiesta
             </span>
 
-            <div className="mb-12 grid grid-cols-1 text-center md:grid-cols-2">
-              <div className="p-6 md:border-r md:border-[#c8c0b4]">
+            <div className="mb-12 flex flex-col text-center">
+              <div className="p-6">
                 {/* <span className="mb-3 block text-[0.95rem] font-bold uppercase text-[#3c4439] md:text-[0.8rem]">
                   Fecha
                 </span> */}
-                <div className="instrument-serif-regular text-[clamp(1.6rem,4vw,2.1rem)] leading-[1.3] md:text-[clamp(1.75rem,2.2vw,2.35rem)]">
+                <div className="instrument-serif-regular text-[clamp(1.6rem,4vw,2.1rem)] leading-[1.3]">
                   Sábado 30 de Mayo, 2026
                   <br />
                 </div>
@@ -263,7 +269,7 @@ export default function BodaDomiDiego() {
                 </span> */}
                 <div className="flex items-center gap-2 justify-center">
 
-                <div className="instrument-serif-regular text-[clamp(1.6rem,4vw,2.1rem)] leading-[1.3] md:text-[clamp(1.75rem,2.2vw,2.35rem)]">
+                <div className="instrument-serif-regular text-[clamp(1.6rem,4vw,2.1rem)] leading-[1.3] ">
                   20:00 HS
                 </div>
                 <div className="shadows-into-light-regular text-xl rotate-[-15deg] mb-[15px]">
@@ -281,7 +287,7 @@ export default function BodaDomiDiego() {
                 {/* <span className="mb-3 block font-bold text-[0.95rem] uppercase text-[#3c4439] md:text-[0.8rem]">
                   Lugar
                 </span> */}
-                <div className="instrument-serif-regular text-[clamp(1.6rem,4vw,2.1rem)] leading-[1.3] md:text-[clamp(1.75rem,2.2vw,2.35rem)]">
+                <div className="instrument-serif-regular text-[clamp(1.6rem,4vw,2.1rem)] leading-[1.3]">
                   Regency Park Hotel, Jacksonville
                 </div>
                 <a
@@ -424,7 +430,7 @@ export default function BodaDomiDiego() {
 
         {/* ASISTENCIA / RSVP */}
         <section id="asistencia" className=" px-6 pt-20 text-center ">
-          <div className=" max-w-[700px] bg-[#667b5f] rounded-lg m-5 p-5">
+          <div className=" max-w-[700px] mx-auto bg-[#667b5f] rounded-lg m-5 p-5">
             {/* <h2 className="instrument-serif-regular mb-4 text-[clamp(2.5rem,7vw,4rem)] leading-none text-[#fcf5ed]">
               Confirmá tu presencia
             </h2> */}
@@ -440,7 +446,7 @@ export default function BodaDomiDiego() {
                 <div className="flex flex-col gap-2 text-[#fcf5ed]">
                   <label
                     htmlFor="guest-name-domi-diego"
-                    className="text-[0.7rem] font-bold uppercase text-[#3c4439]"
+                    className="text-[0.7rem] md:text-[1rem] font-bold uppercase text-[#3c4439]"
                   >
                     Nombre y Apellido
                   </label>
@@ -461,7 +467,7 @@ export default function BodaDomiDiego() {
                 </div>
 
                 <div className="space-y-3">
-                  <p className="text-[0.7rem] font-bold uppercase text-[#3c4439]">
+                  <p className="text-[0.7rem] md:text-[1rem] font-bold uppercase text-[#3c4439]">
                     Confirmar asistencia
                   </p>
                   <div className="flex flex-col gap-3 text-[#fcf5ed]">
@@ -488,7 +494,7 @@ export default function BodaDomiDiego() {
                 </div>
 
                 <div className="flex flex-col gap-3">
-                  <p className="text-[0.7rem] font-bold uppercase text-[#3c4439]">
+                  <p className="text-[0.7rem] md:text-[1rem] font-bold uppercase text-[#3c4439]">
                     Restricciones alimentarias
                   </p>
                   {[
@@ -545,7 +551,7 @@ export default function BodaDomiDiego() {
 
                 <Button
                   type="submit"
-                  disabled={true}
+                  disabled={isSubmitting}
                   className="w-full rounded-full border border-[#f5f3ef] bg-transparent instrument-serif-regular py-6 text-[1.5rem]  font-normal uppercase text-[#fcf5ed] hover:bg-[#f5f3ef]/90 disabled:opacity-50"
                 >
                   {isSubmitting ? "Enviando..." : "Confirmar"}
@@ -591,7 +597,12 @@ export default function BodaDomiDiego() {
             <img
               src="/bodaDomi&Diego/perro2.png"
               alt="Perro"
-              className="h-full w-full object-cover object-center"
+              className="h-full w-full object-cover object-center md:hidden"
+            />
+            <img
+              src="/bodaDomi&Diego/perroxl.png"
+              alt="Perro"
+              className="hidden h-full w-full object-cover object-center md:block"
             />
           </div>
           <div className="max-w-6xl mx-auto text-[#3c4439]">
