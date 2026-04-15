@@ -12,6 +12,14 @@ const nextConfig = {
   async rewrites() {
     return [
       {
+        source: '/boda-domi-diego',
+        destination: '/bodaDomi&Diego',
+      },
+      {
+        source: '/boda-domi-diego-hotel',
+        destination: '/bodaDomi&Diego-hotel',
+      },
+      {
         source: '/bodaMica&Tincho',
         destination: '/bodaMica&Tincho',
       },

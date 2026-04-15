@@ -31,13 +31,13 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "Domi & Diego",
+    title: "Boda Domi & Diego",
     description: "",
     images: [OG_IMAGE_PATH],
   },
 };
 
-export default function BodaDomiDiegoLayout({
+export default function BodaDomiDiegoHotelLayout({
   children,
 }: {
   children: ReactNode;
