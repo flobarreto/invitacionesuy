@@ -16,7 +16,7 @@ const OG_IMAGE_PATH = "/bodaDomi%26Diego/preview.jpeg";
 export const metadata: Metadata = {
   metadataBase: getMetadataBase(),
   title: "Boda Domi y Diego",
-  description: "Invitación a la boda de Domi y Diego.",
+  description: "",
   openGraph: {
     title: "Boda Domi y Diego",
     description: "",
@@ -32,7 +32,7 @@ export const metadata: Metadata = {
   twitter: {
     card: "summary_large_image",
     title: "Boda Domi y Diego",
-    description: "Invitación a la boda de Domi y Diego.",
+    description: "",
     images: [OG_IMAGE_PATH],
   },
 };
