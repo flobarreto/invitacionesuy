@@ -111,7 +111,7 @@ export default function BodaDomiDiegoHotel() {
       toast.success(
         attendanceResponse === "si"
           ? "¡Te esperamos!"
-          : "¡Gracias por tu respuesta, te esperamos!",
+          : "¡Gracias por tu respuesta!",
         {
           position: "bottom-center",
           duration: 7000,
