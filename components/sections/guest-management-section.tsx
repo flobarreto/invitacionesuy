@@ -49,7 +49,7 @@ export function GuestManagementSection() {
               <MagneticButton
                 size="lg"
                 variant="primary"
-                onClick={() => window.open("https://wa.me/59898630797", "_blank")}
+                onClick={() => window.open("https://wa.me/59898280590", "_blank")}
                 className="!bg-[#b3d3f6] !text-[#4d3022] hover:!bg-[#b84a46]"
               >
                 Quiero ver cómo funciona

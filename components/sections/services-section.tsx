@@ -127,7 +127,7 @@ function ServiceCard({
           <MagneticButton
             size="lg"
             variant="primary"
-            onClick={() => window.open("https://wa.me/59898630797", "_blank")}
+            onClick={() => window.open("https://wa.me/59898280590", "_blank")}
             className="w-full !bg-[#cc5b57] !text-white"
           >
             {service.cta}

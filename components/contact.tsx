@@ -77,7 +77,7 @@ export function Contact() {
                 <h3 className="text-2xl font-bold mb-6">Otras formas de contacto</h3>
                 <div className="space-y-4">
                   <a
-                    href="https://wa.me/59898630797"
+                    href="https://wa.me/59898280590"
                     className="flex items-center gap-4 p-4 bg-card rounded-2xl border border-border hover:border-primary transition-colors group"
                   >
                     <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center group-hover:bg-primary/20 transition-colors">
