@@ -82,6 +82,7 @@ export default function RootLayout({
         <link href="https://fonts.googleapis.com/css2?family=Italiana&family=Shadows+Into+Light&display=swap" rel="stylesheet" />
         <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet"></link>
         <link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet"></link>
+        <link href="https://fonts.googleapis.com/css2?family=Playwrite+NO:wght@100..400&display=swap" rel="stylesheet"></link>
       </head>
       <body className="font-sans">{children}</body>
     </html>
