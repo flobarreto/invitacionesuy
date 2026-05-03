@@ -90,10 +90,12 @@
   * {
     @apply border-border outline-ring/50;
   }
+
   html {
     overflow-x: clip;
     max-width: 100%;
   }
+
   body {
     overflow-x: clip;
     max-width: 100%;
@@ -106,12 +108,15 @@
   .font-italianno {
     font-family: var(--font-italianno), cursive;
   }
+
   .font-umeko {
     font-family: var(--font-umeko), cursive;
   }
+
   .font-montserrat {
     font-family: var(--font-montserrat), sans-serif;
   }
+
   .dynalight-regular {
     font-family: "Dynalight", cursive;
     font-weight: 400;
@@ -186,7 +191,7 @@
     font-weight: 400;
     font-style: normal;
   }
-  
+
   .instrument-serif-regular-italic {
     font-family: "Instrument Serif", serif;
     font-weight: 400;
@@ -199,7 +204,28 @@
     font-weight: 400;
     font-style: normal;
   }
-  
+
+  /* <weight>: Use a value from 100 to 400
+     <uniquifier>: Use a unique and descriptive class name */
+  .playwrite-norge {
+    font-family: "Playwrite NO", cursive;
+    font-optical-sizing: auto;
+    font-weight: 200;
+    font-style: normal;
+  }
+
+  .font-tangerine {
+    font-family: var(--font-tangerine), cursive;
+    font-weight: 400;
+    font-style: normal;
+  }
+
+  .font-eb-garamond {
+    font-family: var(--font-eb-garamond), serif;
+    font-weight: 400;
+    font-style: normal;
+  }
+
 }
 
 @keyframes fade-in {
@@ -207,6 +233,7 @@
     opacity: 0;
     transform: translateY(-1rem);
   }
+
   to {
     opacity: 1;
     transform: translateY(0);

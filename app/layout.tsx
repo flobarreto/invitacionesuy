@@ -6,6 +6,8 @@ import {
   Cormorant_Garamond as CormorantGaramond,
   Bodoni_Moda,
   Dancing_Script,
+  Tangerine,
+  EB_Garamond,
 } from "next/font/google"
 import localFont from "next/font/local";
 import "./globals.css"
@@ -55,6 +57,20 @@ const dancing = Dancing_Script({
   display: "swap",
 })
 
+const tangerine = Tangerine({
+  subsets: ["latin"],
+  variable: "--font-tangerine",
+  weight: "400",
+  display: "swap",
+})
+
+const ebGaramond = EB_Garamond({
+  subsets: ["latin"],
+  variable: "--font-eb-garamond",
+  weight: "400",
+  display: "swap",
+})
+
 export const metadata = {
   title: "invitia.uy - Invitaciones digitales personalizadas",
   description: "Diseñamos invitaciones digitales a medida para eventos",
@@ -68,7 +84,7 @@ export default function RootLayout({
   return (
     <html
       lang="es"
-      className={`${montserrat.variable} ${italianno.variable} ${umekoPlum.variable} ${cormorantGaramond.variable} ${allura.variable} ${bodoni.variable} ${dancing.variable} antialiased`}
+      className={`${montserrat.variable} ${italianno.variable} ${umekoPlum.variable} ${cormorantGaramond.variable} ${allura.variable} ${bodoni.variable} ${dancing.variable} ${tangerine.variable} ${ebGaramond.variable} antialiased`}
     >
       <head>
         <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -82,6 +98,7 @@ export default function RootLayout({
         <link href="https://fonts.googleapis.com/css2?family=Italiana&family=Shadows+Into+Light&display=swap" rel="stylesheet" />
         <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet"></link>
         <link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet"></link>
+        <link href="https://fonts.googleapis.com/css2?family=Playwrite+NO:wght@100..400&display=swap" rel="stylesheet"></link>
       </head>
       <body className="font-sans">{children}</body>
     </html>
