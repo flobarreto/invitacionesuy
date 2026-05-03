@@ -214,6 +214,18 @@
     font-style: normal;
   }
 
+  .font-tangerine {
+    font-family: var(--font-tangerine), cursive;
+    font-weight: 400;
+    font-style: normal;
+  }
+
+  .font-eb-garamond {
+    font-family: var(--font-eb-garamond), serif;
+    font-weight: 400;
+    font-style: normal;
+  }
+
 }
 
 @keyframes fade-in {
