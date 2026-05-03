@@ -2,6 +2,8 @@
 
 import { CalendarHeart, Clock, MapPin, PartyPopper, Church, Shirt, MessageCircleHeart } from "lucide-react"
 import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input"
+import { Label } from "@radix-ui/react-label"
 import Image from "next/image"
 import Link from "next/link"
 import { FormEvent, useState, useEffect } from "react";
@@ -17,6 +19,9 @@ export default function BodaMicaSanti() {
   const [timeLeft, setTimeLeft] = useState<TimeLeft>({ days: 0, hours: 0, minutes: 0 });
   const [guestName, setGuestName] = useState("");
   const [attendanceResponse, setAttendanceResponse] = useState<"si" | "no">("si");
+  const [drinkChoice, setDrinkChoice] = useState<string>("cerveza");
+  const [otherDrink, setOtherDrink] = useState<string>("");
+  const [favoriteSong, setFavoriteSong] = useState<string>("");
   const [dietaryPreferences, setDietaryPreferences] = useState<string[]>(["no"]);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submissionFeedback, setSubmissionFeedback] = useState<{ type: "success" | "error"; message: string } | null>(null);
@@ -85,6 +90,8 @@ export default function BodaMicaSanti() {
         body: JSON.stringify({
           name: guestName.trim(),
           attendance: attendanceResponse,
+          drink: drinkChoice === "otro" ? otherDrink.trim() : drinkChoice,
+          favoriteSong: favoriteSong.trim(),
           dietaryPreferences,
         }),
       });
@@ -97,6 +104,9 @@ export default function BodaMicaSanti() {
       setSubmissionFeedback({ type: "success", message: "¡Gracias! Registramos tu respuesta." });
       setGuestName("");
       setAttendanceResponse("si");
+      setDrinkChoice("cerveza");
+      setOtherDrink("");
+      setFavoriteSong("");
       setDietaryPreferences(["no"]);
       setTimeout(() => setSubmissionFeedback(null), 5000);
     } catch (error) {
@@ -122,12 +132,14 @@ export default function BodaMicaSanti() {
     >
 
       {/* Hero */}
-      <section className="border-2 border-[#8D8A40]-200 m-2 relative min-h-screen flex flex-col items-center justify-center px-4 pb-0 pt-20">
+      <section className=" relative min-h-screen flex flex-col items-center justify-center px-4 pb-0 pt-20">
         <div className="max-w-4xl mx-auto text-center">
-          <p className="text-[#8B6F5E]/80 text-4xl mb-4 tracking-wide font-semibold instrument-serif-regular ">SAVE the DATE</p>
-          <div className="playwrite-norge text-4xl md:text-2xl text-[#895C28] mb-4">Mica &amp; Santi</div>
+          <p className="text-[#8B6F5E]/80 text-6xl tracking-wide font-semibold instrument-serif-regular ">SAVE</p>
+          <p className="text-[#8B6F5E]/80 text-6xl  tracking-wide font-semibold instrument-serif-regular ">the</p>
+          <p className="text-[#8B6F5E]/80 text-6xl mb-6 tracking-wide font-semibold instrument-serif-regular ">DATE</p>
+          <div className="playwrite-norge text-4xl md:text-2xl text-[#966200] mb-4">Mica &amp; Santi</div>
           <a
-            href="https://calendar.google.com/calendar/u/0/r/eventedit?text=Boda+Mica+%26+Santi&dates=20261114T220000Z/20261115T060000Z&details=%C2%A1Guardate+la+fecha+de+nuestro+casamiento+para+que+no+te+olvides+y+puedas+compartir+con+nosotros%21"
+            href="https://calendar.google.com/calendar/u/0/r/eventedit?text=Boda+Mica+%26+Santi&dates=20261017T220000Z/20261115T060000Z&details=%C2%A1Guardate+la+fecha+de+nuestro+casamiento+para+que+no+te+olvides+y+puedas+compartir+con+nosotros%21"
             target="_blank"
             rel="noopener noreferrer"
           >
@@ -142,9 +154,9 @@ export default function BodaMicaSanti() {
             <span>{String(timeLeft.minutes).padStart(2, "0")} m</span>
           </div>
 
-          <div className="relative w-90 md:w-80 mx-auto aspect-[4/3]">
+          <div className="relative w-90 md:w-80 mx-auto aspect-[5/3]">
             <Image
-              src="/bodaMica%26Santi/perros.png"
+              src="/bodaMica%26Santi/boda_espalda.png"
               alt="Mica y Santi"
               fill
               className="object-contain"
@@ -154,7 +166,7 @@ export default function BodaMicaSanti() {
         </div>
         <div className="max-w-4xl mx-auto text-center">
           <p className="ital text-[#895C28] text-l mt-4 tracking-wide ">VIÑA VARELA ZARRANZ</p>
-          <p className="text-[#8D8A40] text-sm">Montevideo, Uruguay</p>
+          <p className="text-[#8D8A40] text-sm -mb-4">Montevideo, Uruguay</p>
         </div>
         <div className="relative w-full">
           <Image
@@ -170,17 +182,17 @@ export default function BodaMicaSanti() {
       {/* Confirmar presencia */}
       <section className="px-4 bg-[#FBF7F4] py-20">
         <div className="max-w-2xl mx-auto text-center">
-          <h2 className="text-4xl md:text-5xl font-bold text-[#8B6F5E] mb-3 text-balance">Confirmá tu presencia</h2>
-          <p className="text-xl text-[#8B6F5E]/70 mb-8 leading-relaxed">
-            Nos vemos el 14 de noviembre!
+          <h2 className="text-4xl md:text-5xl instrument-serif-regular font-bold text-[#966200] mb-3 text-balance">Confirmá tu presencia</h2>
+          <p className="text-xl text-[#8D8A40]/70 mb-4 playwrite-norge">
+            Nos vemos el 17 de Octubre!
           </p>
 
           <form
             onSubmit={handleRsvpSubmit}
-            className="bg-white/90 p-6 md:p-8 text-left space-y-6"
+            className="bg-white/90 p-6 md:p-8 text-left space-y-6 rounded-md"
           >
             <div className="flex flex-col gap-2">
-              <label htmlFor="guest-name" className="text-sm font-semibold text-[#8B6F5E] uppercase tracking-wide">
+              <label htmlFor="guest-name" className="text-sm font-semibold text-[#966200] uppercase tracking-wide">
                 Nombre y Apellido
               </label>
               <input
@@ -193,74 +205,75 @@ export default function BodaMicaSanti() {
               />
             </div>
 
+            <div className="flex justify-center my-2">
+              <Image src="/bodaMica&Santi/perros.png" alt="Perros" width={160} height={160} className="object-contain" />
+            </div>
+
+            {/*Drinking Choice*/}
             <div className="space-y-3">
-              <p className="text-sm font-semibold text-[#8B6F5E] uppercase tracking-wide">Confirmar asistencia</p>
-              <div className="flex flex-col sm:flex-row gap-3">
+              <p className="text-sm font-semibold text-[#966200] uppercase tracking-wide">¿Qué te gustaría tomar?</p>
+              <div className="flex flex-col gap-2">
                 {[
-                  { value: "si", label: "Sí" },
-                  { value: "no", label: "No, lo siento" },
+                  { value: "cerveza", label: "Cerveza" },
+                  { value: "vino", label: "Vino" },
+                  { value: "fernet", label: "Fernet" },
+                  { value: "aperol", label: "Aperol" },
+                  { value: "gin-tonic", label: "Gin Tonic" },
                 ].map((option) => (
-                  <label
-                    key={option.value}
-                    className={`flex-1 cursor-pointer rounded-xl border px-4 py-3 text-center text-sm font-medium transition ${attendanceResponse === option.value
-                      ? "bg-[#B89080] text-white border-[#B89080]"
-                      : "border-[#8B6F5E]/30 text-[#8B6F5E]"
-                      }`}
-                  >
+                  <label key={option.value} className="flex items-center gap-3 cursor-pointer text-[#8B6F5E]">
                     <input
                       type="radio"
-                      name="attendance"
+                      name="drink"
                       value={option.value}
-                      checked={attendanceResponse === option.value}
-                      onChange={() => setAttendanceResponse(option.value as "si" | "no")}
-                      className="hidden"
+                      checked={drinkChoice === option.value}
+                      onChange={() => setDrinkChoice(option.value)}
+                      className="h-4 w-4 accent-[#8D8A40] focus:ring-[#B89080]"
                     />
-                    {option.label}
+                    <span className="text-sm font-medium">{option.label}</span>
                   </label>
                 ))}
+                <label className="flex items-center gap-3 cursor-pointer text-[#8B6F5E]">
+                  <input
+                    type="radio"
+                    name="drink"
+                    value="otro"
+                    checked={drinkChoice === "otro"}
+                    onChange={() => setDrinkChoice("otro")}
+                    className="h-4 w-4 accent-[#B89080] focus:ring-[#B89080]"
+                  />
+                  <span className="text-sm font-medium">Otro:</span>
+                  <input
+                    type="text"
+                    value={otherDrink}
+                    onChange={(e) => { setOtherDrink(e.target.value); setDrinkChoice("otro"); }}
+                    placeholder="¿Cuál?"
+                    className="flex-1 rounded-lg border border-[#8B6F5E]/30 bg-white/80 px-3 py-1.5 text-sm text-[#8B6F5E] focus:outline-none focus:ring-2 focus:ring-[#B89080] transition"
+                  />
+                </label>
               </div>
             </div>
 
-            <div className="flex flex-col gap-3">
-              <p className="text-sm font-semibold text-[#8B6F5E] uppercase tracking-wide">Restricciones Alimentarias</p>
-              {[
-                { value: "no", label: "No" },
-                { value: "celiaco", label: "Celíaco/a" },
-                { value: "veggie", label: "Veggie" },
-              ].map((option) => {
-                const checked = dietaryPreferences.includes(option.value);
-                return (
-                  <label key={option.value} className="flex items-center gap-3 text-[#8B6F5E]">
-                    <input
-                      type="checkbox"
-                      value={option.value}
-                      checked={checked}
-                      onChange={(event) => {
-                        const isChecked = event.target.checked;
-                        setDietaryPreferences((prev) => {
-                          if (option.value === "no") {
-                            return isChecked ? ["no"] : prev.filter((v) => v !== "no");
-                          }
-                          if (isChecked) {
-                            const withoutNo = prev.filter((v) => v !== "no");
-                            if (withoutNo.includes(option.value)) return withoutNo;
-                            return [...withoutNo, option.value];
-                          }
-                          return prev.filter((v) => v !== option.value);
-                        });
-                      }}
-                      className="h-4 w-4 rounded border-[#8B6F5E]/50 accent-[#B89080] focus:ring-[#B89080]"
-                    />
-                    {option.label}
-                  </label>
-                );
-              })}
+            <div className="flex flex-col items-start gap-2 w-full">
+              <Label
+                htmlFor="music-input"
+                className="font-semibold text-[#966200] text-xs tracking-[0] leading-[normal]"
+              >
+                ¿Qué canción no puede faltar?
+              </Label>
+
+              <Input
+                id="music-input"
+                value={favoriteSong}
+                onChange={(event) => setFavoriteSong(event.target.value)}
+                placeholder="Comparte tu canción favorita"
+                className="flex items-center justify-center gap-2 px-3 py-2 w-full rounded border-[0.75px] border-solid border-[#532c0a] bg-transparent text-[#745437] text-base tracking-[0] leading-[normal] h-auto"
+              />
             </div>
 
             <Button
               type="submit"
               disabled={true}
-              className="w-full bg-[#B89080] hover:bg-[#8B6F5E] disabled:bg-[#8B6F5E]/30 disabled:cursor-not-allowed disabled:text-white/60 text-white font-semibold text-lg py-3 rounded-lg transition-colors"
+              className="w-full bg-[#B89080] hover:bg-[#8B6F5E] disabled:bg-[#8B6F5E]/30 disabled:cursor-not-allowed disabled:text-white/80 text-white font-semibold text-lg py-3 rounded-lg transition-colors"
             >
               {isSubmitting ? "Enviando..." : "Confirmar asistencia"}
             </Button>
@@ -278,24 +291,6 @@ export default function BodaMicaSanti() {
           </form>
         </div>
       </section>
-
-      {/* WhatsApp */}
-      <footer className="bg-[#8B6F5E]/50 text-soft-white py-12 px-4 pb-15">
-        <div className="max-w-4xl mx-auto text-center">
-          <p className="text-xl md:text-2xl font-bold mb-2 text-[#8B6F5E]">¿No tenés cómo ir?</p>
-          <p className="text-[#8B6F5E] text-md mb-3 mx-3">
-            Hicimos un grupo de WhatsApp para que puedan coordinar transporte
-          </p>
-          <Button
-            className="bg-transparent text-[#8B6F5E] text-md rounded-md border-1 border-[#8B6F5E]"
-            style={{ textWrap: "wrap" }}
-            onClick={() => window.open("https://chat.whatsapp.com/ENLACE_GRUPO", "_blank")}
-          >
-            <MessageCircleHeart className="w-10 h-10" />
-            Unirme
-          </Button>
-        </div>
-      </footer>
 
       <footer className="bg-gray-200 py-5 md:py-10">
         <div className="max-w-6xl mx-auto px-4">
