@@ -27,6 +27,10 @@ const nextConfig = {
         source: '/bodaVir&Jere',
         destination: '/bodaVir&Jere',
       },
+      {
+        source: '/boda-Mica-Santi',
+        destination: '/bodaMica&Santi',
+      },
     ]
   },
 }
