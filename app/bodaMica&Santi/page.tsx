@@ -14,12 +14,33 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@radix-ui/react-label";
 import Image from "next/image";
 import Link from "next/link";
+import { Metadata } from 'next'
 import { FormEvent, useState, useEffect, useRef, TransitionEvent } from "react";
 
 interface TimeLeft {
   days: number;
   hours: number;
   minutes: number;
+}
+
+export const metadata: Metadata = {
+  title: 'Boda de Mica y Santi',
+  description: '¡Estás invitado a nuestra boda! Mira todos los detalles aquí.',
+  openGraph: {
+    title: 'Boda de Mica y Santi',
+    description: '¡Estás invitado a nuestra boda! Mira todos los detalles aquí.',
+    url: 'https://invitia.uy/bodaMica&Santi',
+    siteName: 'invitia.uy',
+    images: [
+      {
+        url: 'https://invitia.uy/bodaMica&Santi/meta-foto.jpeg', // Ruta absoluta a la imagen
+        width: 1200,
+        height: 630,
+      },
+    ],
+    locale: 'es_UY',
+    type: 'website',
+  },
 }
 
 const SAVE_THE_DATE_LINES = [
@@ -199,7 +220,7 @@ export default function BodaMicaSanti() {
         const errorBody = await response.json().catch(() => null);
         throw new Error(
           errorBody?.error ??
-            "No pudimos guardar tu respuesta. Intenta nuevamente.",
+          "No pudimos guardar tu respuesta. Intenta nuevamente.",
         );
       }
 
@@ -240,9 +261,8 @@ export default function BodaMicaSanti() {
     >
       {saveTheDatePhase !== "gone" && (
         <div
-          className={`fixed inset-0 z-30 flex flex-col items-center justify-center bg-[#f9f2e5] bg-cover bg-center bg-no-repeat px-4 transition-opacity duration-[1400ms] ease-in-out pointer-events-none ${
-            saveTheDatePhase === "shown" ? "opacity-100" : "opacity-0"
-          }`}
+          className={`fixed inset-0 z-30 flex flex-col items-center justify-center bg-[#f9f2e5] bg-cover bg-center bg-no-repeat px-4 transition-opacity duration-[1400ms] ease-in-out pointer-events-none ${saveTheDatePhase === "shown" ? "opacity-100" : "opacity-0"
+            }`}
           style={{
             backgroundImage: "url('/bodaMica%26Santi/fondo.png')",
           }}
@@ -261,9 +281,8 @@ export default function BodaMicaSanti() {
                     return (
                       <span
                         key={`${line.text}-${i}-${char}`}
-                        className={`inline-block transition-opacity ease-out ${
-                          revealSaveTheDateLetters ? "opacity-100" : "opacity-0"
-                        }`}
+                        className={`inline-block transition-opacity ease-out ${revealSaveTheDateLetters ? "opacity-100" : "opacity-0"
+                          }`}
                         style={{
                           transitionDuration: `${SAVE_THE_DATE_LETTER_MS}ms`,
                           transitionDelay: revealSaveTheDateLetters
@@ -282,11 +301,10 @@ export default function BodaMicaSanti() {
         </div>
       )}
       <section
-        className={`relative z-10 min-h-screen flex flex-col items-center md:justify-start justify-between overflow-hidden bg-[#f9f2e5] pb-0 transition-opacity duration-[1400ms] ease-in-out ${
-          saveTheDatePhase === "shown"
+        className={`relative z-10 min-h-screen flex flex-col items-center md:justify-start justify-between overflow-hidden bg-[#f9f2e5] pb-0 transition-opacity duration-[1400ms] ease-in-out ${saveTheDatePhase === "shown"
             ? "opacity-0 pointer-events-none"
             : "opacity-100"
-        }`}
+          }`}
       >
         <div
           aria-hidden
@@ -476,11 +494,10 @@ export default function BodaMicaSanti() {
 
               {submissionFeedback && (
                 <p
-                  className={`text-center text-sm font-medium ${
-                    submissionFeedback.type === "success"
+                  className={`text-center text-sm font-medium ${submissionFeedback.type === "success"
                       ? "text-[#B89080]"
                       : "text-red-500"
-                  }`}
+                    }`}
                   role="status"
                   aria-live="polite"
                 >
