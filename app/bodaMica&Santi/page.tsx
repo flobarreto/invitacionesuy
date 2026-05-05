@@ -70,7 +70,7 @@ export default function BodaMicaSanti() {
   const [attendanceResponse, setAttendanceResponse] = useState<"si" | "no">(
     "si",
   );
-  const [drinkChoice, setDrinkChoice] = useState<string>("cerveza");
+  const [drinkChoices, setDrinkChoices] = useState<string[]>([]);
   const [otherDrink, setOtherDrink] = useState<string>("");
   const [favoriteSong, setFavoriteSong] = useState<string>("");
   const [dietaryPreferences, setDietaryPreferences] = useState<string[]>([
@@ -189,7 +189,9 @@ export default function BodaMicaSanti() {
         body: JSON.stringify({
           name: guestName.trim(),
           attendance: attendanceResponse,
-          drink: drinkChoice === "otro" ? otherDrink.trim() : drinkChoice,
+          drink: drinkChoices.includes("otro")
+            ? [...drinkChoices.filter((v) => v !== "otro"), otherDrink.trim()].filter(Boolean)
+            : drinkChoices,
           favoriteSong: favoriteSong.trim(),
           dietaryPreferences,
         }),
@@ -209,7 +211,7 @@ export default function BodaMicaSanti() {
       });
       setGuestName("");
       setAttendanceResponse("si");
-      setDrinkChoice("cerveza");
+      setDrinkChoices([]);
       setOtherDrink("");
       setFavoriteSong("");
       setDietaryPreferences(["no"]);
@@ -403,8 +405,14 @@ export default function BodaMicaSanti() {
                       type="checkbox"
                       name="drink"
                       value={option.value}
-                      checked={drinkChoice === option.value}
-                      onChange={() => setDrinkChoice(option.value)}
+                      checked={drinkChoices.includes(option.value)}
+                      onChange={() =>
+                        setDrinkChoices((prev) =>
+                          prev.includes(option.value)
+                            ? prev.filter((v) => v !== option.value)
+                            : [...prev, option.value],
+                        )
+                      }
                       className="h-4 w-4 accent-[#8D8A40] focus:ring-[#B89080]"
                     />
                     <span className="text-sm md:text-lg font-medium">
@@ -418,7 +426,11 @@ export default function BodaMicaSanti() {
                     value={otherDrink}
                     onChange={(e) => {
                       setOtherDrink(e.target.value);
-                      setDrinkChoice("otro");
+                      setDrinkChoices((prev) =>
+                        e.target.value
+                          ? prev.includes("otro") ? prev : [...prev, "otro"]
+                          : prev.filter((v) => v !== "otro"),
+                      );
                     }}
                     placeholder="Otro"
                     className="flex-1 border-b border-[#8B6F5E]/50 px-3 py-1.5 text-sm text-[#8B6F5E] focus:outline-none focus:ring-2 focus:ring-[#B89080] transition"
@@ -436,11 +448,8 @@ export default function BodaMicaSanti() {
 
                 <input
                   type="text"
-                  value={otherDrink}
-                  onChange={(e) => {
-                    setOtherDrink(e.target.value);
-                    setDrinkChoice("otro");
-                  }}
+                  value={favoriteSong}
+                  onChange={(e) => setFavoriteSong(e.target.value)}
                   placeholder="Bad Bunny - Inolvidable"
                   className="flex-1 w-full  border-b border-[#8B6F5E]/50 px-3 py-1.5 text-sm text-[#8B6F5E] focus:outline-none focus:ring-2 focus:ring-[#B89080] transition"
                 />
