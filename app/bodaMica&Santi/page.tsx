@@ -174,7 +174,7 @@ export default function BodaMicaSanti() {
           className={`fixed inset-0 z-30 flex flex-col items-center justify-center bg-[#f9f2e5] bg-cover bg-center bg-no-repeat px-4 transition-opacity duration-[1400ms] ease-in-out pointer-events-none ${saveTheDatePhase === "shown" ? "opacity-100" : "opacity-0"
             }`}
           style={{
-            backgroundImage: "url('/bodaMica%26Santi/fondo.png')",
+            backgroundImage: "url('/bodaMica%26Santi/hel2.png')",
           }}
           onTransitionEnd={handleSaveTheDateTransitionEnd}
         >
