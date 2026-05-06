@@ -324,7 +324,8 @@ export default function BodaMicaSanti() {
                   { value: "vino", label: "Vino" },
                   { value: "fernet", label: "Fernet" },
                   { value: "aperol", label: "Aperol" },
-                  { value: "gin-tonic", label: "Gin Tonic" },
+                  { value: "gin", label: "Gin" },
+                  { value: "vodka", label: "Vodka" }
                 ].map((option) => (
                   <label
                     key={option.value}
