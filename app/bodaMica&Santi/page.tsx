@@ -50,7 +50,7 @@ const SAVE_THE_DATE_HIDE_AFTER_MS =
   SAVE_THE_DATE_HOLD_MS;
 
 const GOOGLE_CALENDAR_EVENT_URL =
-  "https://calendar.google.com/calendar/u/0/r/eventedit?text=Boda+Mica+%26+Santi&dates=20261017T220000Z/20261115T060000Z&details=%C2%A1Guardate+la+fecha+de+nuestro+casamiento+para+que+no+te+olvides+y+puedas+compartir+con+nosotros%21";
+  "https://calendar.google.com/calendar/render?action=TEMPLATE&text=Boda+Mica+%26+Santi&dates=20261017T180000%2F20261018T030000&ctz=America%2FMontevideo&details=%C2%A1Guardate+la+fecha+de+nuestro+casamiento+para+que+no+te+olvides+y+puedas+compartir+con+nosotros%21";
 
 /** Navegador web “completo”: evita target=_blank en WebViews / apps in-app donde suele fallar. */
 function isFullWebBrowser(): boolean {
