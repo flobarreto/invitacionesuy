@@ -60,22 +60,9 @@ function isFullWebBrowser(): boolean {
 }
 
 export default function BodaMicaSanti() {
-  const [copied, setCopied] = useState(false);
-  const [timeLeft, setTimeLeft] = useState<TimeLeft>({
-    days: 0,
-    hours: 0,
-    minutes: 0,
-  });
-  const [guestName, setGuestName] = useState("");
-  const [attendanceResponse, setAttendanceResponse] = useState<"si" | "no">(
-    "si",
-  );
   const [drinkChoices, setDrinkChoices] = useState<string[]>([]);
   const [otherDrink, setOtherDrink] = useState<string>("");
   const [favoriteSong, setFavoriteSong] = useState<string>("");
-  const [dietaryPreferences, setDietaryPreferences] = useState<string[]>([
-    "no",
-  ]);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submissionFeedback, setSubmissionFeedback] = useState<{
     type: "success" | "error";
@@ -120,65 +107,10 @@ export default function BodaMicaSanti() {
     if (saveTheDatePhaseRef.current === "out") setSaveTheDatePhase("gone");
   };
 
-  useEffect(() => {
-    const weddingDate = new Date("2026-10-17T19:00:00-03:00");
-
-    const updateCountdown = () => {
-      const now = new Date();
-      const difference = weddingDate.getTime() - now.getTime();
-
-      if (difference > 0) {
-        setTimeLeft({
-          days: Math.floor(difference / (1000 * 60 * 60 * 24)),
-          hours: Math.floor(
-            (difference % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60),
-          ),
-          minutes: Math.floor((difference % (1000 * 60 * 60)) / (1000 * 60)),
-        });
-      } else {
-        setTimeLeft({ days: 0, hours: 0, minutes: 0 });
-      }
-    };
-
-    updateCountdown();
-    const interval = setInterval(updateCountdown, 60000);
-    return () => clearInterval(interval);
-  }, []);
-
-  const copyAccountNumber = async (accountNumber: string) => {
-    try {
-      if (navigator.clipboard && navigator.clipboard.writeText) {
-        await navigator.clipboard.writeText(accountNumber);
-        setCopied(true);
-        setTimeout(() => setCopied(false), 2000);
-      } else {
-        const textArea = document.createElement("textarea");
-        textArea.value = accountNumber;
-        textArea.style.position = "fixed";
-        textArea.style.left = "-999999px";
-        document.body.appendChild(textArea);
-        textArea.select();
-        document.execCommand("copy");
-        textArea.remove();
-        setCopied(true);
-        setTimeout(() => setCopied(false), 2000);
-      }
-    } catch (err) {
-      console.error("Failed to copy: ", err);
-    }
-  };
-
   const handleRsvpSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     setSubmissionFeedback(null);
 
-    if (!guestName.trim()) {
-      setSubmissionFeedback({
-        type: "error",
-        message: "Por favor escribí tu nombre y apellido.",
-      });
-      return;
-    }
 
     setIsSubmitting(true);
 
@@ -187,13 +119,11 @@ export default function BodaMicaSanti() {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          name: guestName.trim(),
-          attendance: attendanceResponse,
           drink: drinkChoices.includes("otro")
             ? [...drinkChoices.filter((v) => v !== "otro"), otherDrink.trim()].filter(Boolean)
             : drinkChoices,
           favoriteSong: favoriteSong.trim(),
-          dietaryPreferences,
+          isSaveTheDate: true,
         }),
       });
 
@@ -207,14 +137,13 @@ export default function BodaMicaSanti() {
 
       setSubmissionFeedback({
         type: "success",
-        message: "¡Gracias! Registramos tu respuesta.",
+        message: "¡Gracias!",
       });
-      setGuestName("");
-      setAttendanceResponse("si");
+
       setDrinkChoices([]);
       setOtherDrink("");
       setFavoriteSong("");
-      setDietaryPreferences(["no"]);
+
       setTimeout(() => setSubmissionFeedback(null), 5000);
     } catch (error) {
       setSubmissionFeedback({

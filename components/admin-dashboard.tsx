@@ -41,11 +41,113 @@ interface RSVP {
   name: string
   attendance: string
   dietary_preferences?: string[]
-  favorite_song?: string
+  drink?: string[]
+  /** Some events store a single string; others (e.g. save_the_date) may use a string array in DB. */
+  favorite_song?: string | string[]
   email?: string | null
   created_at?: string
   tags?: string[]
   table_number?: string | null
+}
+
+function formatFavoriteSongForDisplay(value: unknown): string {
+  if (value === undefined || value === null) return ""
+  if (typeof value === "string") return value.trim()
+  if (Array.isArray(value)) {
+    return value
+      .map((x) => String(x ?? "").trim())
+      .filter(Boolean)
+      .join(", ")
+  }
+  if (typeof value === "number" || typeof value === "boolean") {
+    return String(value).trim()
+  }
+  return ""
+}
+
+function hasNonEmptyFavoriteSong(value: unknown): boolean {
+  return formatFavoriteSongForDisplay(value) !== ""
+}
+
+/** Tabla de respuestas solo con drink / canción (save the date). */
+const SAVE_THE_DATE_TABLE = "save_the_date_mica_santi"
+
+const SAVE_THE_DATE_EXCLUDED_KEYS = new Set([
+  "id",
+  "created_at",
+  "is_save_the_date",
+  "isSaveTheDate",
+])
+
+function columnHasMeaningfulValueForStd(key: string, value: unknown): boolean {
+  if (value === undefined || value === null) return false
+  if (typeof value === "string") {
+    const t = value.trim()
+    if (t === "" || t === "—") return false
+    if (key === "attendance" && t.toLowerCase() === "save_the_date") return false
+    return true
+  }
+  if (Array.isArray(value)) return value.length > 0
+  if (typeof value === "object") return Object.keys(value as object).length > 0
+  return true
+}
+
+function saveTheDateColumnLabel(key: string): string {
+  const labels: Record<string, string> = {
+    drink: "Bebida(s)",
+    favorite_song: "Canción favorita",
+    name: "Nombre",
+    attendance: "Asistencia",
+    dietary_preferences: "Preferencias dietéticas",
+    email: "Email",
+    tags: "Etiquetas",
+    table_number: "Mesa",
+  }
+  return labels[key] ?? key.replace(/_/g, " ")
+}
+
+/** Algunas columnas (p. ej. drink en Postgres/JSON) llegan como string '["a","b"]'. */
+function tryParseJsonStringArray(s: string): string[] | null {
+  const t = s.trim()
+  if (!t.startsWith("[") || !t.endsWith("]")) return null
+  try {
+    const parsed = JSON.parse(t) as unknown
+    if (!Array.isArray(parsed)) return null
+    return parsed
+      .map((x) => String(x ?? "").trim())
+      .filter(Boolean)
+  } catch {
+    return null
+  }
+}
+
+/** Texto plano para búsqueda / CSV (sin resolver nombres de etiquetas). */
+function formatRsvpFieldForDisplay(key: string, value: unknown): string {
+  if (value === undefined || value === null) return ""
+  if (key === "favorite_song") return formatFavoriteSongForDisplay(value)
+  if (Array.isArray(value)) {
+    return value
+      .map((x) => String(x ?? "").trim())
+      .filter(Boolean)
+      .join(", ")
+  }
+  if (typeof value === "string") {
+    if (key === "drink" || key === "dietary_preferences") {
+      const fromJson = tryParseJsonStringArray(value)
+      if (fromJson !== null) return fromJson.join(", ")
+    }
+    return value.trim()
+  }
+  if (typeof value === "object") return JSON.stringify(value)
+  return String(value).trim()
+}
+
+function saveTheDateRowSearchText(rsvp: RSVP): string {
+  const row = rsvp as unknown as Record<string, unknown>
+  return Object.keys(row)
+    .filter((k) => !SAVE_THE_DATE_EXCLUDED_KEYS.has(k))
+    .map((k) => formatRsvpFieldForDisplay(k, row[k]).toLowerCase())
+    .join(" ")
 }
 
 interface AdminDashboardProps {
@@ -171,9 +273,41 @@ export default function AdminDashboard({ username }: AdminDashboardProps) {
     return attendance.includes("sí") || attendance.includes("si")
   }
 
+  const isSaveTheDateTable = tableName === SAVE_THE_DATE_TABLE
+
+  const saveTheDateColumnKeys = useMemo(() => {
+    if (!isSaveTheDateTable) return [] as string[]
+    if (rsvps.length === 0) {
+      return ["drink", "favorite_song"]
+    }
+    const keys = new Set<string>()
+    for (const rsvp of rsvps) {
+      const row = rsvp as unknown as Record<string, unknown>
+      for (const k of Object.keys(row)) {
+        if (SAVE_THE_DATE_EXCLUDED_KEYS.has(k)) continue
+        if (columnHasMeaningfulValueForStd(k, row[k])) keys.add(k)
+      }
+    }
+    const preferred = ["drink", "favorite_song"]
+    const ordered = preferred.filter((k) => keys.has(k))
+    const rest = [...keys].filter((k) => !preferred.includes(k)).sort()
+    const result = [...ordered, ...rest]
+    return result.length > 0 ? result : ["drink", "favorite_song"]
+  }, [isSaveTheDateTable, rsvps])
+
   // Filtrar RSVPs por búsqueda, confirmados y etiquetas
   const filteredRsvps = useMemo(() => {
     let filtered = rsvps
+
+    if (isSaveTheDateTable) {
+      if (searchQuery.trim()) {
+        const query = searchQuery.toLowerCase()
+        filtered = filtered.filter((rsvp) =>
+          saveTheDateRowSearchText(rsvp).includes(query)
+        )
+      }
+      return filtered
+    }
 
     // Filtrar por búsqueda
     if (searchQuery.trim()) {
@@ -205,15 +339,18 @@ export default function AdminDashboard({ username }: AdminDashboardProps) {
     }
 
     return filtered
-  }, [rsvps, searchQuery, showOnlyConfirmed, showOnlyUnconfirmed, selectedFilterTags])
+  }, [
+    rsvps,
+    searchQuery,
+    showOnlyConfirmed,
+    showOnlyUnconfirmed,
+    selectedFilterTags,
+    isSaveTheDateTable,
+  ])
 
   // Detectar si la tabla tiene la columna favorite_song
   const hasFavoriteSong = useMemo(() => {
-    return rsvps.some((rsvp) => 
-      rsvp.favorite_song !== undefined && 
-      rsvp.favorite_song !== null && 
-      rsvp.favorite_song.trim() !== ""
-    )
+    return rsvps.some((rsvp) => hasNonEmptyFavoriteSong(rsvp.favorite_song))
   }, [rsvps])
 
   const hasEmail = useMemo(() => {
@@ -430,6 +567,20 @@ export default function AdminDashboard({ username }: AdminDashboardProps) {
     return tag
   }
 
+  const getSaveTheDateCellText = (key: string, rsvp: RSVP): string => {
+    if (key === "tags") {
+      const ids = rsvp.tags
+      if (!ids?.length) return "—"
+      const names = ids
+        .map((id) => getTagById(String(id))?.name ?? String(id))
+        .filter(Boolean)
+      return names.length ? names.join(", ") : "—"
+    }
+    const v = (rsvp as unknown as Record<string, unknown>)[key]
+    const text = formatRsvpFieldForDisplay(key, v)
+    return text || "—"
+  }
+
   const handleTableNumberChange = async (rsvpId: string, tableNumber: string | null) => {
     try {
       const response = await fetch("/api/admin/update-rsvp-table-number", {
@@ -482,6 +633,39 @@ export default function AdminDashboard({ username }: AdminDashboardProps) {
 
   // Función para descargar CSV
   const handleDownloadCSV = () => {
+    const escapeCSV = (value: string) => {
+      if (value.includes(",") || value.includes('"') || value.includes("\n")) {
+        return `"${value.replace(/"/g, '""')}"`
+      }
+      return value
+    }
+
+    if (isSaveTheDateTable) {
+      const headers = saveTheDateColumnKeys.map((k) => saveTheDateColumnLabel(k))
+      const csvRows = [
+        headers.join(","),
+        ...filteredRsvps.map((rsvp) =>
+          saveTheDateColumnKeys
+            .map((key) => escapeCSV(getSaveTheDateCellText(key, rsvp)))
+            .join(","),
+        ),
+      ]
+      const csvContent = csvRows.join("\n")
+      const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" })
+      const link = document.createElement("a")
+      const url = URL.createObjectURL(blob)
+      link.setAttribute("href", url)
+      link.setAttribute(
+        "download",
+        `confirmaciones-${tableName}-${new Date().toISOString().split("T")[0]}.csv`,
+      )
+      link.style.visibility = "hidden"
+      document.body.appendChild(link)
+      link.click()
+      document.body.removeChild(link)
+      return
+    }
+
     const headers = [
       "Nombre",
       "Asistencia",
@@ -491,46 +675,39 @@ export default function AdminDashboard({ username }: AdminDashboardProps) {
       "Etiquetas",
       "Fecha de Respuesta",
     ]
-    
+
     const csvRows = [
       headers.join(","),
       ...filteredRsvps.map((rsvp) => {
-        const dietary = rsvp.dietary_preferences && rsvp.dietary_preferences.length > 0
-          ? Array.isArray(rsvp.dietary_preferences)
-            ? rsvp.dietary_preferences.join("; ")
-            : rsvp.dietary_preferences
-          : "no"
-        
+        const dietary =
+          rsvp.dietary_preferences && rsvp.dietary_preferences.length > 0
+            ? Array.isArray(rsvp.dietary_preferences)
+              ? rsvp.dietary_preferences.join("; ")
+              : rsvp.dietary_preferences
+            : "no"
+
         const date = rsvp.created_at ? formatDate(rsvp.created_at) : "N/A"
-        
+
         // Obtener nombres de etiquetas
-        const tagNames = rsvp.tags && rsvp.tags.length > 0
-          ? rsvp.tags
-              .map((tagId) => {
-                const tag = getTagById(tagId)
-                return tag ? tag.name : null
-              })
-              .filter((name) => name !== null)
-              .join("; ")
-          : ""
-        
-        // Escapar comillas y comas en los valores
-        const escapeCSV = (value: string) => {
-          if (value.includes(",") || value.includes('"') || value.includes("\n")) {
-            return `"${value.replace(/"/g, '""')}"`
-          }
-          return value
-        }
-        
+        const tagNames =
+          rsvp.tags && rsvp.tags.length > 0
+            ? rsvp.tags
+                .map((tagId) => {
+                  const tag = getTagById(tagId)
+                  return tag ? tag.name : null
+                })
+                .filter((name) => name !== null)
+                .join("; ")
+            : ""
+
         const row = [
           escapeCSV(rsvp.name),
           escapeCSV(rsvp.attendance),
           escapeCSV(dietary),
         ]
-        
+
         if (hasFavoriteSong) {
-          const favoriteSong = rsvp.favorite_song || ""
-          row.push(escapeCSV(favoriteSong))
+          row.push(escapeCSV(formatFavoriteSongForDisplay(rsvp.favorite_song)))
         }
 
         if (hasEmail) {
@@ -539,7 +716,7 @@ export default function AdminDashboard({ username }: AdminDashboardProps) {
 
         row.push(escapeCSV(tagNames))
         row.push(escapeCSV(date))
-        
+
         return row.join(",")
       }),
     ]
@@ -578,12 +755,19 @@ export default function AdminDashboard({ username }: AdminDashboardProps) {
         </div>
 
         {/* Stats Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div
+          className={`grid grid-cols-1 gap-4 ${isSaveTheDateTable ? "" : "md:grid-cols-3"}`}
+        >
           <Card
             className={`cursor-pointer transition-all hover:shadow-md ${
-              !showOnlyConfirmed && !showOnlyUnconfirmed ? "ring-2 ring-primary ring-offset-2 dark:ring-offset-gray-900" : ""
+              !isSaveTheDateTable &&
+              !showOnlyConfirmed &&
+              !showOnlyUnconfirmed
+                ? "ring-2 ring-primary ring-offset-2 dark:ring-offset-gray-900"
+                : ""
             }`}
             onClick={() => {
+              if (isSaveTheDateTable) return
               setShowOnlyConfirmed(false)
               setShowOnlyUnconfirmed(false)
             }}
@@ -595,50 +779,66 @@ export default function AdminDashboard({ username }: AdminDashboardProps) {
             <CardContent>
               <div className="text-2xl font-bold">{rsvps.length}</div>
               <p className="text-xs text-muted-foreground">
-                {!showOnlyConfirmed && !showOnlyUnconfirmed ? "Mostrando todas · Clic para ver todas" : "Personas que respondieron · Clic para ver todas"}
+                {isSaveTheDateTable
+                  ? "Respuestas recibidas"
+                  : !showOnlyConfirmed && !showOnlyUnconfirmed
+                    ? "Mostrando todas · Clic para ver todas"
+                    : "Personas que respondieron · Clic para ver todas"}
               </p>
             </CardContent>
           </Card>
-          <Card
-            className={`cursor-pointer transition-all hover:shadow-md ${
-              showOnlyConfirmed ? "ring-2 ring-green-500 ring-offset-2 dark:ring-offset-gray-900" : ""
-            }`}
-            onClick={() => {
-              setShowOnlyConfirmed((prev) => !prev)
-              if (!showOnlyConfirmed) setShowOnlyUnconfirmed(false)
-            }}
-          >
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Confirmados</CardTitle>
-              <Users className="h-4 w-4 text-green-600" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold text-green-600">{totalConfirmedCount}</div>
-              <p className="text-xs text-muted-foreground">
-                {showOnlyConfirmed ? "Mostrando solo confirmados · Clic para quitar filtro" : "Asistirán al evento · Clic para filtrar"}
-              </p>
-            </CardContent>
-          </Card>
-          <Card
-            className={`cursor-pointer transition-all hover:shadow-md ${
-              showOnlyUnconfirmed ? "ring-2 ring-red-500 ring-offset-2 dark:ring-offset-gray-900" : ""
-            }`}
-            onClick={() => {
-              setShowOnlyUnconfirmed((prev) => !prev)
-              if (!showOnlyUnconfirmed) setShowOnlyConfirmed(false)
-            }}
-          >
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">No Confirmados</CardTitle>
-              <Users className="h-4 w-4 text-red-600" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold text-red-600">{totalDeclinedCount}</div>
-              <p className="text-xs text-muted-foreground">
-                {showOnlyUnconfirmed ? "Mostrando solo no confirmados · Clic para quitar filtro" : "No asistirán · Clic para filtrar"}
-              </p>
-            </CardContent>
-          </Card>
+          {!isSaveTheDateTable && (
+            <>
+              <Card
+                className={`cursor-pointer transition-all hover:shadow-md ${
+                  showOnlyConfirmed
+                    ? "ring-2 ring-green-500 ring-offset-2 dark:ring-offset-gray-900"
+                    : ""
+                }`}
+                onClick={() => {
+                  setShowOnlyConfirmed((prev) => !prev)
+                  if (!showOnlyConfirmed) setShowOnlyUnconfirmed(false)
+                }}
+              >
+                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                  <CardTitle className="text-sm font-medium">Confirmados</CardTitle>
+                  <Users className="h-4 w-4 text-green-600" />
+                </CardHeader>
+                <CardContent>
+                  <div className="text-2xl font-bold text-green-600">{totalConfirmedCount}</div>
+                  <p className="text-xs text-muted-foreground">
+                    {showOnlyConfirmed
+                      ? "Mostrando solo confirmados · Clic para quitar filtro"
+                      : "Asistirán al evento · Clic para filtrar"}
+                  </p>
+                </CardContent>
+              </Card>
+              <Card
+                className={`cursor-pointer transition-all hover:shadow-md ${
+                  showOnlyUnconfirmed
+                    ? "ring-2 ring-red-500 ring-offset-2 dark:ring-offset-gray-900"
+                    : ""
+                }`}
+                onClick={() => {
+                  setShowOnlyUnconfirmed((prev) => !prev)
+                  if (!showOnlyUnconfirmed) setShowOnlyConfirmed(false)
+                }}
+              >
+                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                  <CardTitle className="text-sm font-medium">No Confirmados</CardTitle>
+                  <Users className="h-4 w-4 text-red-600" />
+                </CardHeader>
+                <CardContent>
+                  <div className="text-2xl font-bold text-red-600">{totalDeclinedCount}</div>
+                  <p className="text-xs text-muted-foreground">
+                    {showOnlyUnconfirmed
+                      ? "Mostrando solo no confirmados · Clic para quitar filtro"
+                      : "No asistirán · Clic para filtrar"}
+                  </p>
+                </CardContent>
+              </Card>
+            </>
+          )}
         </div>
 
         {/* RSVPs Table */}
@@ -646,9 +846,12 @@ export default function AdminDashboard({ username }: AdminDashboardProps) {
           <CardHeader>
             <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
               <div>
-                <CardTitle>Lista de Confirmaciones</CardTitle>
+                <CardTitle>
+                  {isSaveTheDateTable ? "Respuestas Save the Date" : "Lista de Confirmaciones"}
+                </CardTitle>
               </div>
               <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3 w-full sm:w-auto">
+                {!isSaveTheDateTable && (
                 <Button
                   onClick={() => setIsAddModalOpen(true)}
                   className="w-full sm:w-auto"
@@ -656,6 +859,7 @@ export default function AdminDashboard({ username }: AdminDashboardProps) {
                   <Plus className="h-4 w-4 mr-2" />
                   Agregar Invitado
                 </Button>
+                )}
                 <Button
                   variant="outline"
                   onClick={handleDownloadCSV}
@@ -677,12 +881,17 @@ export default function AdminDashboard({ username }: AdminDashboardProps) {
                   <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                   <Input
                     type="text"
-                    placeholder="Buscar por nombre..."
+                    placeholder={
+                      isSaveTheDateTable
+                        ? "Buscar en las respuestas..."
+                        : "Buscar por nombre..."
+                    }
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
                     className="pl-10"
                   />
                 </div>
+                  {!isSaveTheDateTable && (
                   <Button
                     variant={selectedFilterTags.length > 0 ? "default" : "outline"}
                     onClick={() => setIsFilterModalOpen(true)}
@@ -696,9 +905,10 @@ export default function AdminDashboard({ username }: AdminDashboardProps) {
                       </span>
                     )}
                   </Button>
+                  )}
                 </div>
                 {/* Mostrar etiquetas seleccionadas para filtrar */}
-                {selectedFilterTags.length > 0 && (
+                {!isSaveTheDateTable && selectedFilterTags.length > 0 && (
                   <div className="flex flex-wrap gap-2 mt-2">
                     {selectedFilterTags.map((tagId) => {
                       const tag = getTagById(tagId)
@@ -732,12 +942,16 @@ export default function AdminDashboard({ username }: AdminDashboardProps) {
                     </Button>
                   </div>
                 )}
-                {(searchQuery || showOnlyConfirmed || showOnlyUnconfirmed || selectedFilterTags.length > 0) && (
+                {(searchQuery ||
+                  (!isSaveTheDateTable &&
+                    (showOnlyConfirmed || showOnlyUnconfirmed || selectedFilterTags.length > 0))) && (
                   <p className="text-sm text-muted-foreground mt-2">
                     Mostrando {filteredRsvps.length} de {rsvps.length} resultados
-                    {showOnlyConfirmed && " (solo confirmados)"}
-                    {showOnlyUnconfirmed && " (solo no confirmados)"}
-                    {selectedFilterTags.length > 0 && ` (filtrado por ${selectedFilterTags.length} etiqueta${selectedFilterTags.length > 1 ? 's' : ''})`}
+                    {!isSaveTheDateTable && showOnlyConfirmed && " (solo confirmados)"}
+                    {!isSaveTheDateTable && showOnlyUnconfirmed && " (solo no confirmados)"}
+                    {!isSaveTheDateTable &&
+                      selectedFilterTags.length > 0 &&
+                      ` (filtrado por ${selectedFilterTags.length} etiqueta${selectedFilterTags.length > 1 ? "s" : ""})`}
                   </p>
                 )}
               </div>
@@ -766,7 +980,63 @@ export default function AdminDashboard({ username }: AdminDashboardProps) {
               </div>
             ) : (
               <>
-                {/* Mobile View - Expandible Cards */}
+                {/* Mobile View - Save the Date (solo columnas con datos útiles) */}
+                {isSaveTheDateTable ? (
+                  <div className="block md:hidden space-y-3">
+                    {filteredRsvps.map((rsvp, index) => {
+                      const rsvpId = rsvp.id || `rsvp-${index}`
+                      const isExpanded = expandedRows.has(rsvpId)
+                      return (
+                        <Card
+                          key={rsvpId}
+                          className="cursor-pointer"
+                          onClick={() => toggleRow(rsvpId)}
+                        >
+                          <CardContent className="p-4 py-0">
+                            <div className="flex items-center justify-between">
+                              <div className="flex-1">
+                                <div className="flex items-center justify-between">
+                                  <p className="font-medium text-base">
+                                    Respuesta {index + 1}
+                                  </p>
+                                  <Button
+                                    variant="ghost"
+                                    size="sm"
+                                    className="h-8 w-8 p-0 text-red-600 hover:text-red-700 hover:bg-red-50"
+                                    onClick={(e) => handleDeleteClick(rsvp, e)}
+                                  >
+                                    <Trash2 className="h-4 w-4" />
+                                  </Button>
+                                </div>
+                                {isExpanded && (
+                                  <div className="mt-3 space-y-2 pt-3 border-t">
+                                    {saveTheDateColumnKeys.map((key) => (
+                                      <div key={key}>
+                                        <p className="text-xs text-muted-foreground mb-1">
+                                          {saveTheDateColumnLabel(key)}
+                                        </p>
+                                        <p className="text-sm break-words">
+                                          {getSaveTheDateCellText(key, rsvp)}
+                                        </p>
+                                      </div>
+                                    ))}
+                                  </div>
+                                )}
+                              </div>
+                              <div className="ml-2">
+                                {isExpanded ? (
+                                  <ChevronUp className="h-5 w-5 text-muted-foreground" />
+                                ) : (
+                                  <ChevronDown className="h-5 w-5 text-muted-foreground" />
+                                )}
+                              </div>
+                            </div>
+                          </CardContent>
+                        </Card>
+                      )
+                    })}
+                  </div>
+                ) : (
                 <div className="block md:hidden space-y-3">
                   {filteredRsvps.map((rsvp, index) => {
                     const rsvpId = rsvp.id || `rsvp-${index}`
@@ -816,7 +1086,9 @@ export default function AdminDashboard({ username }: AdminDashboardProps) {
                                   {hasFavoriteSong && (
                                     <div>
                                       <p className="text-xs text-muted-foreground mb-1">Canción Favorita</p>
-                                      <p className="text-sm">{rsvp.favorite_song || "—"}</p>
+                                      <p className="text-sm">
+                                        {formatFavoriteSongForDisplay(rsvp.favorite_song) || "—"}
+                                      </p>
                                     </div>
                                   )}
                                   {hasEmail && (
@@ -903,8 +1175,44 @@ export default function AdminDashboard({ username }: AdminDashboardProps) {
                     )
                   })}
                 </div>
+                )}
 
-                {/* Desktop View - Full Table */}
+                {/* Desktop View - Save the Date */}
+                {isSaveTheDateTable ? (
+                  <div className="hidden md:block overflow-x-auto">
+                    <Table>
+                      <TableHeader>
+                        <TableRow>
+                          {saveTheDateColumnKeys.map((key) => (
+                            <TableHead key={key}>{saveTheDateColumnLabel(key)}</TableHead>
+                          ))}
+                          <TableHead className="w-[100px]">Acciones</TableHead>
+                        </TableRow>
+                      </TableHeader>
+                      <TableBody>
+                        {filteredRsvps.map((rsvp, index) => (
+                          <TableRow key={rsvp.id || index}>
+                            {saveTheDateColumnKeys.map((key) => (
+                              <TableCell key={key} className="max-w-xs truncate">
+                                {getSaveTheDateCellText(key, rsvp)}
+                              </TableCell>
+                            ))}
+                            <TableCell>
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                className="h-8 w-8 p-0 text-red-600 hover:text-red-700 hover:bg-red-50"
+                                onClick={(e) => handleDeleteClick(rsvp, e)}
+                              >
+                                <Trash2 className="h-4 w-4" />
+                              </Button>
+                            </TableCell>
+                          </TableRow>
+                        ))}
+                      </TableBody>
+                    </Table>
+                  </div>
+                ) : (
                 <div className="hidden md:block overflow-x-auto">
                   <Table>
                     <TableHeader>
@@ -946,7 +1254,7 @@ export default function AdminDashboard({ username }: AdminDashboardProps) {
                             </TableCell>
                             {hasFavoriteSong && (
                               <TableCell className="max-w-xs truncate">
-                                {rsvp.favorite_song || "—"}
+                                {formatFavoriteSongForDisplay(rsvp.favorite_song) || "—"}
                               </TableCell>
                             )}
                             {hasEmail && (
@@ -1080,6 +1388,7 @@ export default function AdminDashboard({ username }: AdminDashboardProps) {
                     </TableBody>
                   </Table>
                 </div>
+                )}
               </>
             )}
           </CardContent>

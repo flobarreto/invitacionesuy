@@ -18,7 +18,9 @@ export async function POST(request: Request) {
       attendance?: string
       dietaryPreferences?: string[]
       favoriteSong?: string
-    }
+      drink?: string[]
+      isSaveTheDate?: boolean
+    };
 
     try {
       payload = await request.json()
@@ -29,9 +31,9 @@ export async function POST(request: Request) {
       )
     }
 
-    const { name, attendance, dietaryPreferences = [], favoriteSong = "" } = payload
+    const { name, attendance, dietaryPreferences = [], favoriteSong = "", drink = [], isSaveTheDate = false } = payload
 
-    if (!name || !attendance) {
+    if (!name || !attendance && !isSaveTheDate) {
       return NextResponse.json(
         { error: "El nombre y la respuesta de asistencia son obligatorios" },
         { status: 400 }
@@ -42,6 +44,7 @@ export async function POST(request: Request) {
       name: name.trim(),
       attendance,
       dietary_preferences: dietaryPreferences,
+      drink,
     }
 
     // Solo incluir favorite_song si está presente y no está vacío
