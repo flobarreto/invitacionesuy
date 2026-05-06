@@ -289,7 +289,7 @@ export default function BodaMicaSanti() {
       >
         <div className="max-w-2xl md:max-w-[70%] mx-auto text-center bg-white/40 md:bg-white/70 p-6 md:p-8 text-left rounded-md">
           <h2 className="text-lg md:text-3xl text-[#966200] mb-3 md:mb-10 text-balance text-center uppercase">
-            Queremos que seas parte desde el principio
+            Nuestros humanos se casan y queremos que seas parte desde el principio
           </h2>
           <form
             onSubmit={handleRsvpSubmit}
