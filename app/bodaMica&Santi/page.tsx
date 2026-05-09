@@ -10,11 +10,25 @@ import {
   MessageCircleHeart,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@radix-ui/react-label";
 import Image from "next/image";
 import Link from "next/link";
-import { FormEvent, useState, useEffect, useRef, TransitionEvent } from "react";
+import {
+  FormEvent,
+  useState,
+  useEffect,
+  useRef,
+  TransitionEvent,
+  MouseEvent,
+} from "react";
 
 interface TimeLeft {
   days: number;
@@ -52,11 +66,21 @@ const SAVE_THE_DATE_HIDE_AFTER_MS =
 const GOOGLE_CALENDAR_EVENT_URL =
   "https://calendar.google.com/calendar/render?action=TEMPLATE&text=Boda+Mica+%26+Santi&dates=20261017T180000%2F20261018T030000&ctz=America%2FMontevideo&details=%C2%A1Guardate+la+fecha+de+nuestro+casamiento+para+que+no+te+olvides+y+puedas+compartir+con+nosotros%21";
 
-/** Navegador web “completo”: evita target=_blank en WebViews / apps in-app donde suele fallar. */
-function isFullWebBrowser(): boolean {
-  if (typeof navigator === "undefined") return true;
-  const ua = navigator.userAgent;
-  return !/FBAN|FBAV|Instagram|Line\/|; wv\)|\bWebView\b/i.test(ua);
+/** .ics vía HTTPS: en iPhone, Safari entrega el evento a Calendario (evita el data: que suele forzar “descargar”). */
+const APPLE_CALENDAR_EVENT_PATH = "/api/calendar/boda-mica-santi";
+
+/** Solo iPhone (no iPad): el modal de elegir calendario. */
+function isIPhone(): boolean {
+  if (typeof navigator === "undefined") return false;
+  return /iPhone/.test(navigator.userAgent);
+}
+
+/** Teléfono / tablet: no abrir calendario en pestaña nueva. */
+function isMobile(): boolean {
+  if (typeof navigator === "undefined") return false;
+  return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
+    navigator.userAgent,
+  );
 }
 
 export default function BodaMicaSanti() {
@@ -76,10 +100,37 @@ export default function BodaMicaSanti() {
   const saveTheDatePhaseRef = useRef(saveTheDatePhase);
   saveTheDatePhaseRef.current = saveTheDatePhase;
 
-  const [calendarLinkNewTab, setCalendarLinkNewTab] = useState(true);
-  useEffect(() => {
-    setCalendarLinkNewTab(isFullWebBrowser());
-  }, []);
+  const [calendarChoiceOpen, setCalendarChoiceOpen] = useState(false);
+
+  /**
+   * target siempre _self (mismo HTML en servidor y cliente → sin error de hidratación).
+   * Escritorio: nueva pestaña vía window.open. Móvil: navegación normal. iPhone: modal.
+   */
+  const handleCalendarAnchorClick = (event: MouseEvent<HTMLAnchorElement>) => {
+    if (isIPhone()) {
+      event.preventDefault();
+      setCalendarChoiceOpen(true);
+      return;
+    }
+    if (!isMobile()) {
+      event.preventDefault();
+      window.open(GOOGLE_CALENDAR_EVENT_URL, "_blank", "noopener,noreferrer");
+    }
+  };
+
+  const openAppleCalendar = () => {
+    setCalendarChoiceOpen(false);
+    window.location.assign(APPLE_CALENDAR_EVENT_PATH);
+  };
+
+  const openGoogleCalendar = () => {
+    setCalendarChoiceOpen(false);
+    if (isMobile()) {
+      window.location.assign(GOOGLE_CALENDAR_EVENT_URL);
+      return;
+    }
+    window.open(GOOGLE_CALENDAR_EVENT_URL, "_blank", "noopener,noreferrer");
+  };
 
   useEffect(() => {
     const id = requestAnimationFrame(() => {
@@ -232,15 +283,22 @@ export default function BodaMicaSanti() {
         />
         <div className="relative z-10 max-w-4xl mx-auto w-full text-center">
           <div>
-            <a
-              href={GOOGLE_CALENDAR_EVENT_URL}
-              target={calendarLinkNewTab ? "_blank" : "_self"}
-              rel={calendarLinkNewTab ? "noopener noreferrer" : undefined}
+            <Button
+              asChild
+              variant="ghost"
+              className="pointer-events-auto h-auto min-h-0 p-0 text-[#895C28] shadow-none hover:bg-transparent hover:text-[#895C28] focus-visible:ring-2 focus-visible:ring-[#B89080] focus-visible:ring-offset-2"
             >
-              <p className="text-[#895C28] text-2xl mt-20 tracking-wide md:text-6xl">
-                17 · OCTUBRE · 2026
-              </p>
-            </a>
+              <a
+                href={GOOGLE_CALENDAR_EVENT_URL}
+                target="_self"
+                rel="noopener noreferrer"
+                onClick={handleCalendarAnchorClick}
+              >
+                <p className="text-[#895C28] text-2xl mt-20 tracking-wide md:text-6xl">
+                  17 · OCTUBRE · 2026
+                </p>
+              </a>
+            </Button>
             <a
               href="https://maps.app.goo.gl/xnSWNpQYU9fHXazY6"
               target="_blank"
@@ -301,7 +359,7 @@ export default function BodaMicaSanti() {
             >
               <div className="flex justify-center my-2 ">
                 <Image
-                  src="/bodaMica&Santi/perros.png"
+                  src="/bodaMica%26Santi/perros.png"
                   alt="Perros"
                   width={320}
                   height={320}
@@ -399,12 +457,13 @@ export default function BodaMicaSanti() {
               </Button>
               <Button
                 asChild
-                className="flex-1 bg-[#827a71] hover:bg-[#827a71] disabled:bg-[#827a71]/30 disabled:cursor-not-allowed disabled:text-white/80 text-white text-lg py-3 rounded-lg transition-colors"
+                className="pointer-events-auto flex-1 bg-[#827a71] hover:bg-[#827a71] disabled:bg-[#827a71]/30 disabled:cursor-not-allowed disabled:text-white/80 text-white text-lg py-3 rounded-lg transition-colors"
               >
                 <a
                   href={GOOGLE_CALENDAR_EVENT_URL}
-                  target={calendarLinkNewTab ? "_blank" : "_self"}
-                  rel={calendarLinkNewTab ? "noopener noreferrer" : undefined}
+                  target="_self"
+                  rel="noopener noreferrer"
+                  onClick={handleCalendarAnchorClick}
                 >
                   Agendar en mi calendario
                 </a>
@@ -426,6 +485,36 @@ export default function BodaMicaSanti() {
           </form>
         </div>
       </section>
+
+      <Dialog open={calendarChoiceOpen} onOpenChange={setCalendarChoiceOpen}>
+        <DialogContent className="max-w-[calc(100%-2rem)] border-[#8B6F5E]/30 bg-[#f9f2e5] text-[#5c4030] sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle className="font-eb-garamond text-xl text-[#966200]">
+              Agendar el evento
+            </DialogTitle>
+            <DialogDescription className="text-[#8B6F5E]">
+              Elegí con qué calendario querés guardar la fecha.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="flex flex-col gap-3 pt-1">
+            <Button
+              type="button"
+              className="w-full bg-[#8D8A40] text-white hover:bg-[#966200]"
+              onClick={openAppleCalendar}
+            >
+              Abrir con Calendario de Apple
+            </Button>
+            <Button
+              type="button"
+              variant="outline"
+              className="w-full border-[#8B6F5E]/50 bg-transparent text-[#5c4030] hover:bg-[#8B6F5E]/10"
+              onClick={openGoogleCalendar}
+            >
+              Abrir con Google Calendar
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
 
       <footer className="bg-gray-200 py-5 md:py-10">
         <div className="max-w-6xl mx-auto px-4">
