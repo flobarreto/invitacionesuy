@@ -282,7 +282,7 @@ export default function BodaMicaSanti() {
           }}
         />
         <div className="relative z-10 max-w-4xl mx-auto w-full text-center">
-          <div>
+          <div className="flex flex-col items-center">
             <Button
               asChild
               variant="ghost"
