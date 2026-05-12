@@ -31,6 +31,10 @@ const nextConfig = {
         source: '/boda-Mica-Santi',
         destination: '/bodaMica&Santi',
       },
+      {
+        source: '/mesas-domi-diego/qr',
+        destination: '/mesas-domi-diego-qr',
+      },
     ]
   },
 }
