@@ -13,7 +13,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table"
-import { RefreshCw, Users, X, Tag } from "lucide-react"
+import { RefreshCw, Users, X, Tag, LayoutGrid } from "lucide-react"
 import { Badge } from "@/components/ui/badge"
 import { Checkbox } from "@/components/ui/checkbox"
 import { Label } from "@/components/ui/label"
@@ -28,6 +28,7 @@ import {
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs"
 import TableNumberDialog from "@/components/table-number-dialog"
+import { FloorPlan } from "@/components/floor-plan"
 
 interface Tag {
   id: string
@@ -315,6 +316,10 @@ export default function TablesPage() {
               <TabsTrigger value="sin-mesa">
                 <Users className="h-4 w-4 mr-2" />
                 Sin Mesa ({rsvpsWithoutTable.length})
+              </TabsTrigger>
+              <TabsTrigger value="plano">
+                <LayoutGrid className="h-4 w-4 mr-2" />
+                Plano
               </TabsTrigger>
             </TabsList>
 
@@ -670,6 +675,14 @@ export default function TablesPage() {
                   </CardContent>
                 </Card>
               )}
+            </TabsContent>
+
+            <TabsContent value="plano" className="mt-0">
+              <FloorPlan
+                rsvps={rsvps}
+                availableTags={availableTags}
+                onRsvpTableChange={handleTableNumberChange}
+              />
             </TabsContent>
           </Tabs>
         )}
