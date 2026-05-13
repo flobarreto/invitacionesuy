@@ -5,7 +5,6 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Badge } from "@/components/ui/badge"
-import { Slider } from "@/components/ui/slider"
 import {
   Dialog,
   DialogContent,
@@ -13,7 +12,7 @@ import {
   DialogTitle,
   DialogFooter,
 } from "@/components/ui/dialog"
-import { Upload, Plus, X, Search, Save, Trash2, RefreshCw, Tag as TagIcon, Sun, ZoomIn, ZoomOut } from "lucide-react"
+import { Upload, Plus, X, Search, Save, Trash2, RefreshCw, Tag as TagIcon, Sun, ZoomIn, ZoomOut, User, Users } from "lucide-react"
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 
@@ -556,27 +555,6 @@ export function FloorPlan({ rsvps, availableTags, onRsvpTableChange }: FloorPlan
           )}
         </Button>
 
-        {plan.imageUrl && (
-          <div className="flex items-center gap-2 min-w-[220px]">
-            <Label className="text-sm whitespace-nowrap shrink-0">Opacidad:</Label>
-            <Slider
-              value={[Math.round(plan.opacity * 100)]}
-              min={0}
-              max={100}
-              step={5}
-              onValueChange={([v]) => setPlan((prev) => ({ ...prev, opacity: v / 100 }))}
-              onValueCommit={([v]) => {
-                const next = { ...planRef.current, opacity: v / 100 }
-                applyUpdate(next, true)
-              }}
-              className="w-28"
-            />
-            <span className="text-sm text-muted-foreground w-9 text-right tabular-nums">
-              {Math.round(plan.opacity * 100)}%
-            </span>
-          </div>
-        )}
-
         <Button size="sm" onClick={handleAddTable}>
           <Plus className="h-4 w-4 mr-2" />
           Agregar mesa
@@ -596,7 +574,7 @@ export function FloorPlan({ rsvps, availableTags, onRsvpTableChange }: FloorPlan
           size="sm"
           onClick={() => setShowPersons((v) => !v)}
         >
-          <Sun className="h-4 w-4 mr-2" />
+          <Users className="h-4 w-4 mr-2" />
           Ver personas
         </Button>
 
@@ -649,7 +627,7 @@ export function FloorPlan({ rsvps, availableTags, onRsvpTableChange }: FloorPlan
             src={plan.imageUrl}
             alt="Plano del salón"
             className="absolute inset-0 w-full h-full object-contain pointer-events-none"
-            style={{ opacity: plan.opacity, transform: `scale(${zoom})`, transformOrigin: "center center" }}
+            style={{ opacity: 0.1, transform: `scale(${zoom})`, transformOrigin: "center center" }}
             draggable={false}
           />
         )}
