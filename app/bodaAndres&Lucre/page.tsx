@@ -381,7 +381,7 @@ export default function BodaAndresLucre() {
           </div>
           <div className="h-[0.5px] w-full bg-black mx-auto mb-10"></div>
           <p>
-            <b className="font-bold">Titular:</b> Andrés Chemavonian
+            <b className="font-bold">Titular:</b> Andrés Pérez
           </p>
           <p>
             <b className="font-bold">Banco:</b> BROU{" "}
@@ -398,15 +398,15 @@ export default function BodaAndresLucre() {
               role="button"
               tabIndex={0}
               className="cursor-pointer underline hover:opacity-80"
-              onClick={() => copyAccountNumber("000403106-00001")}
+              onClick={() => copyAccountNumber("123456789-00001")}
               onKeyDown={(e) => {
                 if (e.key === "Enter" || e.key === " ") {
                   e.preventDefault();
-                  copyAccountNumber("000403106-00001");
+                  copyAccountNumber("123456789-00001");
                 }
               }}
             >
-              000403106-00001
+              123456789-00001
             </span>
           </p>
           <p className="text-sm min-h-[24px]">{copied && "✓ Copiado!"}</p>

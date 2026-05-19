@@ -29,6 +29,7 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 import { Badge } from "@/components/ui/badge"
 import TableNumberDialog from "@/components/table-number-dialog"
+import { tryParseJsonStringArray } from "@/lib/adminDrinks"
 
 interface Tag {
   id: string
@@ -69,14 +70,13 @@ function hasNonEmptyFavoriteSong(value: unknown): boolean {
   return formatFavoriteSongForDisplay(value) !== ""
 }
 
-/** Tabla de respuestas solo con drink / canción (save the date). */
-const SAVE_THE_DATE_TABLE = "save_the_date_mica_santi"
-
 const SAVE_THE_DATE_EXCLUDED_KEYS = new Set([
   "id",
   "created_at",
   "is_save_the_date",
   "isSaveTheDate",
+  "tags",
+  "table_number",
 ])
 
 function columnHasMeaningfulValueForStd(key: string, value: unknown): boolean {
@@ -104,21 +104,6 @@ function saveTheDateColumnLabel(key: string): string {
     table_number: "Mesa",
   }
   return labels[key] ?? key.replace(/_/g, " ")
-}
-
-/** Algunas columnas (p. ej. drink en Postgres/JSON) llegan como string '["a","b"]'. */
-function tryParseJsonStringArray(s: string): string[] | null {
-  const t = s.trim()
-  if (!t.startsWith("[") || !t.endsWith("]")) return null
-  try {
-    const parsed = JSON.parse(t) as unknown
-    if (!Array.isArray(parsed)) return null
-    return parsed
-      .map((x) => String(x ?? "").trim())
-      .filter(Boolean)
-  } catch {
-    return null
-  }
 }
 
 /** Texto plano para búsqueda / CSV (sin resolver nombres de etiquetas). */
@@ -205,13 +190,9 @@ export default function AdminDashboard({ username }: AdminDashboardProps) {
       }
 
       setRsvps(data.rsvps || [])
-      if (data.tableName) {
-        setTableName(data.tableName)
-      }
-      if (data.eventName) {
-        setEventName(data.eventName)
-      }
-    } catch (err) {
+      if (data.tableName) setTableName(data.tableName)
+      if (data.eventName) setEventName(data.eventName)
+    } catch {
       setError("Error de conexión. Intenta nuevamente.")
     } finally {
       setLoading(false)
@@ -234,11 +215,21 @@ export default function AdminDashboard({ username }: AdminDashboardProps) {
     }
   }
 
+  const isSaveTheDateTable = tableName.toLowerCase().includes("save_the_date")
+
   useEffect(() => {
-    fetchRSVPs()
-    fetchTags()
+    void fetchRSVPs()
+    if (!isSaveTheDateTable) {
+      void fetchTags()
+    }
   }, [])
 
+  const handleRefresh = () => {
+    void fetchRSVPs()
+    if (!isSaveTheDateTable) {
+      void fetchTags()
+    }
+  }
 
   const formatDate = (dateString?: string) => {
     if (!dateString) return "N/A"
@@ -272,8 +263,6 @@ export default function AdminDashboard({ username }: AdminDashboardProps) {
     const attendance = rsvp.attendance?.toLowerCase() || ""
     return attendance.includes("sí") || attendance.includes("si")
   }
-
-  const isSaveTheDateTable = tableName === SAVE_THE_DATE_TABLE
 
   const saveTheDateColumnKeys = useMemo(() => {
     if (!isSaveTheDateTable) return [] as string[]
@@ -313,7 +302,7 @@ export default function AdminDashboard({ username }: AdminDashboardProps) {
     if (searchQuery.trim()) {
       const query = searchQuery.toLowerCase()
       filtered = filtered.filter((rsvp) =>
-        rsvp.name.toLowerCase().includes(query)
+        (rsvp.name ?? "").toLowerCase().includes(query)
       )
     }
 
@@ -745,7 +734,7 @@ export default function AdminDashboard({ username }: AdminDashboardProps) {
           <div className="flex gap-2">
             <Button
               variant="outline"
-              onClick={fetchRSVPs}
+              onClick={handleRefresh}
               disabled={loading}
             >
               <RefreshCw className={`h-4 w-4 mr-2 ${loading ? "animate-spin" : ""}`} />
@@ -860,6 +849,7 @@ export default function AdminDashboard({ username }: AdminDashboardProps) {
                   Agregar Invitado
                 </Button>
                 )}
+                {!isSaveTheDateTable && (
                 <Button
                   variant="outline"
                   onClick={handleDownloadCSV}
@@ -869,6 +859,7 @@ export default function AdminDashboard({ username }: AdminDashboardProps) {
                   <Download className="h-4 w-4 mr-2" />
                   Descargar Lista
                 </Button>
+                )}
               </div>
             </div>
           </CardHeader>
@@ -966,7 +957,7 @@ export default function AdminDashboard({ username }: AdminDashboardProps) {
                 <p className="text-red-600 dark:text-red-400">{error}</p>
                 <Button
                   variant="outline"
-                  onClick={fetchRSVPs}
+                  onClick={handleRefresh}
                   className="mt-4"
                 >
                   Reintentar

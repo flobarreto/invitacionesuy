@@ -10,7 +10,7 @@ import Link from "next/link";
 import { copyToClipboard } from "@/app/utils/copyToClipboard";
 import { getTimeLeftToUruguayDate, type TimeLeft } from "@/app/utils/countdown";
 
-const WEDDING_DATE_ISO = "2026-05-30T20:00:00-03:00";
+const WEDDING_DATE_ISO = "2026-03-28T20:00:00-03:00";
 
 export default function BodaCalas() {
   const accountNumber = "1234567";
@@ -161,7 +161,7 @@ export default function BodaCalas() {
               className="block text-[clamp(5rem,18vw,14rem)] uppercase font-bold tracking-[-0.02em] md:text-8xl text-[#f5f3ef]"
               style={{ fontFamily: "var(--font-bodoni, serif)" }}
             >
-              Domi
+              Juli
             </span>
             <span
               className="my-1 mb-3block text-6xl md:my-0 md:mb-0 md:mt-0 md:mx-[-10px] md:text-[100px] text-[#f5f3ef]"
@@ -173,12 +173,12 @@ export default function BodaCalas() {
               className="block text-[clamp(5rem,18vw,14rem)] uppercase font-bold tracking-[-0.02em] md:text-8xl text-[#f5f3ef]"
               style={{ fontFamily: "var(--font-bodoni, serif)" }}
             >
-              Diego
+              Mati
             </span>
           </div>
           <div className="mt-8 md:mt-16">
             <div className="text-[#f5f3ef] text-[clamp(1.8rem,5vw,3rem)] font-light font-bodoni tracking-[0.1em] mt-[-10px] md:mt-[-50px] md:text-4xl">
-              30<span className="px-2 ">|</span>05
+              28<span className="px-2 ">|</span>03
               <span className="px-2 ">|</span>26
             </div>
           </div>
@@ -272,7 +272,7 @@ export default function BodaCalas() {
               </a>
 
               <a
-                href="https://calendar.google.com/calendar/u/0/r/eventedit?text=Boda+Domi+%26+Diego&dates=20260530T230000Z/20260531T070000Z&location=Regency+Park+Hotel%2C+Montevideo"
+                href="https://calendar.google.com/calendar/u/0/r/eventedit?text=Boda+Juli+%26+Mati&dates=20260328T230000Z/20260329T070000Z&location=Regency+Park+Hotel%2C+Montevideo"
                 target={openExternalInNewTab === true ? "_blank" : undefined}
                 rel={
                   openExternalInNewTab === true
@@ -386,7 +386,7 @@ export default function BodaCalas() {
               <div className="mb-1 text-[0.7rem] uppercase tracking-[0.3em] text-[#f5f3ef] md:text-[0.85rem]">
                 Titular
               </div>
-              <div className="text-[1.1rem] md:text-xl">Dominique Parnas</div>
+              <div className="text-[1.1rem] md:text-xl">Julieta Rodriguez</div>
             </div>
           </div>
           </div>
@@ -552,17 +552,17 @@ export default function BodaCalas() {
               className="mb-4 text-[clamp(2rem,6vw,3.5rem)] uppercase"
               style={{ fontFamily: "var(--font-bodoni, serif)" }}
             >
-              Domi y Diego
+              Juli y Mati
             </div>
             <p className="text-[0.75rem] uppercase tracking-[0.3em]">
-              30 · 05 · 2026 <br />
+              28 · 03 · 2026 <br />
               Montevideo, Uruguay
             </p>
           </div>
           <div className="max-w-6xl mx-auto px-">
             <div className="text-center mt-2">
               <p className="text-xs">
-                Hecho especialmente para Diego y Domi por Invitia.uy
+                Hecho especialmente para Juli y Mati por Invitia.uy
               </p>
               <Button
                 variant="link"

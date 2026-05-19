@@ -76,7 +76,7 @@ export default function TablesPage() {
       }
 
       setRsvps(data.rsvps || [])
-    } catch (err) {
+    } catch {
       setError("Error de conexión. Intenta nuevamente.")
     } finally {
       setLoading(false)
@@ -100,8 +100,8 @@ export default function TablesPage() {
   }
 
   useEffect(() => {
-    fetchRSVPs()
-    fetchTags()
+    void fetchRSVPs()
+    void fetchTags()
   }, [])
 
   const getTagById = (tagId: string) => {
@@ -280,7 +280,7 @@ export default function TablesPage() {
           <div className="flex gap-2">
             <Button
               variant="outline"
-              onClick={fetchRSVPs}
+              onClick={() => void fetchRSVPs()}
               disabled={loading}
             >
               <RefreshCw className={`h-4 w-4 mr-2 ${loading ? "animate-spin" : ""}`} />
@@ -299,7 +299,7 @@ export default function TablesPage() {
             <p className="text-red-600 dark:text-red-400">{error}</p>
             <Button
               variant="outline"
-              onClick={fetchRSVPs}
+              onClick={() => void fetchRSVPs()}
               className="mt-4"
             >
               Reintentar

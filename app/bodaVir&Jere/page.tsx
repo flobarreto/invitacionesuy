@@ -95,7 +95,7 @@ export default function BodaVirJere() {
 
   const copyAccountNumber = async () => {
     try {
-      await navigator.clipboard.writeText("001895968-00004");
+      await navigator.clipboard.writeText("123456789-00004");
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
     } catch (err) {
@@ -311,7 +311,7 @@ export default function BodaVirJere() {
           <div className="space-y-6 mb-2">
             <ul className="space-y-2 text-sm text-[#9e1d2c] md:text-lg">
               <li>
-                <strong>Titular:</strong> Virginia Mazzoni
+                <strong>Titular:</strong> Virginia Lopez
               </li>
               <li>
                 <strong>Banco:</strong> BROU
@@ -325,7 +325,7 @@ export default function BodaVirJere() {
                   className="cursor-pointer hover:text-white transition-colors underline ml-1"
                   onClick={copyAccountNumber}
                 >
-                  001895968-00004
+                  123456789-00004
                 </span>
 
                 <p className="ml-2 text-sm h-[30px]">
