@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server"
 import { supabaseAdmin } from "@/lib/supabase"
 
-const TABLE = "boda_domi_diego"
+const TABLE = "domi_diego"
 
 const MIN_QUERY_LEN = 4
 const MAX_QUERY_LEN = 100
