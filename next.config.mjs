@@ -28,7 +28,7 @@ const nextConfig = {
         destination: '/bodaVir&Jere',
       },
       {
-        source: '/boda-Mica-Santi',
+        source: '/mica-y-santi-v1-web',
         destination: '/bodaMica&Santi',
       },
       {

@@ -1,14 +1,5 @@
 "use client";
 
-import {
-  CalendarHeart,
-  Clock,
-  MapPin,
-  PartyPopper,
-  Church,
-  Shirt,
-  MessageCircleHeart,
-} from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -24,44 +15,13 @@ import Link from "next/link";
 import {
   FormEvent,
   useState,
-  useEffect,
-  useRef,
-  TransitionEvent,
   MouseEvent,
+  useEffect,
 } from "react";
 
-interface TimeLeft {
-  days: number;
-  hours: number;
-  minutes: number;
-}
+import { getTimeLeftToUruguayDate, type TimeLeft } from "@/app/utils/countdown";
 
-const SAVE_THE_DATE_LINES = [
-  { text: "SAVE", className: "text-[#8B6F5E]/80 text-[130px] text-balance" },
-  {
-    text: "the",
-    className:
-      "text-[#8B6F5E]/80 text-[100px] font-tangerine tracking-wide mt-[-50px] mb-[-70px]",
-  },
-  {
-    text: "DATE",
-    className: "text-[#8B6F5E]/80 text-[130px] mb-6 text-balance",
-  },
-] as const;
-
-const SAVE_THE_DATE_STAGGER_MS = 100;
-const SAVE_THE_DATE_LETTER_MS = 280;
-const SAVE_THE_DATE_HOLD_MS = 1000;
-
-const SAVE_THE_DATE_LETTER_COUNT = SAVE_THE_DATE_LINES.reduce(
-  (n, line) => n + line.text.length,
-  0,
-);
-
-const SAVE_THE_DATE_HIDE_AFTER_MS =
-  (SAVE_THE_DATE_LETTER_COUNT - 1) * SAVE_THE_DATE_STAGGER_MS +
-  SAVE_THE_DATE_LETTER_MS +
-  SAVE_THE_DATE_HOLD_MS;
+const WEDDING_DATE_ISO = "2026-10-17T17:30:00-03:00";
 
 const GOOGLE_CALENDAR_EVENT_URL =
   "https://calendar.google.com/calendar/render?action=TEMPLATE&text=Boda+Mica+%26+Santi&dates=20261017T180000%2F20261018T030000&ctz=America%2FMontevideo&details=%C2%A1Guardate+la+fecha+de+nuestro+casamiento+para+que+no+te+olvides+y+puedas+compartir+con+nosotros%21";
@@ -83,24 +43,39 @@ function isMobile(): boolean {
   );
 }
 
+const accountNumber = "XXXXXXX";
+
 export default function BodaMicaSanti() {
-  const [drinkChoices, setDrinkChoices] = useState<string[]>([]);
-  const [otherDrink, setOtherDrink] = useState<string>("");
-  const [favoriteSong, setFavoriteSong] = useState<string>("");
+  const [guestName, setGuestName] = useState("");
+    const [copied, setCopied] = useState(false);
+
+  const [attendanceResponse, setAttendanceResponse] = useState<"si" | "no">(
+    "si",
+  );
+  const [dietaryPreferences, setDietaryPreferences] = useState<string[]>([
+    "no",
+  ]);
+  const [otroText, setOtroText] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submissionFeedback, setSubmissionFeedback] = useState<{
     type: "success" | "error";
     message: string;
   } | null>(null);
-  type SaveTheDatePhase = "shown" | "out" | "gone";
-  const [saveTheDatePhase, setSaveTheDatePhase] =
-    useState<SaveTheDatePhase>("shown");
-  const [revealSaveTheDateLetters, setRevealSaveTheDateLetters] =
-    useState(false);
-  const saveTheDatePhaseRef = useRef(saveTheDatePhase);
-  saveTheDatePhaseRef.current = saveTheDatePhase;
-
   const [calendarChoiceOpen, setCalendarChoiceOpen] = useState(false);
+    const [timeLeft, setTimeLeft] = useState<TimeLeft>({
+    days: 0,
+    hours: 0,
+    minutes: 0,
+  });
+
+    useEffect(() => {
+      const update = () => {
+        setTimeLeft(getTimeLeftToUruguayDate(WEDDING_DATE_ISO));
+      };
+      update();
+      const timer = setInterval(update, 1000);
+      return () => clearInterval(timer);
+    }, []);
 
   /**
    * target siempre _self (mismo HTML en servidor y cliente → sin error de hidratación).
@@ -132,49 +107,49 @@ export default function BodaMicaSanti() {
     window.open(GOOGLE_CALENDAR_EVENT_URL, "_blank", "noopener,noreferrer");
   };
 
-  useEffect(() => {
-    const id = requestAnimationFrame(() => {
-      requestAnimationFrame(() => setRevealSaveTheDateLetters(true));
-    });
-    return () => cancelAnimationFrame(id);
-  }, []);
-
-  useEffect(() => {
-    const hideTimer = setTimeout(
-      () => setSaveTheDatePhase("out"),
-      SAVE_THE_DATE_HIDE_AFTER_MS,
-    );
-    return () => clearTimeout(hideTimer);
-  }, []);
-
-  const handleSaveTheDateTransitionEnd = (
-    event: TransitionEvent<HTMLDivElement>,
-  ) => {
-    if (
-      event.target !== event.currentTarget ||
-      event.propertyName !== "opacity"
-    )
-      return;
-    if (saveTheDatePhaseRef.current === "out") setSaveTheDatePhase("gone");
+    const copyAccountNumber = async () => {
+    try {
+      await navigator.clipboard.writeText(accountNumber);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    } catch (err) {
+      console.error("Failed to copy: ", err);
+    }
   };
+
 
   const handleRsvpSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     setSubmissionFeedback(null);
 
+    if (!guestName.trim()) {
+      setSubmissionFeedback({
+        type: "error",
+        message: "Por favor escribí tu nombre y apellido.",
+      });
+      return;
+    }
 
     setIsSubmitting(true);
 
     try {
+      const validPreferences = dietaryPreferences
+        .filter((p) => p !== "no" && p !== "otro" && !p.startsWith("otro:"))
+        .filter((value, index, self) => self.indexOf(value) === index);
+
+      const finalPreferences = otroText.trim()
+        ? [...validPreferences, otroText.trim()].filter(
+          (value, index, self) => self.indexOf(value) === index,
+        )
+        : validPreferences;
+
       const response = await fetch("/api/rsvp/bodaMicaSanti", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          drink: drinkChoices.includes("otro")
-            ? [...drinkChoices.filter((v) => v !== "otro"), otherDrink.trim()].filter(Boolean)
-            : drinkChoices,
-          favoriteSong: favoriteSong.trim(),
-          isSaveTheDate: true,
+          name: guestName.trim(),
+          attendance: attendanceResponse,
+          dietaryPreferences: finalPreferences,
         }),
       });
 
@@ -188,12 +163,13 @@ export default function BodaMicaSanti() {
 
       setSubmissionFeedback({
         type: "success",
-        message: "¡Gracias!",
+        message: "¡Gracias! Registramos tu respuesta.",
       });
 
-      setDrinkChoices([]);
-      setOtherDrink("");
-      setFavoriteSong("");
+      setGuestName("");
+      setAttendanceResponse("si");
+      setDietaryPreferences(["no"]);
+      setOtroText("");
 
       setTimeout(() => setSubmissionFeedback(null), 5000);
     } catch (error) {
@@ -220,53 +196,7 @@ export default function BodaMicaSanti() {
         backgroundAttachment: "fixed",
       }}
     >
-      {saveTheDatePhase !== "gone" && (
-        <div
-          className={`fixed inset-0 z-30 flex flex-col items-center justify-center bg-[#f9f2e5] bg-cover bg-center bg-no-repeat px-4 transition-opacity duration-[1400ms] ease-in-out pointer-events-none ${saveTheDatePhase === "shown" ? "opacity-100" : "opacity-0"
-            }`}
-          style={{
-            backgroundImage: "url('/bodaMica%26Santi/hel2.png')",
-          }}
-          onTransitionEnd={handleSaveTheDateTransitionEnd}
-        >
-          <div className="max-w-4xl mx-auto text-center">
-            {SAVE_THE_DATE_LINES.map((line, lineIndex) => {
-              const letterOffset = SAVE_THE_DATE_LINES.slice(
-                0,
-                lineIndex,
-              ).reduce((sum, l) => sum + l.text.length, 0);
-              return (
-                <p key={line.text} className={line.className}>
-                  {line.text.split("").map((char, i) => {
-                    const g = letterOffset + i;
-                    return (
-                      <span
-                        key={`${line.text}-${i}-${char}`}
-                        className={`inline-block transition-opacity ease-out ${revealSaveTheDateLetters ? "opacity-100" : "opacity-0"
-                          }`}
-                        style={{
-                          transitionDuration: `${SAVE_THE_DATE_LETTER_MS}ms`,
-                          transitionDelay: revealSaveTheDateLetters
-                            ? `${g * SAVE_THE_DATE_STAGGER_MS}ms`
-                            : "0ms",
-                        }}
-                      >
-                        {char}
-                      </span>
-                    );
-                  })}
-                </p>
-              );
-            })}
-          </div>
-        </div>
-      )}
-      <section
-        className={`relative z-10 min-h-screen flex flex-col items-center md:justify-start justify-between overflow-hidden bg-[#f9f2e5] pb-0 transition-opacity duration-[1400ms] ease-in-out ${saveTheDatePhase === "shown"
-          ? "opacity-0 pointer-events-none"
-          : "opacity-100"
-          }`}
-      >
+      <section className="relative z-10 min-h-screen flex flex-col items-center md:justify-start justify-between overflow-hidden bg-[#f9f2e5] pb-0">
         <div
           aria-hidden
           className="pointer-events-none absolute inset-0 bg-cover bg-top bg-no-repeat md:hidden"
@@ -276,30 +206,15 @@ export default function BodaMicaSanti() {
         />
         <div
           aria-hidden
-          className="pointer-events-none absolute inset-x-0 bottom-[-90px] top-0 hidden bg-cover bg-bottom bg-no-repeat md:top-28 md:block"
+          className="pointer-events-none absolute inset-x-0 bottom-[0px] top-0 hidden bg-cover bg-bottom bg-no-repeat md:top-28 md:block"
           style={{
             backgroundImage: "url('/bodaMica%26Santi/viña.png')",
           }}
         />
-        <div className="relative z-10 max-w-4xl mx-auto w-full text-center">
-          <div className="flex flex-col items-center">
-            <Button
-              asChild
-              variant="ghost"
-              className="pointer-events-auto h-auto min-h-0 p-0 text-[#895C28] shadow-none hover:bg-transparent hover:text-[#895C28] focus-visible:ring-2 focus-visible:ring-[#B89080] focus-visible:ring-offset-2"
-            >
-              <a
-                href={GOOGLE_CALENDAR_EVENT_URL}
-                target="_self"
-                rel="noopener noreferrer"
-                onClick={handleCalendarAnchorClick}
-              >
-                <p className="text-[#895C28] text-2xl mt-20 tracking-wide md:text-6xl">
-                  17 · OCTUBRE · 2026
-                </p>
-              </a>
-            </Button>
-            <a
+        {/* <div className="relative z-10 max-w-4xl mx-auto w-full text-center">
+          <div className="flex flex-col items-center"> */}
+            
+            {/* <a
               href="https://maps.app.goo.gl/xnSWNpQYU9fHXazY6"
               target="_blank"
               rel="noopener noreferrer"
@@ -311,8 +226,8 @@ export default function BodaMicaSanti() {
               <span className="block text-sm -mb-4 md:text-xl">
                 Montevideo, Uruguay
               </span>
-            </a>
-          </div>
+            </a> */}
+          {/* </div> */}
 
           {/* <div className="relative w-90 md:w-80 mx-auto aspect-[5/3]">
             <Image
@@ -330,162 +245,351 @@ export default function BodaMicaSanti() {
             <span className="text-[#895C28]/50">·</span>
             <span>{String(timeLeft.minutes).padStart(2, "0")} m</span>
           </div> */}
-        </div>
+        {/* </div> */}
         <div className="relative z-10 max-w-4xl mx-auto text-center">
-          <div className="font-tangerine text-7xl text-[#966200] mb-20 md:mt-10">
+          <div className="font-allura text-6xl md:text-[100px] text-[#966200] mt-30
+          0">
             Mica &amp; Santi
           </div>
-        </div>
+       
+        <Button
+              asChild
+              variant="ghost"
+              className="pointer-events-auto h-auto min-h-0 p-0 text-[#895C28] shadow-none hover:bg-transparent hover:text-[#895C28] focus-visible:ring-2 focus-visible:ring-[#B89080] focus-visible:ring-offset-2"
+            >
+              <a
+                href={GOOGLE_CALENDAR_EVENT_URL}
+                target="_self"
+                rel="noopener noreferrer"
+                onClick={handleCalendarAnchorClick}
+              >
+                <p className="text-[#895C28] text-lg tracking-wide md:text-xl">
+                  17 · OCTUBRE · 2026
+                </p>
+              </a>
+            </Button>
+             </div>
       </section>
 
-      {/* Confirmar presencia */}
+
+      <section className="bg-[#6b653a] py-10 md:py-20 justify-center flex flex-col items-center px-10 py-20 text-center ">
+ <p className="text-white text-5xl font-allura ">
+                  Nos casamos! 
+
+                </p>
+                 <p className="text-white max-w-[80%] mx-auto">
+                  y nos encantaría que nos acompañes en este día tan especial
+                  </p> 
+      </section>
       <section
-        className="relative overflow-hidden bg-[#FBF7F4] bg-cover bg-center bg-no-repeat px-4 py-20"
+        className="relative bg-cover bg-bottom bg-no-repeat px-4 py-20"
         style={{
-          backgroundImage: "url('/bodaMica%26Santi/hel2.png')",
+          backgroundImage: "url('/bodaMica%26Santi/ceremonia.png')",
         }}
       >
-        <div className="max-w-2xl md:max-w-[70%] mx-auto text-center bg-white/40 md:bg-white/70 p-6 md:p-8 text-left rounded-md">
-          <h2 className="text-lg md:text-3xl text-[#966200] mb-3 md:mb-10 text-balance text-center uppercase">
-            Nuestros humanos se casan y queremos que seas parte desde el principio
-          </h2>
-          <form
-            onSubmit={handleRsvpSubmit}
-            className="  grid grid-cols-1 md:gap-6 md:grid-cols-2 md:items-start"
-          >
-            <div
-              className="order-1 flex flex-col md:col-start-2 md:row-start-1"
-              id="1"
+        <div className="mx-auto flex flex-col items-center justify-center rounded-lg bg-[#FBF7F4]/90 p-8 max-w-[85%] text-center">
+          <p className="font-allura text-xl md:text-2xl text-[#966200] mb-4">
+            Ceremonia y Fiesta
+          </p>
+          <p className="text-[#966200] text-2xl font-medium">
+
+          Viña Varela Zarranz
+          </p>
+          
+          <a
+              href="https://maps.app.goo.gl/xnSWNpQYU9fHXazY6"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-block text-[#B89080] no-underline transition-opacity hover:opacity-80 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#B89080] focus-visible:ring-offset-2 rounded-sm"
             >
-              <div className="flex justify-center my-2 ">
-                <Image
-                  src="/bodaMica%26Santi/perros.png"
-                  alt="Perros"
-                  width={320}
-                  height={320}
-                  className="h-40 w-40 object-contain md:h-80 md:w-80"
-                />
+              <span className="block text-sm md:text-xl">
+               74 km 29 · Joaquín Suárez · Canelones
+              </span>
+            </a>
+          <Button className="bg-[#8D8A40] rounded-xl text-white mt-4 p-3 h-[30px]">
+            Cómo ir?
+          </Button>
+        </div>
+      </section>
+      <section
+        id="asistencia"
+        className="relative overflow-hidden bg-[#FBF7F4] bg-cover bg-center bg-no-repeat px-4 py-20"
+        // style={{
+        //   backgroundImage: "url('/bodaMica%26Santi/hel2.png')",
+        // }}
+      >
+        <div className="max-w-xl mx-auto text-center p-6 md:p-10 rounded-md">
+          <div className="mb-6">
+
+          <h2 className="text-2xl md:text-3xl text-[#8D8A40] font-allura text-balance text-center mb-[-10px]">
+            Asistencia
+          </h2>
+          <span className="text-xs text-[#8B6F5E]/80">
+Por favor, confirmá antes del 1 de octubre
+              </span>
+          </div>
+
+          <form onSubmit={handleRsvpSubmit} className="space-y-6 text-left">
+            <div className="flex flex-col gap-2">
+              <Label
+                htmlFor="guest-name-mica-santi"
+                className="text-[#966200] text-sm md:text-lg tracking-[0] leading-[normal]"
+              >
+                Nombre y Apellido
+              </Label>
+              <input
+                id="guest-name-mica-santi"
+                type="text"
+                value={guestName}
+                onChange={(e) => setGuestName(e.target.value)}
+                placeholder="Ej: María Rodríguez"
+                className="w-full border-b border-[#8B6F5E]/50 bg-transparent px-0 py-2 text-[#8B6F5E] placeholder:text-[#8B6F5E]/60 focus:outline-none focus:ring-2 focus:ring-[#B89080] transition"
+              />
+              <span className="text-xs text-[#8B6F5E]/80">
+                * Uno por persona
+              </span>
+            </div>
+
+            <div className="space-y-3">
+              <p className="text-sm md:text-lg text-[#966200] tracking-wide">
+                Confirmar asistencia
+              </p>
+              <div className="flex flex-col gap-3 text-[#8B6F5E]">
+                {[
+                  { value: "si" as const, label: "Sí" },
+                  { value: "no" as const, label: "No" },
+                ].map((option) => (
+                  <label
+                    key={option.value}
+                    className="flex cursor-pointer items-center gap-3"
+                  >
+                    <input
+                      type="radio"
+                      name="attendance"
+                      value={option.value}
+                      checked={attendanceResponse === option.value}
+                      onChange={() => setAttendanceResponse(option.value)}
+                      className="h-4 w-4 accent-[#8D8A40]"
+                    />
+                    {option.label}
+                  </label>
+                ))}
               </div>
             </div>
 
-            {/*Drinking Choice + canción (fila completa en md) */}
-            <div
-              id="2"
-              className="order-2 space-y-3 md:col-start-1 md:row-start-1"
-            >
+            <div className="flex flex-col gap-3">
               <p className="text-sm md:text-lg text-[#966200] tracking-wide">
-                ¿Qué te gustaría tomar?
+                Restricciones alimentarias
               </p>
-              <div className="flex flex-col gap-2">
-                {[
-                  { value: "cerveza", label: "Cerveza" },
-                  { value: "vino", label: "Vino" },
-                  { value: "fernet", label: "Fernet" },
-                  { value: "aperol", label: "Aperol" },
-                  { value: "gin", label: "Gin" },
-                  { value: "vodka", label: "Vodka" }
-                ].map((option) => (
+              {[
+                { value: "no", label: "No" },
+                { value: "celiaco", label: "Celíaco/a" },
+                { value: "vegetariano", label: "Vegetariano" },
+              ].map((option) => {
+                const checked = dietaryPreferences.includes(option.value);
+                return (
                   <label
                     key={option.value}
                     className="flex items-center gap-3 cursor-pointer text-[#8B6F5E]"
                   >
                     <input
                       type="checkbox"
-                      name="drink"
                       value={option.value}
-                      checked={drinkChoices.includes(option.value)}
-                      onChange={() =>
-                        setDrinkChoices((prev) =>
-                          prev.includes(option.value)
-                            ? prev.filter((v) => v !== option.value)
-                            : [...prev, option.value],
-                        )
-                      }
-                      className="h-4 w-4 accent-[#8D8A40] focus:ring-[#B89080]"
+                      checked={checked}
+                      onChange={(e) => {
+                        const isChecked = e.target.checked;
+                        setDietaryPreferences((prev) => {
+                          if (option.value === "no") {
+                            if (isChecked) return ["no"];
+                            return prev.filter((value) => value !== "no");
+                          }
+                          if (isChecked) {
+                            const withoutNo = prev.filter(
+                              (value) => value !== "no",
+                            );
+                            if (withoutNo.includes(option.value))
+                              return withoutNo;
+                            return [...withoutNo, option.value];
+                          }
+                          return prev.filter(
+                            (value) => value !== option.value,
+                          );
+                        });
+                      }}
+                      className="h-4 w-4 rounded accent-[#8D8A40]"
                     />
                     <span className="text-sm md:text-lg font-medium">
                       {option.label}
                     </span>
                   </label>
-                ))}
-                <label className="flex items-center gap-3 cursor-pointer text-[#8B6F5E]">
-                  <input
-                    type="text"
-                    value={otherDrink}
-                    onChange={(e) => {
-                      setOtherDrink(e.target.value);
-                      setDrinkChoices((prev) =>
-                        e.target.value
-                          ? prev.includes("otro") ? prev : [...prev, "otro"]
-                          : prev.filter((v) => v !== "otro"),
-                      );
-                    }}
-                    placeholder="Otro"
-                    className="flex-1 border-b border-[#8B6F5E]/50 px-3 py-1.5 text-sm text-[#8B6F5E] focus:outline-none focus:ring-2 focus:ring-[#B89080] transition"
-                  />
-                </label>
-              </div>
-
-              <div className="flex flex-col items-start gap-2 w-full">
-                <Label
-                  htmlFor="music-input"
-                  className=" text-[#966200] text-sm md:text-lg tracking-[0] leading-[normal]"
-                >
-                  ¿Qué canción no puede faltar?
-                </Label>
-
-                <input
-                  type="text"
-                  value={favoriteSong}
-                  onChange={(e) => setFavoriteSong(e.target.value)}
-                  placeholder="Bad Bunny - Inolvidable"
-                  className="flex-1 w-full  border-b border-[#8B6F5E]/50 px-3 py-1.5 text-sm text-[#8B6F5E] focus:outline-none focus:ring-2 focus:ring-[#B89080] transition"
-                />
-              </div>
+                );
+              })}
+              <input
+                type="text"
+                value={otroText}
+                onChange={(e) => setOtroText(e.target.value)}
+                placeholder="Otra restricción"
+                className="w-full border-b border-[#8B6F5E]/50 bg-transparent px-0 py-2 text-[#8B6F5E] placeholder:text-[#8B6F5E]/60 focus:outline-none focus:ring-2 focus:ring-[#B89080] transition"
+              />
             </div>
 
-            <div
-              id="3"
-              className="order-3 flex flex-col gap-4 max-w-full mt-6 md:mt-0 md:flex-row md:col-span-2 md:row-start-2"
-            >
+            <div className="flex flex-col gap-4 max-w-full mt-6 md:mt-0 md:flex-row">
               <Button
                 type="submit"
-                disabled={false}
-                className="flex-1 bg-[#8D8A40] hover:bg-[#966200] disabled:bg-[#966200]/30 disabled:cursor-not-allowed disabled:text-white/80 text-white text-lg py-3 rounded-lg transition-colors"
+                disabled={isSubmitting}
+                className="flex-1 bg-[#8D8A40] hover:bg-[#966200] disabled:bg-[#966200]/30 disabled:cursor-not-allowed disabled:text-white/80 text-white text-lg py-3 rounded-xl transition-colors"
               >
-                {isSubmitting ? "Enviando..." : "Enviar respuesta"}
+                {isSubmitting ? "Enviando..." : "Confirmar"}
               </Button>
-              <Button
-                asChild
-                className="pointer-events-auto flex-1 bg-[#827a71] hover:bg-[#827a71] disabled:bg-[#827a71]/30 disabled:cursor-not-allowed disabled:text-white/80 text-white text-lg py-3 rounded-lg transition-colors"
-              >
-                <a
-                  href={GOOGLE_CALENDAR_EVENT_URL}
-                  target="_self"
-                  rel="noopener noreferrer"
-                  onClick={handleCalendarAnchorClick}
-                >
-                  Agendar en mi calendario
-                </a>
-              </Button>
-
-              {submissionFeedback && (
-                <p
-                  className={`text-center text-sm font-medium ${submissionFeedback.type === "success"
-                    ? "text-[#B89080]"
-                    : "text-red-500"
-                    }`}
-                  role="status"
-                  aria-live="polite"
-                >
-                  {submissionFeedback.message}
-                </p>
-              )}
             </div>
+
+            {submissionFeedback && (
+              <p
+                className={`text-center text-sm font-medium ${submissionFeedback.type === "success"
+                  ? "text-[#966200]"
+                  : "text-red-500"
+                  }`}
+                role="status"
+                aria-live="polite"
+              >
+                {submissionFeedback.message}
+              </p>
+            )}
           </form>
         </div>
       </section>
+      <section className="bg-[#8B6F5E] py-8"
+      >
+          <div className="flex flex-col items-center justify-center py-4">
+            <span className="text-2xl text-[#f9f2e5] font-allura">
+              Faltan
+            </span>
+            <div className="flex flex-wrap justify-center text-4xl">
+              <div className="flex flex-col items-center">
+                <span className=" font-bold leading-none text-[#f9f2e5]">
+                  {timeLeft.days}
+                </span>
+                <span className="mt-2 text-sm text-[#f9f2e5]">
+                  Días
+                </span>
+              </div>
 
+              <span className="text-[#f9f2e5]  self-start pt-0.5 leading-none">
+                :
+              </span>
+
+              <div className="flex flex-col items-center">
+                <span className=" font-bold leading-none text-[#f9f2e5]">
+                  {timeLeft.hours}
+                </span>
+                <span className="mt-2 text-sm  text-[#f9f2e5]">
+                  Horas
+                </span>
+              </div>
+
+              <span className="text-[#f9f2e5]  self-start pt-0.5 leading-none">
+                :
+              </span>
+
+              <div className="flex flex-col items-center">
+                <span className=" font-bold leading-none text-[#f9f2e5]">
+                  {timeLeft.minutes}
+                </span>
+                <span className="mt-2 text-sm  text-[#f9f2e5]">
+                  Minutos
+                </span>
+              </div>
+            </div>
+          </div>
+
+      </section>
+
+       <section className="py-8 bg-white">
+        <div className="max-w-5xl mx-auto px-6 text-center pb-6">
+          <Image src="/bodaMica%26Santi/regalo.png" alt="Mesa de regalos" width={200} height={200} className="mx-auto mt-[-40px] mb-[-40px]" />
+          <div className="space-y-6 mb-2">
+            <ul className="space-y-2 text-md text-[#8D8A40] md:text-lg">
+              <li>
+                <strong>Titular:</strong> Micaela XXXXX
+              </li>
+              <li>
+                <strong>Banco:</strong> Itaú
+              </li>
+                <li>
+                  <strong>Tipo:</strong> Caja de ahorro USD
+                </li>
+              <li>
+                <strong>Número:</strong>
+                <span
+                  className="cursor-pointer hover:text-white transition-colors underline ml-1"
+                  onClick={copyAccountNumber}
+                >
+                  {accountNumber}
+                </span>
+
+                <p className="ml-2 text-sm h-[30px]">
+                  {copied && '✓ Copiado!'}
+                </p>
+
+              </li>
+            </ul>
+          </div>
+        </div>
+      </section>
+      <section className="bg-[#f9f2e5] px-4 py-20 flex flex-col items-center justify-center">
+        <div className="mx-auto max-w-sm">
+          <h2 className="mb-10 font-allura text-2xl text-[#966200] md:text-6xl text-center">
+            Timeline
+          </h2>
+          <div className="relative">
+            <span className="absolute left-[116px] top-0 h-1.5 w-1.5 -translate-x-1/2 rounded-full bg-[#8B6F5E]" />
+            <div className="absolute left-[116px] top-0 bottom-0 w-px -translate-x-1/2 bg-[#8B6F5E]/50" />
+            <span className="absolute left-[116px] bottom-0 h-1.5 w-1.5 -translate-x-1/2 rounded-full bg-[#8B6F5E]" />
+
+            <ol className="grid grid-cols-[100px_1fr] items-center gap-x-4 gap-y-10 py-3">
+              {[
+                { time: "18:00 hrs", title: "Ceremonia", imageSrc: "/bodaMica%26Santi/0.png" },
+                { time: "19:00 hrs", title: "Cocktail", imageSrc: "/bodaMica%26Santi/1.png" },
+                { time: "21:00 hrs", title: "Cena", imageSrc: "/bodaMica%26Santi/2.png" },
+                { time: "22:30 hrs", title: "Torta", imageSrc: "/bodaMica%26Santi/3.png" },
+                { time: "00:00 hrs", title: "Fiesta", imageSrc: "/bodaMica%26Santi/4.png" },
+              ].map((event) => (
+                <li key={event.title} className="contents">
+                  <Image
+                    src={event.imageSrc}
+                    alt={event.title}
+                    width={100}
+                    height={100}
+                    className="justify-self-center rounded-full"
+                  />
+                  <div className="flex items-center gap-4">
+                    <span className="h-px w-5 shrink-0 bg-[#8B6F5E]/50" />
+                    <div>
+                      <p className="text-sm text-[#8B6F5E]">{event.time}</p>
+                      <p className="text-sm text-[#8B6F5E]">{event.title}</p>
+                    </div>
+                  </div>
+                </li>
+              ))}
+            </ol>
+          </div>
+        </div>
+      </section>
+      <section className="bg-[#FBF7F4] px-4 py-20 flex flex-col items-center justify-center ">
+        <div className="mx-auto max-w-[80%]">
+
+        <h2 className="font-allura text-2xl text-[#966200] md:text-6xl text-center mb-4">
+
+      Nuestra bodega
+</h2>
+<div >
+
+Elegimos celebrar nuestra boda en una bodega con más de un siglo de historia, rodeada de viñedos y naturaleza.
+<br/><br/>
+Nos enamoró la tranquilidad del lugar, sus paisajes y el encanto de cada rincón. Esperamos que disfruten este espacio tanto como nosotros.
+</div>
+        </div>
+      </section>
       <Dialog open={calendarChoiceOpen} onOpenChange={setCalendarChoiceOpen}>
         <DialogContent className="max-w-[calc(100%-2rem)] border-[#8B6F5E]/30 bg-[#f9f2e5] text-[#5c4030] sm:max-w-md">
           <DialogHeader>
@@ -516,11 +620,11 @@ export default function BodaMicaSanti() {
         </DialogContent>
       </Dialog>
 
-      <footer className="bg-gray-200 py-5 md:py-10">
+      <footer className="bg-[#f9f2e5] py-5 md:py-10">
         <div className="max-w-6xl mx-auto px-4">
           <div className="text-center text-gray-600 mt-2">
             <p className="text-sm">
-              invitia.uy - Diseño de páginas web para eventos.
+              Hecho por invitia.uy
             </p>
             <Button
               variant="link"
