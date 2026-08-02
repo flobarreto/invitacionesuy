@@ -43,7 +43,7 @@ function isMobile(): boolean {
   );
 }
 
-const accountNumber = "XXXXXXX";
+const accountNumber = "8163122";
 
 export default function BodaMicaSanti() {
   const [guestName, setGuestName] = useState("");
@@ -510,7 +510,7 @@ Por favor, confirmá antes del 1 de octubre
           <div className="space-y-6 mb-2">
             <ul className="space-y-2 text-md text-[#8D8A40] md:text-lg">
               <li>
-                <strong>Titular:</strong> Micaela XXXXX
+                <strong>Titular:</strong> Santiago Romero
               </li>
               <li>
                 <strong>Banco:</strong> Itaú
@@ -536,7 +536,7 @@ Por favor, confirmá antes del 1 de octubre
           </div>
         </div>
       </section>
-      <section className="bg-[#f9f2e5] px-4 py-20 flex flex-col items-center justify-center">
+      <section className="bg-[#f9f2e5] bg-none bg-cover bg-center bg-no-repeat px-4 py-20 flex flex-col items-center justify-center md:bg-[url('/bodaMica%26Santi/fondo-timeline.png')]">
         <div className="mx-auto max-w-sm">
           <h2 className="mb-10 font-allura text-2xl text-[#966200] text-center">
             Timeline
@@ -549,10 +549,10 @@ Por favor, confirmá antes del 1 de octubre
             <ol className="grid grid-cols-[100px_1fr] items-center gap-x-4 gap-y-10 py-3">
               {[
                 { time: "18:00 hrs", title: "Ceremonia", imageSrc: "/bodaMica%26Santi/0.png" },
-                { time: "19:00 hrs", title: "Cocktail", imageSrc: "/bodaMica%26Santi/1.png" },
-                { time: "21:00 hrs", title: "Cena", imageSrc: "/bodaMica%26Santi/2.png" },
-                { time: "22:30 hrs", title: "Torta", imageSrc: "/bodaMica%26Santi/3.png" },
-                { time: "00:00 hrs", title: "Fiesta", imageSrc: "/bodaMica%26Santi/4.png" },
+                { time: "19:15 hrs", title: "Cocktail + live Jazz", imageSrc: "/bodaMica%26Santi/1.png" },
+                { time: "20:30 hrs", title: "Baile", imageSrc: "/bodaMica%26Santi/5.png" },
+                { time: "22:00 hrs", title: "Cena + vinos", imageSrc: "/bodaMica%26Santi/2.png" },
+                { time: "23:00 hrs", title: "Baile", description:"* hasta 3:00am", imageSrc: "/bodaMica%26Santi/4.png" },
               ].map((event) => (
                 <li key={event.title} className="contents">
                   <Image
@@ -567,6 +567,9 @@ Por favor, confirmá antes del 1 de octubre
                     <div>
                       <p className="text-sm text-[#8B6F5E]">{event.time}</p>
                       <p className="text-sm text-[#8B6F5E]">{event.title}</p>
+                      {event.description && (
+                        <p className="text-xs text-[#8B6F5E]/80">{event.description}</p>
+                      )}
                     </div>
                   </div>
                 </li>
