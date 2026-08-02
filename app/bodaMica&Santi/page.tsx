@@ -538,7 +538,7 @@ Por favor, confirmá antes del 1 de octubre
       </section>
       <section className="bg-[#f9f2e5] px-4 py-20 flex flex-col items-center justify-center">
         <div className="mx-auto max-w-sm">
-          <h2 className="mb-10 font-allura text-2xl text-[#966200] md:text-6xl text-center">
+          <h2 className="mb-10 font-allura text-2xl text-[#966200] text-center">
             Timeline
           </h2>
           <div className="relative">
@@ -575,17 +575,17 @@ Por favor, confirmá antes del 1 de octubre
           </div>
         </div>
       </section>
-      <section className="bg-[#FBF7F4] px-4 py-20 flex flex-col items-center justify-center ">
+      <section className="bg-[#FBF7F4] px-4 py-20 flex flex-col items-center justify-center text-center ">
         <div className="mx-auto max-w-[80%]">
 
-        <h2 className="font-allura text-2xl text-[#966200] md:text-6xl text-center mb-4">
+        <h2 className="font-allura text-2xl text-[#966200] md:text-6xl  mb-4">
 
       Nuestra bodega
 </h2>
 <div >
 
 Elegimos celebrar nuestra boda en una bodega con más de un siglo de historia, rodeada de viñedos y naturaleza.
-<br/><br/>
+<br/>
 Nos enamoró la tranquilidad del lugar, sus paisajes y el encanto de cada rincón. Esperamos que disfruten este espacio tanto como nosotros.
 </div>
         </div>
