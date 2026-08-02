@@ -196,91 +196,58 @@ export default function BodaMicaSanti() {
         backgroundAttachment: "fixed",
       }}
     >
-      <section className="relative z-10 min-h-screen flex flex-col items-center md:justify-start justify-between overflow-hidden bg-[#f9f2e5] pb-0">
+      <section id="hero" className="relative z-10 min-h-screen flex flex-col items-center md:justify-start justify-between overflow-hidden bg-[#f9f2e5] pb-0">
         <div
           aria-hidden
           className="pointer-events-none absolute inset-0 bg-cover bg-top bg-no-repeat md:hidden"
           style={{
-            backgroundImage: "url('/bodaMica%26Santi/viñaMobile.png')",
+            backgroundImage: "url('/bodaMica%26Santi/hero.png')",
           }}
         />
         <div
           aria-hidden
-          className="pointer-events-none absolute inset-x-0 bottom-[0px] top-0 hidden bg-cover bg-bottom bg-no-repeat md:top-28 md:block"
+          className="pointer-events-none absolute inset-0 hidden bg-cover bg-center bg-no-repeat md:block"
           style={{
-            backgroundImage: "url('/bodaMica%26Santi/viña.png')",
+            backgroundImage: "url('/bodaMica%26Santi/fondo-timeline.png')",
           }}
         />
-        {/* <div className="relative z-10 max-w-4xl mx-auto w-full text-center">
-          <div className="flex flex-col items-center"> */}
-            
-            {/* <a
-              href="https://maps.app.goo.gl/xnSWNpQYU9fHXazY6"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="mt-4 inline-block text-[#8D8A40] no-underline transition-opacity hover:opacity-80 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#B89080] focus-visible:ring-offset-2 rounded-sm"
-            >
-              <span className="ital block text-l tracking-wide md:text-2xl">
-                VIÑA VARELA ZARRANZ
-              </span>
-              <span className="block text-sm -mb-4 md:text-xl">
-                Montevideo, Uruguay
-              </span>
-            </a> */}
-          {/* </div> */}
-
-          {/* <div className="relative w-90 md:w-80 mx-auto aspect-[5/3]">
-            <Image
-              src="/bodaMica%26Santi/boda_espalda.png"
-              alt="Mica y Santi"
-              fill
-              className="object-contain"
-            />
-          </div>  */}
-
-          {/* <div className="inline-flex items-center gap-3 rounded-full text-[#895C28] text-lg">
-            <span>{timeLeft.days} d</span>
-            <span className="text-[#895C28]/50">·</span>
-            <span>{String(timeLeft.hours).padStart(2, "0")} h</span>
-            <span className="text-[#895C28]/50">·</span>
-            <span>{String(timeLeft.minutes).padStart(2, "0")} m</span>
-          </div> */}
-        {/* </div> */}
-        <div className="relative z-10 max-w-4xl mx-auto text-center">
-          <div className="font-allura text-6xl md:text-[100px] text-[#966200] mt-30
-          0">
+        <div className="relative z-10 max-w-[80%] mx-auto text-center justify-end min-h-screen md:mt-auto flex flex-col items-center md:justify-center pb-[100px] md:pb-0">
+          <div className="font-allura text-6xl md:text-[100px] text-[#966200]">
             Mica &amp; Santi
           </div>
-       
-        <Button
-              asChild
-              variant="ghost"
-              className="pointer-events-auto h-auto min-h-0 p-0 text-[#895C28] shadow-none hover:bg-transparent hover:text-[#895C28] focus-visible:ring-2 focus-visible:ring-[#B89080] focus-visible:ring-offset-2"
+
+          <Button
+            asChild
+            variant="ghost"
+            className="pointer-events-auto h-auto min-h-0 p-0 text-[#895C28] shadow-none hover:bg-transparent hover:text-[#895C28] focus-visible:ring-2 focus-visible:ring-[#B89080] focus-visible:ring-offset-2 mt-6"
+          >
+            <a
+              href={GOOGLE_CALENDAR_EVENT_URL}
+              target="_self"
+              rel="noopener noreferrer"
+              onClick={handleCalendarAnchorClick}
             >
-              <a
-                href={GOOGLE_CALENDAR_EVENT_URL}
-                target="_self"
-                rel="noopener noreferrer"
-                onClick={handleCalendarAnchorClick}
-              >
-                <p className="text-[#895C28] text-lg tracking-wide md:text-xl">
-                  17 · OCTUBRE · 2026
-                </p>
-              </a>
-            </Button>
-             </div>
+              <p className="text-[#895C28] text-md text-wrap uppercase tracking-wide md:text-2xl">
+                Diecisiete de Octubre de Dos Mil Veintiséis
+              </p>
+            </a>
+          </Button>
+
+          <p className="text-[#966200] text-2xl md:text-3xl mt-12 tracking-wide">
+            Viña Varela Zarranz
+          </p>
+          <p className="text-[#895C28] text-base md:text-lg tracking-[0.15em] mt-2">
+            Montevideo · Uruguay
+          </p>
+
+          <p className="text-[#966200] font-eb-garamond italic text-lg md:text-xl tracking-wide mt-14 max-w-[85%] mx-auto leading-relaxed">
+            Nos encantaría que nos acompañes en este día tan especial ♥
+          </p>
+        </div>
       </section>
 
 
-      <section className="bg-[#6b653a] py-10 md:py-20 justify-center flex flex-col items-center px-10 py-20 text-center ">
- <p className="text-white text-5xl font-allura ">
-                  Nos casamos! 
-
-                </p>
-                 <p className="text-white max-w-[80%] mx-auto">
-                  y nos encantaría que nos acompañes en este día tan especial
-                  </p> 
-      </section>
+    
       <section
         className="relative bg-cover bg-bottom bg-no-repeat px-4 py-20"
         style={{
@@ -306,17 +273,144 @@ export default function BodaMicaSanti() {
                74 km 29 · Joaquín Suárez · Canelones
               </span>
             </a>
-          <Button className="bg-[#8D8A40] rounded-xl text-white mt-4 p-3 h-[30px]">
+          <Button className="bg-[#8D8A40] rounded-xl text-white mt-4 p-3 h-[30px]" onClick={() => window.open("https://ul.waze.com/ul?venue_id=199230893.1992046783.17618772&overview=yes&utm_campaign=default&utm_source=waze_website&utm_medium=lm_share_location", "_blank", "noopener,noreferrer")}>
             Cómo ir?
           </Button>
         </div>
       </section>
-      <section
+      <section className="bg-[#8B6F5E] py-8"
+      >
+          <div className="flex flex-col items-center justify-center py-4">
+            <span className="text-2xl text-[#f9f2e5] font-allura">
+              Faltan
+            </span>
+            <div className="flex flex-wrap justify-center text-4xl">
+              <div className="flex flex-col items-center">
+                <span className=" font-bold leading-none text-[#f9f2e5]">
+                  {timeLeft.days}
+                </span>
+                <span className="mt-2 text-sm text-[#f9f2e5]">
+                  Días
+                </span>
+              </div>
+
+              <span className="text-[#f9f2e5]  self-start pt-0.5 leading-none">
+                :
+              </span>
+
+              <div className="flex flex-col items-center">
+                <span className=" font-bold leading-none text-[#f9f2e5]">
+                  {timeLeft.hours}
+                </span>
+                <span className="mt-2 text-sm  text-[#f9f2e5]">
+                  Horas
+                </span>
+              </div>
+
+              <span className="text-[#f9f2e5]  self-start pt-0.5 leading-none">
+                :
+              </span>
+
+              <div className="flex flex-col items-center">
+                <span className=" font-bold leading-none text-[#f9f2e5]">
+                  {timeLeft.minutes}
+                </span>
+                <span className="mt-2 text-sm  text-[#f9f2e5]">
+                  Minutos
+                </span>
+              </div>
+            </div>
+          </div>
+
+      </section>
+
+       <section className="py-8 bg-white">
+        <div className="max-w-5xl mx-auto px-6 text-center pb-6">
+          <Image src="/bodaMica%26Santi/regalo.png" alt="Mesa de regalos" width={200} height={200} className="mx-auto mt-[-40px] mb-[-40px]" />
+          <div className="space-y-6 mb-2">
+            <ul className="space-y-2 text-md text-[#8D8A40] md:text-lg">
+              <li>
+                <strong>Titular:</strong> Santiago Romero
+              </li>
+              <li>
+                <strong>Banco:</strong> Itaú
+              </li>
+                <li>
+                  <strong>Tipo:</strong> Caja de ahorro USD
+                </li>
+              <li>
+                <strong>Número:</strong>
+                <span
+                  className="cursor-pointer hover:text-white transition-colors underline ml-1"
+                  onClick={copyAccountNumber}
+                >
+                  {accountNumber}
+                </span>
+
+                <p className="ml-2 text-sm h-[30px]">
+                  {copied && '✓ Copiado!'}
+                </p>
+
+              </li>
+            </ul>
+          </div>
+        </div>
+      </section>
+          <section className="bg-[#6b653a] py-10 md:py-20 justify-center flex flex-col items-center px-10 py-20 text-center ">
+
+      </section>
+      <section className="relative bg-[#f9f2e5] px-4 py-20 flex flex-col items-center justify-center md:min-h-[900px] md:py-32">
+        <div
+          aria-hidden
+          className="pointer-events-none absolute inset-0 hidden bg-cover bg-center bg-no-repeat md:block"
+          style={{
+            backgroundImage: "url('/bodaMica%26Santi/fondo-timeline.png')",
+          }}
+        />
+        <div className="relative z-10 mx-auto max-w-sm">
+          <h2 className="mb-10 font-allura text-2xl text-[#966200] text-center">
+            Timeline
+          </h2>
+          <div className="relative">
+            <span className="absolute left-[116px] top-0 h-1.5 w-1.5 -translate-x-1/2 rounded-full bg-[#8B6F5E]" />
+            <div className="absolute left-[116px] top-0 bottom-0 w-px -translate-x-1/2 bg-[#8B6F5E]/50" />
+            <span className="absolute left-[116px] bottom-0 h-1.5 w-1.5 -translate-x-1/2 rounded-full bg-[#8B6F5E]" />
+
+            <ol className="grid grid-cols-[100px_1fr] items-center gap-x-4 gap-y-10 py-3">
+              {[
+                { time: "18:00 hrs", title: "Ceremonia", imageSrc: "/bodaMica%26Santi/0.png" },
+                { time: "19:15 hrs", title: "Cocktail + live Jazz", imageSrc: "/bodaMica%26Santi/1.png" },
+                { time: "20:30 hrs", title: "Apertura de pista", imageSrc: "/bodaMica%26Santi/5.png" },
+                { time: "22:00 hrs", title: "Cena + vinos", imageSrc: "/bodaMica%26Santi/2.png" },
+                { time: "23:00 hrs", title: "Baile", description:"* hasta 3:00am", imageSrc: "/bodaMica%26Santi/4.png" },
+              ].map((event) => (
+                <li key={event.title} className="contents">
+                  <Image
+                    src={event.imageSrc}
+                    alt={event.title}
+                    width={100}
+                    height={100}
+                    className="justify-self-center rounded-full"
+                  />
+                  <div className="flex items-center gap-4">
+                    <span className="h-px w-5 shrink-0 bg-[#8B6F5E]/50" />
+                    <div>
+                      <p className="text-sm text-[#8B6F5E]">{event.time}</p>
+                      <p className="text-sm text-[#8B6F5E]">{event.title}</p>
+                      {event.description && (
+                        <p className="text-xs text-[#8B6F5E]/80">{event.description}</p>
+                      )}
+                    </div>
+                  </div>
+                </li>
+              ))}
+            </ol>
+          </div>
+        </div>
+      </section>
+            <section
         id="asistencia"
         className="relative overflow-hidden bg-[#FBF7F4] bg-cover bg-center bg-no-repeat px-4 py-20"
-        // style={{
-        //   backgroundImage: "url('/bodaMica%26Santi/hel2.png')",
-        // }}
       >
         <div className="max-w-xl mx-auto text-center p-6 md:p-10 rounded-md">
           <div className="mb-6">
@@ -458,138 +552,17 @@ Por favor, confirmá antes del 1 de octubre
           </form>
         </div>
       </section>
-      <section className="bg-[#8B6F5E] py-8"
-      >
-          <div className="flex flex-col items-center justify-center py-4">
-            <span className="text-2xl text-[#f9f2e5] font-allura">
-              Faltan
-            </span>
-            <div className="flex flex-wrap justify-center text-4xl">
-              <div className="flex flex-col items-center">
-                <span className=" font-bold leading-none text-[#f9f2e5]">
-                  {timeLeft.days}
-                </span>
-                <span className="mt-2 text-sm text-[#f9f2e5]">
-                  Días
-                </span>
-              </div>
-
-              <span className="text-[#f9f2e5]  self-start pt-0.5 leading-none">
-                :
-              </span>
-
-              <div className="flex flex-col items-center">
-                <span className=" font-bold leading-none text-[#f9f2e5]">
-                  {timeLeft.hours}
-                </span>
-                <span className="mt-2 text-sm  text-[#f9f2e5]">
-                  Horas
-                </span>
-              </div>
-
-              <span className="text-[#f9f2e5]  self-start pt-0.5 leading-none">
-                :
-              </span>
-
-              <div className="flex flex-col items-center">
-                <span className=" font-bold leading-none text-[#f9f2e5]">
-                  {timeLeft.minutes}
-                </span>
-                <span className="mt-2 text-sm  text-[#f9f2e5]">
-                  Minutos
-                </span>
-              </div>
-            </div>
-          </div>
-
-      </section>
-
-       <section className="py-8 bg-white">
-        <div className="max-w-5xl mx-auto px-6 text-center pb-6">
-          <Image src="/bodaMica%26Santi/regalo.png" alt="Mesa de regalos" width={200} height={200} className="mx-auto mt-[-40px] mb-[-40px]" />
-          <div className="space-y-6 mb-2">
-            <ul className="space-y-2 text-md text-[#8D8A40] md:text-lg">
-              <li>
-                <strong>Titular:</strong> Santiago Romero
-              </li>
-              <li>
-                <strong>Banco:</strong> Itaú
-              </li>
-                <li>
-                  <strong>Tipo:</strong> Caja de ahorro USD
-                </li>
-              <li>
-                <strong>Número:</strong>
-                <span
-                  className="cursor-pointer hover:text-white transition-colors underline ml-1"
-                  onClick={copyAccountNumber}
-                >
-                  {accountNumber}
-                </span>
-
-                <p className="ml-2 text-sm h-[30px]">
-                  {copied && '✓ Copiado!'}
-                </p>
-
-              </li>
-            </ul>
-          </div>
-        </div>
-      </section>
-      <section className="bg-[#f9f2e5] bg-none bg-cover bg-center bg-no-repeat px-4 py-20 flex flex-col items-center justify-center md:bg-[url('/bodaMica%26Santi/fondo-timeline.png')]">
-        <div className="mx-auto max-w-sm">
-          <h2 className="mb-10 font-allura text-2xl text-[#966200] text-center">
-            Timeline
-          </h2>
-          <div className="relative">
-            <span className="absolute left-[116px] top-0 h-1.5 w-1.5 -translate-x-1/2 rounded-full bg-[#8B6F5E]" />
-            <div className="absolute left-[116px] top-0 bottom-0 w-px -translate-x-1/2 bg-[#8B6F5E]/50" />
-            <span className="absolute left-[116px] bottom-0 h-1.5 w-1.5 -translate-x-1/2 rounded-full bg-[#8B6F5E]" />
-
-            <ol className="grid grid-cols-[100px_1fr] items-center gap-x-4 gap-y-10 py-3">
-              {[
-                { time: "18:00 hrs", title: "Ceremonia", imageSrc: "/bodaMica%26Santi/0.png" },
-                { time: "19:15 hrs", title: "Cocktail + live Jazz", imageSrc: "/bodaMica%26Santi/1.png" },
-                { time: "20:30 hrs", title: "Baile", imageSrc: "/bodaMica%26Santi/5.png" },
-                { time: "22:00 hrs", title: "Cena + vinos", imageSrc: "/bodaMica%26Santi/2.png" },
-                { time: "23:00 hrs", title: "Baile", description:"* hasta 3:00am", imageSrc: "/bodaMica%26Santi/4.png" },
-              ].map((event) => (
-                <li key={event.title} className="contents">
-                  <Image
-                    src={event.imageSrc}
-                    alt={event.title}
-                    width={100}
-                    height={100}
-                    className="justify-self-center rounded-full"
-                  />
-                  <div className="flex items-center gap-4">
-                    <span className="h-px w-5 shrink-0 bg-[#8B6F5E]/50" />
-                    <div>
-                      <p className="text-sm text-[#8B6F5E]">{event.time}</p>
-                      <p className="text-sm text-[#8B6F5E]">{event.title}</p>
-                      {event.description && (
-                        <p className="text-xs text-[#8B6F5E]/80">{event.description}</p>
-                      )}
-                    </div>
-                  </div>
-                </li>
-              ))}
-            </ol>
-          </div>
-        </div>
-      </section>
-      <section className="bg-[#FBF7F4] px-4 py-20 flex flex-col items-center justify-center text-center ">
+      <section className="bg-[#FBF7F4] px-4 pb-20 flex flex-col items-center justify-center text-center ">
         <div className="mx-auto max-w-[80%]">
 
         <h2 className="font-allura text-2xl text-[#966200]  mb-4">
 
-      Nuestra bodega
+      La bodega
 </h2>
 <div >
 
-Elegimos celebrar nuestra boda en una bodega con más de un siglo de historia, rodeada de viñedos y naturaleza.
-<br/>
-Nos enamoró la tranquilidad del lugar, sus paisajes y el encanto de cada rincón. Esperamos que disfruten este espacio tanto como nosotros.
+Varela Zarranz tiene más de un siglo de historia, rodeada de viñedos y naturaleza. <br/> Nos enamoró la tranquilidad del lugar, sus paisajes y el encanto de cada rincón. Esperamos que ustedes también lo sientan así.
+
 </div>
         </div>
       </section>
