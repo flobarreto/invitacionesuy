@@ -357,6 +357,10 @@ export default function BodaMicaSanti() {
         </div>
       </section>
           <section className="bg-[#6b653a] py-10 md:py-20 justify-center flex flex-col items-center px-10 py-20 text-center ">
+            <p className="text-[#f9f2e5] text-sm mb-4">
+              Vestimenta Formal. Dress code formal. Les pedimos evitar el blanco, el beige y los tonos claros.
+            </p>
+            <Image src="/bodaMica%26Santi/vestimenta.png" alt="Vestimenta formal" width={400} height={180} className="mx-auto mb-4" />
 
       </section>
       <section className="relative bg-[#f9f2e5] px-4 py-20 flex flex-col items-center justify-center md:min-h-[900px] md:py-32">
