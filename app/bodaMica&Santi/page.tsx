@@ -578,7 +578,7 @@ Por favor, confirmá antes del 1 de octubre
       <section className="bg-[#FBF7F4] px-4 py-20 flex flex-col items-center justify-center text-center ">
         <div className="mx-auto max-w-[80%]">
 
-        <h2 className="font-allura text-2xl text-[#966200] md:text-6xl  mb-4">
+        <h2 className="font-allura text-2xl text-[#966200]  mb-4">
 
       Nuestra bodega
 </h2>
