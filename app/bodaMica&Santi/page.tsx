@@ -196,7 +196,81 @@ export default function BodaMicaSanti() {
         backgroundAttachment: "fixed",
       }}
     >
-      <section id="hero" className="relative z-10 min-h-screen flex flex-col items-center md:justify-start justify-between overflow-hidden bg-[#f9f2e5] pb-0">
+      <section className="relative z-10 min-h-screen flex flex-col items-center md:justify-start justify-between overflow-hidden bg-[#f9f2e5] pb-0">
+        <div
+          aria-hidden
+          className="pointer-events-none absolute inset-0 bg-cover bg-top bg-no-repeat md:hidden"
+          style={{
+            backgroundImage: "url('/bodaMica%26Santi/viñaMobile.png')",
+          }}
+        />
+        <div
+          aria-hidden
+          className="pointer-events-none absolute inset-x-0 bottom-[0px] top-0 hidden bg-cover bg-bottom bg-no-repeat md:top-28 md:block"
+          style={{
+            backgroundImage: "url('/bodaMica%26Santi/viña.png')",
+          }}
+        />
+        {/* <div className="relative z-10 max-w-4xl mx-auto w-full text-center">
+          <div className="flex flex-col items-center"> */}
+            
+            {/* <a
+              href="https://maps.app.goo.gl/xnSWNpQYU9fHXazY6"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="mt-4 inline-block text-[#8D8A40] no-underline transition-opacity hover:opacity-80 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#B89080] focus-visible:ring-offset-2 rounded-sm"
+            >
+              <span className="ital block text-l tracking-wide md:text-2xl">
+                VIÑA VARELA ZARRANZ
+              </span>
+              <span className="block text-sm -mb-4 md:text-xl">
+                Montevideo, Uruguay
+              </span>
+            </a> */}
+          {/* </div> */}
+
+          {/* <div className="relative w-90 md:w-80 mx-auto aspect-[5/3]">
+            <Image
+              src="/bodaMica%26Santi/boda_espalda.png"
+              alt="Mica y Santi"
+              fill
+              className="object-contain"
+            />
+          </div>  */}
+
+          {/* <div className="inline-flex items-center gap-3 rounded-full text-[#895C28] text-lg">
+            <span>{timeLeft.days} d</span>
+            <span className="text-[#895C28]/50">·</span>
+            <span>{String(timeLeft.hours).padStart(2, "0")} h</span>
+            <span className="text-[#895C28]/50">·</span>
+            <span>{String(timeLeft.minutes).padStart(2, "0")} m</span>
+          </div> */}
+        {/* </div> */}
+        <div className="relative z-10 max-w-4xl mx-auto text-center">
+          <div className="font-allura text-6xl md:text-[100px] text-[#966200] mt-30
+          0">
+            Mica &amp; Santi
+          </div>
+       
+        <Button
+              asChild
+              variant="ghost"
+              className="pointer-events-auto h-auto min-h-0 p-0 text-[#895C28] shadow-none hover:bg-transparent hover:text-[#895C28] focus-visible:ring-2 focus-visible:ring-[#B89080] focus-visible:ring-offset-2"
+            >
+              <a
+                href={GOOGLE_CALENDAR_EVENT_URL}
+                target="_self"
+                rel="noopener noreferrer"
+                onClick={handleCalendarAnchorClick}
+              >
+                <p className="text-[#895C28] text-lg tracking-wide md:text-xl">
+                  17 · OCTUBRE · 2026
+                </p>
+              </a>
+            </Button>
+             </div>
+      </section>
+      {/* <section id="hero" className="relative z-10 min-h-screen flex flex-col items-center md:justify-start justify-between overflow-hidden bg-[#f9f2e5] pb-0">
         <div
           aria-hidden
           className="pointer-events-none absolute inset-0 bg-cover bg-top bg-no-repeat md:hidden"
@@ -244,7 +318,7 @@ export default function BodaMicaSanti() {
             Nos encantaría que nos acompañes en este día tan especial ♥
           </p>
         </div>
-      </section>
+      </section> */}
 
 
     
