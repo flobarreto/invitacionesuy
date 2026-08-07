@@ -6,9 +6,6 @@ const nextConfig = {
   typescript: {
     ignoreBuildErrors: true,
   },
-  images: {
-    unoptimized: true,
-  },
   async rewrites() {
     return [
       {
@@ -28,7 +25,7 @@ const nextConfig = {
         destination: '/bodaVir&Jere',
       },
       {
-        source: '/boda-Mica-Santi',
+        source: '/mica-y-santi-v1-web',
         destination: '/bodaMica&Santi',
       },
       {
