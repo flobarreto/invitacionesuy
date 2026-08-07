@@ -7,10 +7,11 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@radix-ui/react-label";
 import { RadioGroup, RadioGroupItem } from "@radix-ui/react-radio-group";
 import { Checkbox } from "@/components/ui/checkbox";
-import { Separator } from "@radix-ui/react-separator";
-import { CalendarIcon, SendIcon, MapPinIcon, MessageCircleIcon, MessageCircleHeart } from "lucide-react"
-import Image from "next/image"
+import { CalendarIcon, SendIcon, MapPinIcon, MessageCircleHeart } from "lucide-react"
 import Link from "next/link";
+import { useInvitationCountdown } from "@/hooks/invitations/use-invitation-countdown";
+import { useRsvpSubmission } from "@/hooks/invitations/use-rsvp-submission";
+import { useInvitationCalendarUrl } from "@/hooks/invitations/use-invitation-calendar-url";
 
 const eventSections = [
   {
@@ -69,38 +70,22 @@ const DEFAULT_NAME = ""
 const DEFAULT_SONG = ""
 
 export default function BodaSofiGonchi() {
-  const [timeLeft, setTimeLeft] = useState({ days: 0, hours: 0, minutes: 0 })
+  const timeLeft = useInvitationCountdown("sofi-gonchi")
+  const calendarUrl = useInvitationCalendarUrl("sofi-gonchi")
+  const {
+    status: rsvpStatus,
+    feedback: submissionFeedback,
+    isSubmitting,
+    ensureOpen,
+    resetFeedback,
+    setFeedback: setSubmissionFeedback,
+    submit: submitRsvp,
+  } = useRsvpSubmission("sofi-gonchi")
   const [dietarySelection, setDietarySelection] = useState<string[]>([dietaryOptions[0].value ?? "no"])
   const [guestName, setGuestName] = useState(DEFAULT_NAME)
   const [attendanceResponse, setAttendanceResponse] = useState(DEFAULT_ATTENDANCE_RESPONSE)
   const [favoriteSong, setFavoriteSong] = useState(DEFAULT_SONG)
-  const [isSubmitting, setIsSubmitting] = useState(false)
-  const [submissionFeedback, setSubmissionFeedback] = useState<{ type: "success" | "error"; message: string } | null>(null)
   const [copied, setCopied] = useState(false)
-  useEffect(() => {
-    const targetDate = new Date('2025-12-20T19:30:00').getTime()
-
-    const updateCountdown = () => {
-      const now = new Date().getTime()
-      const difference = targetDate - now
-
-      if (difference > 0) {
-        const days = Math.floor(difference / (1000 * 60 * 60 * 24))
-        const hours = Math.floor((difference % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60))
-        const minutes = Math.floor((difference % (1000 * 60 * 60)) / (1000 * 60))
-
-        setTimeLeft({ days, hours, minutes })
-      } else {
-        setTimeLeft({ days: 0, hours: 0, minutes: 0 })
-      }
-    }
-
-    updateCountdown()
-    const interval = setInterval(updateCountdown, 60000) // Actualizar cada minuto
-
-    return () => clearInterval(interval)
-  }, [])
-
   useEffect(() => {
     if (submissionFeedback?.type === "success") {
       const timeout = setTimeout(() => {
@@ -149,7 +134,9 @@ export default function BodaSofiGonchi() {
 
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault()
-    setSubmissionFeedback(null)
+    resetFeedback()
+
+    if (!ensureOpen()) return
 
     if (!guestName.trim()) {
       setSubmissionFeedback({
@@ -159,40 +146,18 @@ export default function BodaSofiGonchi() {
       return
     }
 
-    setIsSubmitting(true)
+    const submitted = await submitRsvp(
+      {
+        name: guestName.trim(),
+        attendance: attendanceResponse,
+        dietaryPreferences: dietarySelection,
+        favoriteSong: favoriteSong.trim(),
+      },
+      { successMessage: "Enviado" },
+    )
+    if (!submitted) return
 
-    try {
-      const response = await fetch("/api/rsvp/bodaSofiGonchi", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          name: guestName.trim(),
-          attendance: attendanceResponse,
-          dietaryPreferences: dietarySelection,
-          favoriteSong: favoriteSong.trim(),
-        }),
-      })
-
-      if (!response.ok) {
-        const errorBody = await response.json().catch(() => null)
-        throw new Error(errorBody?.error ?? "No pudimos guardar tu respuesta. Intenta nuevamente.")
-      }
-
-      setSubmissionFeedback({
-        type: "success",
-        message: "Enviado",
-      })
-      resetForm({ preserveFeedback: true })
-    } catch (error) {
-      setSubmissionFeedback({
-        type: "error",
-        message: error instanceof Error ? error.message : "Ocurrió un error inesperado. Intenta nuevamente.",
-      })
-    } finally {
-      setIsSubmitting(false)
-    }
+    resetForm({ preserveFeedback: true })
   }
 
   const isSuccessState = submissionFeedback?.type === "success"
@@ -221,7 +186,7 @@ export default function BodaSofiGonchi() {
 
         <div className="flex flex-col items-center relative z-10">
           <Button asChild className="h-8 gap-2 mb-[16px] pl-3 pr-4 py-0 bg-[#0c4256] hover:bg-[#0c4256] rounded-[100px] transition-colors">
-            <a href="https://calendar.google.com/calendar/u/0/r/eventedit?text=Boda+Sofi+%26+Gonchi&dates=20251220T223000Z/20251221T013000Z&details=%C2%A1Guardate+la+fecha+de+nuestro+casamiento+para+que+no+te+olvides+y+puedas+compartir+con+nosotros%21" target="_blank" rel="noopener noreferrer">
+            <a href={calendarUrl} target="_blank" rel="noopener noreferrer">
               <CalendarIcon className="w-5 h-5" />
               <span className=" font-light text-[#f9f7eb] text-base text-center tracking-[0] leading-[normal] whitespace-nowrap">
                 Agendar
@@ -456,7 +421,7 @@ export default function BodaSofiGonchi() {
               <div className="flex flex-col sm:flex-row w-full gap-3">
                 <Button
                   type="submit"
-                  disabled={true}
+                  disabled={isSubmitting || rsvpStatus !== "open"}
                   className={`flex-1 flex items-center justify-center gap-2 pl-3 pr-4 py-3 rounded-[100px] font-light text-[#f9f7eb] text-xl text-center tracking-[0] leading-[normal] whitespace-nowrap h-[40px] transition-colors disabled:opacity-60 disabled:cursor-not-allowed ${
                     isSuccessState ? "bg-[#532C0A] hover:bg-[#532C0A]" : "bg-[#0c4256] hover:bg-[#0c4256]"
                   }`}

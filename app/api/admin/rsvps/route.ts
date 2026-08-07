@@ -1,5 +1,7 @@
 import { NextResponse } from "next/server"
 import { requireAuthWithTable } from "@/lib/auth"
+import { crmErrorResponse } from "@/lib/crm/errors"
+import { logLegacyDatabaseError } from "@/lib/legacy-admin-api"
 import { normalizeRsvpTags } from "@/lib/normalizeRsvp"
 import { supabaseAdmin } from "@/lib/supabase"
 
@@ -9,8 +11,8 @@ export async function GET() {
 
     if (!supabaseAdmin) {
       return NextResponse.json(
-        { error: "Error de configuración del servidor" },
-        { status: 500 },
+        { error: "El servicio no está disponible" },
+        { status: 503 },
       )
     }
 
@@ -26,11 +28,14 @@ export async function GET() {
         .order("created_at", { ascending: false }),
     ])
 
-    if (rsvpsResult.error) {
-      console.error("Error fetching RSVPs:", rsvpsResult.error)
+    if (adminResult.error || rsvpsResult.error) {
+      logLegacyDatabaseError(
+        adminResult.error ? "load_admin_event_name" : "list_legacy_rsvps",
+        adminResult.error ?? rsvpsResult.error,
+      )
       return NextResponse.json(
         { error: "Error al obtener los RSVPs" },
-        { status: 500 },
+        { status: 503 },
       )
     }
 
@@ -48,13 +53,6 @@ export async function GET() {
       },
     )
   } catch (error: unknown) {
-    if (error instanceof Error && error.message === "Unauthorized") {
-      return NextResponse.json({ error: "No autorizado" }, { status: 401 })
-    }
-    console.error("Error in RSVPs route:", error)
-    return NextResponse.json(
-      { error: "Error al obtener los RSVPs" },
-      { status: 500 },
-    )
+    return crmErrorResponse(error)
   }
 }

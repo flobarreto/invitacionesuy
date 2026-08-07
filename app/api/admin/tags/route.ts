@@ -1,177 +1,164 @@
 import { NextResponse } from "next/server"
-import { requireAuthWithTable } from "@/lib/auth"
+import { assertMutationRequest, requireAuthWithTable } from "@/lib/auth"
+import { crmErrorResponse } from "@/lib/crm/errors"
+import { enforceRateLimit } from "@/lib/crm/rate-limit"
+import {
+  legacyTagCreateSchema,
+  legacyTagUpdateSchema,
+  logLegacyDatabaseError,
+  parseLegacyJson,
+} from "@/lib/legacy-admin-api"
 import { supabaseAdmin } from "@/lib/supabase"
 
 export async function GET() {
   try {
-    const { tableName } = await requireAuthWithTable()
+    const { eventId } = await requireAuthWithTable()
 
     if (!supabaseAdmin) {
       return NextResponse.json(
-        { error: "Error de configuración del servidor" },
-        { status: 500 }
+        { error: "El servicio no está disponible" },
+        { status: 503 },
       )
     }
 
-    // Obtener las etiquetas donde table_name coincide con el del usuario
+    // event_id is the canonical tenant boundary; table_name is legacy metadata.
     const { data, error } = await supabaseAdmin
       .from("tags")
-      .select("id, name, color")
-      .eq("table_name", tableName)
+      .select("id, legacy_id, name, color")
+      .eq("event_id", eventId)
       .order("name", { ascending: true })
 
     if (error) {
-      console.error("Error fetching tags:", error)
+      logLegacyDatabaseError("list_tags", error)
       return NextResponse.json(
         { error: "Error al obtener las etiquetas" },
-        { status: 500 }
+        { status: 503 },
       )
     }
 
-    return NextResponse.json({ tags: data || [] })
-  } catch (error: any) {
-    if (error.message === "Unauthorized") {
-      return NextResponse.json(
-        { error: "No autorizado" },
-        { status: 401 }
-      )
-    }
-    console.error("Error in tags route:", error)
-    return NextResponse.json(
-      { error: "Error al obtener las etiquetas" },
-      { status: 500 }
-    )
+    return NextResponse.json({
+      tags: (data || []).map((tag) => ({
+        id: tag.legacy_id ?? tag.id,
+        name: tag.name,
+        color: tag.color,
+      })),
+    })
+  } catch (error: unknown) {
+    return crmErrorResponse(error)
   }
 }
 
 export async function POST(request: Request) {
   try {
-    const { tableName } = await requireAuthWithTable()
+    assertMutationRequest(request)
+    const { adminId, eventId, tableName } = await requireAuthWithTable("write")
 
     if (!supabaseAdmin) {
       return NextResponse.json(
-        { error: "Error de configuración del servidor" },
-        { status: 500 }
+        { error: "El servicio no está disponible" },
+        { status: 503 },
       )
     }
 
-    let payload: {
-      name?: string
-      color?: string
+    await enforceRateLimit({
+      request,
+      namespace: "legacy_admin_tags_write",
+      scope: eventId,
+      identifier: adminId,
+      limit: 30,
+      windowSeconds: 60,
+    })
+    const parsed = await parseLegacyJson(request, legacyTagCreateSchema)
+    if (!parsed.success) {
+      return NextResponse.json({ error: parsed.error }, { status: parsed.status })
     }
-
-    try {
-      payload = await request.json()
-    } catch {
-      return NextResponse.json(
-        { error: "Formato inválido" },
-        { status: 400 }
-      )
-    }
-
-    const { name, color } = payload
-
-    if (!name || !color) {
-      return NextResponse.json(
-        { error: "El nombre y el color son obligatorios" },
-        { status: 400 }
-      )
-    }
+    const { name, color } = parsed.data
 
     const insertData = {
-      name: name.trim(),
-      color: color.trim(),
+      event_id: eventId,
+      name,
+      color: color.toUpperCase(),
       table_name: tableName,
     }
 
     const { error } = await supabaseAdmin.from("tags").insert(insertData)
 
     if (error) {
-      console.error("Error inserting tag:", error)
+      logLegacyDatabaseError("create_tag", error)
+      if (error.code === "23505") {
+        const { data: existingTags, error: lookupError } = await supabaseAdmin
+          .from("tags")
+          .select("id,name,color")
+          .eq("event_id", eventId)
+        if (lookupError) {
+          logLegacyDatabaseError("resolve_duplicate_tag", lookupError)
+        }
+        const existing = (existingTags ?? []).find(
+          (tag) => tag.name.trim().toLocaleLowerCase("es") === name.toLocaleLowerCase("es"),
+        )
+        if (existing?.color.toUpperCase() === color.toUpperCase()) {
+          return NextResponse.json({ ok: true, id: existing.id, idempotentReplay: true })
+        }
+        return NextResponse.json(
+          { error: "Ya existe una etiqueta con ese nombre" },
+          { status: 409 },
+        )
+      }
       return NextResponse.json(
         { error: "Error al agregar la etiqueta" },
-        { status: 500 }
+        { status: 503 },
       )
     }
 
     return NextResponse.json({ ok: true })
-  } catch (error: any) {
-    if (error.message === "Unauthorized") {
-      return NextResponse.json(
-        { error: "No autorizado" },
-        { status: 401 }
-      )
-    }
-    console.error("Error in add-tag route:", error)
-    return NextResponse.json(
-      { error: "Error al agregar la etiqueta" },
-      { status: 500 }
-    )
+  } catch (error: unknown) {
+    return crmErrorResponse(error)
   }
 }
 
 export async function PUT(request: Request) {
   try {
-    const { tableName } = await requireAuthWithTable()
+    assertMutationRequest(request)
+    const { adminId, eventId } = await requireAuthWithTable("write")
 
     if (!supabaseAdmin) {
       return NextResponse.json(
-        { error: "Error de configuración del servidor" },
-        { status: 500 }
+        { error: "El servicio no está disponible" },
+        { status: 503 },
       )
     }
 
-    let payload: {
-      id?: string
-      name?: string
-      color?: string
+    await enforceRateLimit({
+      request,
+      namespace: "legacy_admin_tags_write",
+      scope: eventId,
+      identifier: adminId,
+      limit: 30,
+      windowSeconds: 60,
+    })
+    const parsed = await parseLegacyJson(request, legacyTagUpdateSchema)
+    if (!parsed.success) {
+      return NextResponse.json({ error: parsed.error }, { status: parsed.status })
     }
-
-    try {
-      payload = await request.json()
-    } catch {
-      return NextResponse.json(
-        { error: "Formato inválido" },
-        { status: 400 }
-      )
-    }
-
-    const { id, name, color } = payload
-
-    console.log("PUT request received:", { id, name, color, tableName })
-
-    if (!id) {
-      return NextResponse.json(
-        { error: "El ID de la etiqueta es obligatorio" },
-        { status: 400 }
-      )
-    }
-
-    if (!name || !color) {
-      return NextResponse.json(
-        { error: "El nombre y el color son obligatorios" },
-        { status: 400 }
-      )
-    }
+    const { id, name, color } = parsed.data
 
     // Primero verificar que la etiqueta existe y pertenece al usuario
-    const { data: existingTag, error: fetchError } = await supabaseAdmin
+    const { data: eventTags, error: fetchError } = await supabaseAdmin
       .from("tags")
-      .select("id, table_name")
-      .eq("id", id)
-      .eq("table_name", tableName)
-      .maybeSingle()
-
-    console.log("Existing tag check:", { existingTag, fetchError })
+      .select("id,legacy_id")
+      .eq("event_id", eventId)
 
     if (fetchError) {
-      console.error("Error fetching tag:", fetchError)
+      logLegacyDatabaseError("verify_tag", fetchError)
       return NextResponse.json(
         { error: "Error al verificar la etiqueta" },
-        { status: 500 }
+        { status: 503 },
       )
     }
 
+    const existingTag = (eventTags ?? []).find(
+      (tag) => tag.id === id || tag.legacy_id === id,
+    )
     if (!existingTag) {
       return NextResponse.json(
         { error: "Etiqueta no encontrada o no tienes permisos para editarla" },
@@ -180,42 +167,34 @@ export async function PUT(request: Request) {
     }
 
     const updateData = {
-      name: name.trim(),
-      color: color.trim(),
+      name,
+      color: color.toUpperCase(),
     }
 
     // Actualizar la etiqueta
     const { data, error } = await supabaseAdmin
       .from("tags")
       .update(updateData)
-      .eq("id", id)
-      .eq("table_name", tableName)
-      .select()
-
-    console.log("Update result:", { data, error })
+      .eq("id", existingTag.id)
+      .eq("event_id", eventId)
+      .select("id")
 
     if (error) {
-      console.error("Error updating tag:", error)
-      console.error("Tag ID:", id)
-      console.error("Table name:", tableName)
+      logLegacyDatabaseError("update_tag", error)
+      if (error.code === "23505") {
+        return NextResponse.json(
+          { error: "Ya existe una etiqueta con ese nombre" },
+          { status: 409 },
+        )
+      }
       return NextResponse.json(
         { error: "Error al actualizar la etiqueta" },
-        { status: 500 }
+        { status: 503 },
       )
     }
 
-    return NextResponse.json({ ok: true })
-  } catch (error: any) {
-    if (error.message === "Unauthorized") {
-      return NextResponse.json(
-        { error: "No autorizado" },
-        { status: 401 }
-      )
-    }
-    console.error("Error in update-tag route:", error)
-    return NextResponse.json(
-      { error: "Error al actualizar la etiqueta" },
-      { status: 500 }
-    )
+    return NextResponse.json({ ok: true, id: data?.[0]?.id ?? id })
+  } catch (error: unknown) {
+    return crmErrorResponse(error)
   }
 }

@@ -1,79 +1,88 @@
 import { NextResponse } from "next/server"
-import { requireAuthWithTable } from "@/lib/auth"
+import { assertMutationRequest, requireAuthWithTable } from "@/lib/auth"
+import { crmErrorResponse } from "@/lib/crm/errors"
+import { enforceRateLimit } from "@/lib/crm/rate-limit"
+import { stableHash } from "@/lib/crm/tokens"
+import {
+  legacyAddRsvpSchema,
+  logLegacyDatabaseError,
+  parseLegacyJson,
+} from "@/lib/legacy-admin-api"
 import { supabaseAdmin } from "@/lib/supabase"
 
 export async function POST(request: Request) {
   try {
-    const { username, tableName } = await requireAuthWithTable()
+    assertMutationRequest(request)
+    const { adminId, eventId } = await requireAuthWithTable("write")
 
     if (!supabaseAdmin) {
       return NextResponse.json(
-        { error: "Error de configuración del servidor" },
-        { status: 500 }
+        { error: "El servicio no está disponible" },
+        { status: 503 },
       )
     }
 
-    let payload: {
-      name?: string
-      attendance?: string
-      dietaryPreferences?: string[]
-      favoriteSong?: string
-      drink?: string[]
-      isSaveTheDate?: boolean
-    };
-
-    try {
-      payload = await request.json()
-    } catch {
+    await enforceRateLimit({
+      request,
+      namespace: "legacy_admin_add_rsvp",
+      scope: eventId,
+      identifier: adminId,
+      limit: 30,
+      windowSeconds: 60,
+    })
+    const parsed = await parseLegacyJson(request, legacyAddRsvpSchema)
+    if (!parsed.success) {
+      return NextResponse.json({ error: parsed.error }, { status: parsed.status })
+    }
+    const idempotencyKey = request.headers.get("idempotency-key")?.trim() ?? ""
+    if (!/^[A-Za-z0-9._:-]{8,128}$/.test(idempotencyKey)) {
       return NextResponse.json(
-        { error: "Formato inválido" },
-        { status: 400 }
+        { error: "Falta una clave de idempotencia válida" },
+        { status: 400 },
       )
     }
+    const { name, attendance, dietaryPreferences, favoriteSong, drink, isSaveTheDate } = parsed.data
 
-    const { name, attendance, dietaryPreferences = [], favoriteSong = "", drink = [], isSaveTheDate = false } = payload
-
-    if (!name || !attendance && !isSaveTheDate) {
-      return NextResponse.json(
-        { error: "El nombre y la respuesta de asistencia son obligatorios" },
-        { status: 400 }
-      )
-    }
-
-    const insertData: Record<string, any> = {
-      name: name.trim(),
-      attendance,
+    const insertData: Record<string, unknown> = {
+      name,
+      attendance: attendance || (isSaveTheDate ? "save_the_date" : ""),
       dietary_preferences: dietaryPreferences,
       drink,
     }
 
     // Solo incluir favorite_song si está presente y no está vacío
-    if (favoriteSong && favoriteSong.trim()) {
-      insertData.favorite_song = favoriteSong.trim()
+    if (favoriteSong) {
+      insertData.favorite_song = favoriteSong
     }
 
-    const { error } = await supabaseAdmin.from(tableName).insert(insertData)
+    const { data, error } = await supabaseAdmin.rpc("submit_legacy_rsvp_idempotent", {
+      p_event_id: eventId,
+      p_idempotency_key: idempotencyKey,
+      p_request_hash: stableHash({ eventId, payload: insertData }),
+      p_payload: insertData,
+    })
 
     if (error) {
-      console.error("Error inserting RSVP:", error)
+      logLegacyDatabaseError("add_rsvp", error)
+      if (error.message.includes("idempotency_key_reused")) {
+        return NextResponse.json(
+          { error: "La clave de idempotencia ya fue usada con otros datos" },
+          { status: 409 },
+        )
+      }
       return NextResponse.json(
         { error: "Error al agregar el invitado" },
-        { status: 500 }
+        { status: 503 },
       )
     }
 
-    return NextResponse.json({ ok: true })
-  } catch (error: any) {
-    if (error.message === "Unauthorized") {
-      return NextResponse.json(
-        { error: "No autorizado" },
-        { status: 401 }
-      )
-    }
-    console.error("Error in add-rsvp route:", error)
-    return NextResponse.json(
-      { error: "Error al agregar el invitado" },
-      { status: 500 }
-    )
+    return NextResponse.json({
+      ok: true,
+      idempotentReplay: Boolean(
+        (data as { idempotentReplay?: boolean } | null)?.idempotentReplay,
+      ),
+    })
+  } catch (error: unknown) {
+    return crmErrorResponse(error)
   }
 }

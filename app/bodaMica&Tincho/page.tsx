@@ -1,12 +1,24 @@
 "use client";
 
-import { CalendarHeart, Clock, MapPin, PartyPopper, Church, Shirt, MessageCircleHeart } from "lucide-react"
+import { Clock, MapPin, PartyPopper, Church, Shirt, MessageCircleHeart } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import Image from "next/image"
 import Link from "next/link"
 import { FormEvent, useState } from "react";
+import { useRsvpSubmission } from "@/hooks/invitations/use-rsvp-submission";
+import { useInvitationCalendarUrl } from "@/hooks/invitations/use-invitation-calendar-url";
 
 export default function BodaMicaTincho() {
+  const calendarUrl = useInvitationCalendarUrl("mica-tincho");
+  const {
+    status: rsvpStatus,
+    feedback: submissionFeedback,
+    isSubmitting,
+    ensureOpen,
+    resetFeedback,
+    setFeedback: setSubmissionFeedback,
+    submit: submitRsvp,
+  } = useRsvpSubmission("mica-tincho");
   const [copied, setCopied] = useState(false);
   const copyAccountNumber = async (accountNumber: string) => {
     try {
@@ -35,14 +47,11 @@ export default function BodaMicaTincho() {
   const [guestName, setGuestName] = useState("");
   const [attendanceResponse, setAttendanceResponse] = useState<"si" | "no">("si");
   const [dietaryPreferences, setDietaryPreferences] = useState<string[]>(["no"]);
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [submissionFeedback, setSubmissionFeedback] = useState<{ type: "success" | "error"; message: string } | null>(
-    null
-  );
-
   const handleRsvpSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    setSubmissionFeedback(null);
+    resetFeedback();
+
+    if (!ensureOpen()) return;
 
     if (!guestName.trim()) {
       setSubmissionFeedback({
@@ -52,43 +61,18 @@ export default function BodaMicaTincho() {
       return;
     }
 
-    setIsSubmitting(true);
+    const submitted = await submitRsvp({
+      name: guestName.trim(),
+      attendance: attendanceResponse,
+      dietaryPreferences,
+    });
+    if (!submitted) return;
 
-    try {
-      const response = await fetch("/api/rsvp/bodaMicaTincho", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          name: guestName.trim(),
-          attendance: attendanceResponse,
-          dietaryPreferences,
-        }),
-      });
+    setGuestName("");
+    setAttendanceResponse("si");
+    setDietaryPreferences(["no"]);
 
-      if (!response.ok) {
-        const errorBody = await response.json().catch(() => null);
-        throw new Error(errorBody?.error ?? "No pudimos guardar tu respuesta. Intenta nuevamente.");
-      }
-
-      setSubmissionFeedback({
-        type: "success",
-        message: "¡Gracias! Registramos tu respuesta.",
-      });
-      setGuestName("");
-      setAttendanceResponse("si");
-      setDietaryPreferences(["no"]);
-
-      setTimeout(() => setSubmissionFeedback(null), 5000);
-    } catch (error) {
-      setSubmissionFeedback({
-        type: "error",
-        message: error instanceof Error ? error.message : "Ocurrió un error inesperado. Intenta nuevamente.",
-      });
-    } finally {
-      setIsSubmitting(false);
-    }
+    setTimeout(resetFeedback, 5000);
   };
 
   return (
@@ -113,7 +97,7 @@ export default function BodaMicaTincho() {
           </div>
 
           <a
-            href="https://calendar.google.com/calendar/u/0/r/eventedit?text=Boda+Mica+%26+Tincho&dates=20260131T200000Z/20260201T090000Z&details=%C2%A1Guardate+la+fecha+de+nuestro+casamiento+para+que+no+te+olvides+y+puedas+compartir+con+nosotros%21"
+            href={calendarUrl}
             target="_blank"
             rel="noopener noreferrer"
           >
@@ -211,6 +195,7 @@ export default function BodaMicaTincho() {
                 src="/FotosMartin&Mica/BentaPrincipal.jpg"
                 alt="Martin y Mica"
                 fill
+                sizes="(min-width: 1024px) 25vw, (min-width: 768px) 33vw, 50vw"
                 className="object-cover group-hover:scale-105 transition-transform duration-300"
               />
             </div>
@@ -219,6 +204,7 @@ export default function BodaMicaTincho() {
                 src="/FotosMartin&Mica/Picture1.jpg"
                 alt="Martin y Mica"
                 fill
+                sizes="(min-width: 1024px) 25vw, (min-width: 768px) 33vw, 50vw"
                 className="object-cover group-hover:scale-105 transition-transform duration-300"
               />
             </div>
@@ -227,6 +213,7 @@ export default function BodaMicaTincho() {
                 src="/FotosMartin&Mica/Picture2.jpg"
                 alt="Martin y Mica"
                 fill
+                sizes="(min-width: 1024px) 25vw, (min-width: 768px) 33vw, 50vw"
                 className="object-cover group-hover:scale-105 transition-transform duration-300"
               />
             </div>
@@ -235,6 +222,7 @@ export default function BodaMicaTincho() {
                 src="/FotosMartin&Mica/Picture3.jpg"
                 alt="Martin y Mica"
                 fill
+                sizes="(min-width: 1024px) 25vw, (min-width: 768px) 33vw, 50vw"
                 className="object-cover group-hover:scale-105 transition-transform duration-300"
               />
             </div>
@@ -243,6 +231,7 @@ export default function BodaMicaTincho() {
                 src="/FotosMartin&Mica/Picture4.jpg"
                 alt="Martin y Mica"
                 fill
+                sizes="(min-width: 1024px) 25vw, (min-width: 768px) 33vw, 50vw"
                 className="object-cover group-hover:scale-105 transition-transform duration-300"
               />
             </div>
@@ -251,6 +240,7 @@ export default function BodaMicaTincho() {
                 src="/FotosMartin&Mica/Picture5.jpg"
                 alt="Martin y Mica"
                 fill
+                sizes="(min-width: 1024px) 25vw, (min-width: 768px) 33vw, 50vw"
                 className="object-cover group-hover:scale-105 transition-transform duration-300"
               />
             </div>
@@ -260,6 +250,7 @@ export default function BodaMicaTincho() {
                 src="/FotosMartin&Mica/Picture8.jpg"
                 alt="Martin y Mica"
                 fill
+                sizes="(min-width: 1024px) 25vw, (min-width: 768px) 33vw, 50vw"
                 className="object-cover group-hover:scale-105 transition-transform duration-300"
               />
             </div>
@@ -268,6 +259,7 @@ export default function BodaMicaTincho() {
                 src="/FotosMartin&Mica/Picture9.jpg"
                 alt="Martin y Mica"
                 fill
+                sizes="(min-width: 1024px) 25vw, (min-width: 768px) 33vw, 50vw"
                 className="object-cover object-top group-hover:scale-105 transition-transform duration-300"
               />
             </div>
@@ -276,6 +268,7 @@ export default function BodaMicaTincho() {
                 src="/FotosMartin&Mica/Picture10.jpg"
                 alt="Martin y Mica"
                 fill
+                sizes="(min-width: 1024px) 25vw, (min-width: 768px) 33vw, 50vw"
                 className="object-cover object-bottom group-hover:scale-105 transition-transform duration-300"
               />
             </div>
@@ -284,6 +277,7 @@ export default function BodaMicaTincho() {
                 src="/FotosMartin&Mica/Picture11.jpg"
                 alt="Martin y Mica"
                 fill
+                sizes="(min-width: 1024px) 25vw, (min-width: 768px) 33vw, 50vw"
                 className="object-cover group-hover:scale-105 transition-transform duration-300"
               />
             </div>
@@ -438,7 +432,7 @@ export default function BodaMicaTincho() {
 
             <Button
               type="submit"
-              disabled={true}
+              disabled={isSubmitting || rsvpStatus !== "open"}
               className="w-full bg-[#688268] hover:bg-[#827a71] disabled:bg-[#827a71]/30 disabled:cursor-not-allowed disabled:text-white/60 text-white font-semibold text-lg py-3 rounded-lg transition-colors"
             >
               {isSubmitting ? "Enviando..." : "Confirmar asistencia"}

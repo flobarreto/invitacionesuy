@@ -5,6 +5,7 @@ const plans = [
   {
     name: "Invitación Simple",
     description: "Perfecta para eventos íntimos",
+    featured: false,
     features: [
       "Una pantalla de diseño",
       "Información del evento",

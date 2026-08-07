@@ -1,0 +1,32 @@
+html {
+  scroll-behavior: auto !important;
+  scrollbar-width: none !important;
+}
+
+::-webkit-scrollbar {
+  display: none !important;
+}
+
+*,
+*::before,
+*::after {
+  animation-delay: 0s !important;
+  animation-duration: 0.001s !important;
+  caret-color: transparent !important;
+  transition-delay: 0s !important;
+  transition-duration: 0.001s !important;
+}
+
+/* Media frames and WebGL pixels are time/GPU dependent. Their layout remains in
+   the regression image; only the changing pixels are neutralized. */
+video,
+canvas,
+iframe {
+  visibility: hidden !important;
+}
+
+/* Never include the local Next.js development toolbar in a baseline. */
+nextjs-portal,
+[data-next-badge-root] {
+  display: none !important;
+}

@@ -1,10 +1,14 @@
 import { NextResponse } from "next/server"
-import { requireAuthWithTable } from "@/lib/auth"
+import { assertMutationRequest, requireAuthWithTable } from "@/lib/auth"
+import { crmErrorResponse } from "@/lib/crm/errors"
+import { logLegacyDatabaseError, parseLegacyJson } from "@/lib/legacy-admin-api"
+import { legacyRsvpDeleteSchema } from "@/lib/legacy-rsvp-delete"
 import { supabaseAdmin } from "@/lib/supabase"
 
 export async function DELETE(request: Request) {
   try {
-    const { username, tableName } = await requireAuthWithTable()
+    assertMutationRequest(request)
+    const { tableName } = await requireAuthWithTable("write")
 
     if (!supabaseAdmin) {
       return NextResponse.json(
@@ -13,53 +17,26 @@ export async function DELETE(request: Request) {
       )
     }
 
-    let payload: {
-      id?: string
-    }
-
-    try {
-      payload = await request.json()
-    } catch {
-      return NextResponse.json(
-        { error: "Formato inválido" },
-        { status: 400 }
-      )
-    }
-
-    const { id } = payload
-
-    if (!id) {
-      return NextResponse.json(
-        { error: "El ID del invitado es obligatorio" },
-        { status: 400 }
-      )
+    const parsed = await parseLegacyJson(request, legacyRsvpDeleteSchema)
+    if (!parsed.success) {
+      return NextResponse.json({ error: parsed.error }, { status: parsed.status })
     }
 
     const { error } = await supabaseAdmin
       .from(tableName)
       .delete()
-      .eq("id", id)
+      .eq("id", parsed.data.id)
 
     if (error) {
-      console.error("Error deleting RSVP:", error)
+      logLegacyDatabaseError("delete_rsvp", error)
       return NextResponse.json(
         { error: "Error al eliminar el invitado" },
-        { status: 500 }
+        { status: 503 },
       )
     }
 
     return NextResponse.json({ ok: true })
-  } catch (error: any) {
-    if (error.message === "Unauthorized") {
-      return NextResponse.json(
-        { error: "No autorizado" },
-        { status: 401 }
-      )
-    }
-    console.error("Error in delete-rsvp route:", error)
-    return NextResponse.json(
-      { error: "Error al eliminar el invitado" },
-      { status: 500 }
-    )
+  } catch (error: unknown) {
+    return crmErrorResponse(error)
   }
 }

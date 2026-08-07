@@ -8,17 +8,23 @@ import { toast } from "sonner";
 import { Toaster } from "@/components/ui/sonner";
 import Link from "next/link";
 import { copyToClipboard } from "@/app/utils/copyToClipboard";
-import { getTimeLeftToUruguayDate, type TimeLeft } from "@/app/utils/countdown";
-
-const WEDDING_DATE_ISO = "2026-03-28T20:00:00-03:00";
+import { useInvitationCountdown } from "@/hooks/invitations/use-invitation-countdown";
+import { useRsvpSubmission } from "@/hooks/invitations/use-rsvp-submission";
+import { useInvitationCalendarUrl } from "@/hooks/invitations/use-invitation-calendar-url";
 
 export default function BodaCalas() {
   const accountNumber = "1234567";
-  const [timeLeft, setTimeLeft] = useState<TimeLeft>({
-    days: 0,
-    hours: 0,
-    minutes: 0,
-  });
+  const timeLeft = useInvitationCountdown("calas");
+  const calendarUrl = useInvitationCalendarUrl("calas");
+  const {
+    status: rsvpStatus,
+    feedback: submissionFeedback,
+    isSubmitting,
+    ensureOpen,
+    resetFeedback,
+    setFeedback: setSubmissionFeedback,
+    submit: submitRsvp,
+  } = useRsvpSubmission("calas");
   const [accountCopied, setAccountCopied] = useState(false);
   const [guestName, setGuestName] = useState("");
   const [attendanceResponse, setAttendanceResponse] = useState<"si" | "no">(
@@ -28,12 +34,6 @@ export default function BodaCalas() {
     "no",
   ]);
   const [otroText, setOtroText] = useState("");
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [submissionFeedback, setSubmissionFeedback] = useState<{
-    type: "success" | "error";
-    message: string;
-  } | null>(null);
-
   /** Solo desktop (md+): abrir enlaces externos en pestaña nueva; en mobile, misma pestaña. */
   const [openExternalInNewTab, setOpenExternalInNewTab] = useState<
     boolean | null
@@ -47,18 +47,11 @@ export default function BodaCalas() {
     return () => mq.removeEventListener("change", sync);
   }, []);
 
-  useEffect(() => {
-    const update = () => {
-      setTimeLeft(getTimeLeftToUruguayDate(WEDDING_DATE_ISO));
-    };
-    update();
-    const timer = setInterval(update, 1000);
-    return () => clearInterval(timer);
-  }, []);
-
   const handleRsvpSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    setSubmissionFeedback(null);
+    resetFeedback();
+
+    if (!ensureOpen()) return;
 
     if (!guestName.trim()) {
       setSubmissionFeedback({
@@ -68,69 +61,38 @@ export default function BodaCalas() {
       return;
     }
 
-    setIsSubmitting(true);
+    const validPreferences = dietaryPreferences
+      .filter((p) => p !== "no" && p !== "otro" && !p.startsWith("otro:"))
+      .filter((value, index, self) => self.indexOf(value) === index);
 
-    try {
-      const validPreferences = dietaryPreferences
-        .filter((p) => p !== "no" && p !== "otro" && !p.startsWith("otro:"))
-        .filter((value, index, self) => self.indexOf(value) === index);
+    const finalPreferences = otroText.trim()
+      ? [...validPreferences, otroText.trim()].filter(
+          (value, index, self) => self.indexOf(value) === index,
+        )
+      : validPreferences;
 
-      const finalPreferences = otroText.trim()
-        ? [...validPreferences, otroText.trim()].filter(
-            (value, index, self) => self.indexOf(value) === index,
-          )
-        : validPreferences;
+    const submitted = await submitRsvp({
+      name: guestName.trim(),
+      attendance: attendanceResponse,
+      dietaryPreferences: finalPreferences,
+    });
+    if (!submitted) return;
 
-      const response = await fetch("/api/rsvp/bodaDomiDiego", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          name: guestName.trim(),
-          attendance: attendanceResponse,
-          dietaryPreferences: finalPreferences,
-        }),
-      });
+    toast.success(
+      attendanceResponse === "si"
+        ? "¡Te esperamos!"
+        : "¡Gracias por tu respuesta!",
+      {
+        position: "bottom-center",
+        duration: 7000,
+      },
+    );
+    setGuestName("");
+    setAttendanceResponse("si");
+    setDietaryPreferences(["no"]);
+    setOtroText("");
 
-      if (!response.ok) {
-        const errorBody = await response.json().catch(() => null);
-        throw new Error(
-          errorBody?.error ??
-            "No pudimos guardar tu respuesta. Intenta nuevamente.",
-        );
-      }
-
-      setSubmissionFeedback({
-        type: "success",
-        message: "¡Gracias! Registramos tu respuesta.",
-      });
-      toast.success(
-        attendanceResponse === "si"
-          ? "¡Te esperamos!"
-          : "¡Gracias por tu respuesta!",
-        {
-          position: "bottom-center",
-          duration: 7000,
-        },
-      );
-      setGuestName("");
-      setAttendanceResponse("si");
-      setDietaryPreferences(["no"]);
-      setOtroText("");
-
-      setTimeout(() => setSubmissionFeedback(null), 5000);
-    } catch (error) {
-      setSubmissionFeedback({
-        type: "error",
-        message:
-          error instanceof Error
-            ? error.message
-            : "Ocurrió un error inesperado. Intenta nuevamente.",
-      });
-    } finally {
-      setIsSubmitting(false);
-    }
+    setTimeout(resetFeedback, 5000);
   };
 
   const copyAccountNumber = async () => {
@@ -206,7 +168,7 @@ export default function BodaCalas() {
                 >
                   Sábado
                   <br />
-                  30 de Mayo
+                  28 de Marzo
                 </div>
                 <div className="mt-1 text-[0.85rem] text-[#4a4540] md:text-lg">
                   2026
@@ -272,7 +234,7 @@ export default function BodaCalas() {
               </a>
 
               <a
-                href="https://calendar.google.com/calendar/u/0/r/eventedit?text=Boda+Juli+%26+Mati&dates=20260328T230000Z/20260329T070000Z&location=Regency+Park+Hotel%2C+Montevideo"
+                href={calendarUrl}
                 target={openExternalInNewTab === true ? "_blank" : undefined}
                 rel={
                   openExternalInNewTab === true
@@ -402,20 +364,20 @@ export default function BodaCalas() {
               Confirmá tu presencia
             </h2>
             <p className="mb-10 text-sm text-[#4a4540]">
-              * antes del 15 de mayo
+              * antes del 15 de marzo
             </p>
 
             <div className=" px-5 text-left sm:px-10 sm:py-12">
               <form onSubmit={handleRsvpSubmit} className="space-y-6">
                 <div className="flex flex-col gap-2">
                   <label
-                    htmlFor="guest-name-domi-diego"
+                    htmlFor="guest-name-calas"
                     className="text-[0.7rem] font-bold uppercase text-[#4a4540]"
                   >
                     Nombre y Apellido
                   </label>
                   <input
-                    id="guest-name-domi-diego"
+                    id="guest-name-calas"
                     type="text"
                     value={guestName}
                     onChange={(e) => setGuestName(e.target.value)}
@@ -423,7 +385,7 @@ export default function BodaCalas() {
                     className="w-full border-b border-[#1a1816]/40 bg-transparent px-0 py-3 text-[#1a1816] placeholder:text-[#4a4540]/50 focus:border-[#1a1816] focus:outline-none"
                   />
                   <label
-                    htmlFor="guest-name-domi-diego"
+                    htmlFor="guest-name-calas"
                     className="text-[0.7rem] font-small text-[#4a4540]"
                   >
                     * Uno por persona
@@ -514,7 +476,7 @@ export default function BodaCalas() {
 
                 <Button
                   type="submit"
-                  disabled={isSubmitting}
+                  disabled={isSubmitting || rsvpStatus !== "open"}
                   className="w-full rounded-none border border-[#1a1816] bg-[#1a1816] py-6 text-[0.9rem] font-normal uppercase text-[#f5f3ef] hover:bg-[#1a1816]/90 disabled:opacity-50"
                 >
                   {isSubmitting ? "Enviando..." : "Confirmar asistencia"}

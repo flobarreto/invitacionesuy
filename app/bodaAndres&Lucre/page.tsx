@@ -2,14 +2,27 @@
 
 import { Button } from "@/components/ui/button";
 import Image from "next/image";
-import { FormEvent, useEffect, useState } from "react";
+import { FormEvent, useState } from "react";
 import { CalendarIcon, MapPinIcon } from "lucide-react";
 import { toast } from "sonner";
 import { copyToClipboard } from "@/lib/utils";
 import { Toaster } from "@/components/ui/sonner";
-import { getTimeLeftToUruguayDate, TimeLeft } from "@/app/utils/countdown";
+import { useInvitationCountdown } from "@/hooks/invitations/use-invitation-countdown";
+import { useRsvpSubmission } from "@/hooks/invitations/use-rsvp-submission";
+import { useInvitationCalendarUrl } from "@/hooks/invitations/use-invitation-calendar-url";
 
 export default function BodaAndresLucre() {
+  const timeLeft = useInvitationCountdown("andres-lucre");
+  const calendarUrl = useInvitationCalendarUrl("andres-lucre");
+  const {
+    status: rsvpStatus,
+    feedback: submissionFeedback,
+    isSubmitting,
+    ensureOpen,
+    resetFeedback,
+    setFeedback: setSubmissionFeedback,
+    submit: submitRsvp,
+  } = useRsvpSubmission("andres-lucre");
   const [copied, setCopied] = useState(false);
   const copyAccountNumber = async (accountNumber: string) => {
     try {
@@ -29,32 +42,11 @@ export default function BodaAndresLucre() {
     "no",
   ]);
   const [otroText, setOtroText] = useState("");
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [submissionFeedback, setSubmissionFeedback] = useState<{
-    type: "success" | "error";
-    message: string;
-  } | null>(null);
-  const [timeLeft, setTimeLeft] = useState<TimeLeft>({
-    days: 0,
-    hours: 0,
-    minutes: 0,
-  });
-
-  useEffect(() => {
-    const update = () => {
-      // 21 de marzo de 2026 a las 19:00 hora de Uruguay
-      setTimeLeft(getTimeLeftToUruguayDate("2026-06-21T19:00:00-03:00"));
-    };
-
-    update();
-    const timer = setInterval(update, 1000);
-
-    return () => clearInterval(timer);
-  }, []);
-
   const handleRsvpSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    setSubmissionFeedback(null);
+    resetFeedback();
+
+    if (!ensureOpen()) return;
 
     if (!guestName.trim()) {
       setSubmissionFeedback({
@@ -64,69 +56,38 @@ export default function BodaAndresLucre() {
       return;
     }
 
-    setIsSubmitting(true);
+    const validPreferences = dietaryPreferences
+      .filter((p) => p !== "no" && p !== "otro" && !p.startsWith("otro:"))
+      .filter((value, index, self) => self.indexOf(value) === index);
 
-    try {
-      const validPreferences = dietaryPreferences
-        .filter((p) => p !== "no" && p !== "otro" && !p.startsWith("otro:"))
-        .filter((value, index, self) => self.indexOf(value) === index);
+    const finalPreferences = otroText.trim()
+      ? [...validPreferences, otroText.trim()].filter(
+          (value, index, self) => self.indexOf(value) === index,
+        )
+      : validPreferences;
 
-      const finalPreferences = otroText.trim()
-        ? [...validPreferences, otroText.trim()].filter(
-            (value, index, self) => self.indexOf(value) === index,
-          )
-        : validPreferences;
+    const submitted = await submitRsvp({
+      name: guestName.trim(),
+      attendance: attendanceResponse,
+      dietaryPreferences: finalPreferences,
+    });
+    if (!submitted) return;
 
-      const response = await fetch("/api/rsvp/bodaAndresLucre", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          name: guestName.trim(),
-          attendance: attendanceResponse,
-          dietaryPreferences: finalPreferences,
-        }),
-      });
+    toast.success(
+      attendanceResponse === "si"
+        ? "¡Te esperamos!"
+        : "¡Gracias por tu respuesta!",
+      {
+        position: "bottom-center",
+        duration: 7000,
+      },
+    );
+    setGuestName("");
+    setAttendanceResponse("si");
+    setDietaryPreferences(["no"]);
+    setOtroText("");
 
-      if (!response.ok) {
-        const errorBody = await response.json().catch(() => null);
-        throw new Error(
-          errorBody?.error ??
-            "No pudimos guardar tu respuesta. Intenta nuevamente.",
-        );
-      }
-
-      setSubmissionFeedback({
-        type: "success",
-        message: "¡Gracias! Registramos tu respuesta.",
-      });
-      toast.success(
-        attendanceResponse === "si"
-          ? "¡Te esperamos!"
-          : "¡Gracias por tu respuesta!",
-        {
-          position: "bottom-center",
-          duration: 7000,
-        },
-      );
-      setGuestName("");
-      setAttendanceResponse("si");
-      setDietaryPreferences(["no"]);
-      setOtroText("");
-
-      setTimeout(() => setSubmissionFeedback(null), 5000);
-    } catch (error) {
-      setSubmissionFeedback({
-        type: "error",
-        message:
-          error instanceof Error
-            ? error.message
-            : "Ocurrió un error inesperado. Intenta nuevamente.",
-      });
-    } finally {
-      setIsSubmitting(false);
-    }
+    setTimeout(resetFeedback, 5000);
   };
 
   return (
@@ -336,7 +297,7 @@ export default function BodaAndresLucre() {
 
             <Button
               type="submit"
-              disabled={true}
+              disabled={isSubmitting || rsvpStatus !== "open"}
               className="w-full bg-black hover:bg-black/90 disabled:bg-black/30 disabled:cursor-not-allowed disabled:text-black/60 text-[#fffaf4] font-semibold text-lg py-3 rounded-lg transition-colors"
             >
               {isSubmitting ? "Enviando..." : "Confirmar asistencia"}
@@ -436,7 +397,7 @@ export default function BodaAndresLucre() {
             </div>
           </div>
             <a
-              href="https://calendar.google.com/calendar/u/0/r/eventedit?text=Boda+Andres+%26+Lucre&dates=20260321T230000Z/20260322T070000Z&details=¡Te+esperamos+en+nuestra+boda%21+Confirmá+tu+asistencia+y+agendalo+acá%21"
+              href={calendarUrl}
               target="_blank"
                   rel="noopener noreferrer"
                   className="flex mx-auto w-[150px] justify-center h-[40px] items-center flex-row gap-2 text-md md:text-2xl font-normal mb-4 border-1 border-[#fffaf4] rounded-md px-2 py-1 mr-auto mt-6"

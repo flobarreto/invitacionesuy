@@ -19,9 +19,9 @@ async function convertToWebp() {
   let sharp;
   try {
     sharp = (await import("sharp")).default;
-  } catch (e) {
+  } catch {
     console.error(
-      "Error: sharp no está instalado. Ejecutá: pnpm add -D sharp"
+      "Error: sharp no está instalado. Ejecutá: npm install --save-dev sharp"
     );
     process.exit(1);
   }

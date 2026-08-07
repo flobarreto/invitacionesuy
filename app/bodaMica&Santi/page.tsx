@@ -8,7 +8,6 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { Input } from "@/components/ui/input";
 import { Label } from "@radix-ui/react-label";
 import Image from "next/image";
 import Link from "next/link";
@@ -16,18 +15,14 @@ import {
   FormEvent,
   useState,
   MouseEvent,
-  useEffect,
 } from "react";
 
-import { getTimeLeftToUruguayDate, type TimeLeft } from "@/app/utils/countdown";
-
-const WEDDING_DATE_ISO = "2026-10-17T17:30:00-03:00";
-
-const GOOGLE_CALENDAR_EVENT_URL =
-  "https://calendar.google.com/calendar/render?action=TEMPLATE&text=Boda+Mica+%26+Santi&dates=20261017T180000%2F20261018T030000&ctz=America%2FMontevideo&details=%C2%A1Guardate+la+fecha+de+nuestro+casamiento+para+que+no+te+olvides+y+puedas+compartir+con+nosotros%21";
+import { useInvitationCountdown } from "@/hooks/invitations/use-invitation-countdown";
+import { useRsvpSubmission } from "@/hooks/invitations/use-rsvp-submission";
+import { useInvitationCalendarUrl } from "@/hooks/invitations/use-invitation-calendar-url";
 
 /** .ics vía HTTPS: en iPhone, Safari entrega el evento a Calendario (evita el data: que suele forzar “descargar”). */
-const APPLE_CALENDAR_EVENT_PATH = "/api/calendar/boda-mica-santi";
+const APPLE_CALENDAR_EVENT_PATH = "/api/events/mica-santi/calendar";
 
 /** Solo iPhone (no iPad): el modal de elegir calendario. */
 function isIPhone(): boolean {
@@ -46,6 +41,17 @@ function isMobile(): boolean {
 const accountNumber = "8163122";
 
 export default function BodaMicaSanti() {
+  const timeLeft = useInvitationCountdown("mica-santi");
+  const calendarUrl = useInvitationCalendarUrl("mica-santi");
+  const {
+    status: rsvpStatus,
+    feedback: submissionFeedback,
+    isSubmitting,
+    ensureOpen,
+    resetFeedback,
+    setFeedback: setSubmissionFeedback,
+    submit: submitRsvp,
+  } = useRsvpSubmission("mica-santi");
   const [guestName, setGuestName] = useState("");
     const [copied, setCopied] = useState(false);
 
@@ -56,27 +62,7 @@ export default function BodaMicaSanti() {
     "no",
   ]);
   const [otroText, setOtroText] = useState("");
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [submissionFeedback, setSubmissionFeedback] = useState<{
-    type: "success" | "error";
-    message: string;
-  } | null>(null);
   const [calendarChoiceOpen, setCalendarChoiceOpen] = useState(false);
-    const [timeLeft, setTimeLeft] = useState<TimeLeft>({
-    days: 0,
-    hours: 0,
-    minutes: 0,
-  });
-
-    useEffect(() => {
-      const update = () => {
-        setTimeLeft(getTimeLeftToUruguayDate(WEDDING_DATE_ISO));
-      };
-      update();
-      const timer = setInterval(update, 1000);
-      return () => clearInterval(timer);
-    }, []);
-
   /**
    * target siempre _self (mismo HTML en servidor y cliente → sin error de hidratación).
    * Escritorio: nueva pestaña vía window.open. Móvil: navegación normal. iPhone: modal.
@@ -89,7 +75,7 @@ export default function BodaMicaSanti() {
     }
     if (!isMobile()) {
       event.preventDefault();
-      window.open(GOOGLE_CALENDAR_EVENT_URL, "_blank", "noopener,noreferrer");
+      window.open(calendarUrl, "_blank", "noopener,noreferrer");
     }
   };
 
@@ -101,10 +87,10 @@ export default function BodaMicaSanti() {
   const openGoogleCalendar = () => {
     setCalendarChoiceOpen(false);
     if (isMobile()) {
-      window.location.assign(GOOGLE_CALENDAR_EVENT_URL);
+      window.location.assign(calendarUrl);
       return;
     }
-    window.open(GOOGLE_CALENDAR_EVENT_URL, "_blank", "noopener,noreferrer");
+    window.open(calendarUrl, "_blank", "noopener,noreferrer");
   };
 
     const copyAccountNumber = async () => {
@@ -120,7 +106,9 @@ export default function BodaMicaSanti() {
 
   const handleRsvpSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    setSubmissionFeedback(null);
+    resetFeedback();
+
+    if (!ensureOpen()) return;
 
     if (!guestName.trim()) {
       setSubmissionFeedback({
@@ -130,59 +118,29 @@ export default function BodaMicaSanti() {
       return;
     }
 
-    setIsSubmitting(true);
+    const validPreferences = dietaryPreferences
+      .filter((p) => p !== "no" && p !== "otro" && !p.startsWith("otro:"))
+      .filter((value, index, self) => self.indexOf(value) === index);
 
-    try {
-      const validPreferences = dietaryPreferences
-        .filter((p) => p !== "no" && p !== "otro" && !p.startsWith("otro:"))
-        .filter((value, index, self) => self.indexOf(value) === index);
+    const finalPreferences = otroText.trim()
+      ? [...validPreferences, otroText.trim()].filter(
+        (value, index, self) => self.indexOf(value) === index,
+      )
+      : validPreferences;
 
-      const finalPreferences = otroText.trim()
-        ? [...validPreferences, otroText.trim()].filter(
-          (value, index, self) => self.indexOf(value) === index,
-        )
-        : validPreferences;
+    const submitted = await submitRsvp({
+      name: guestName.trim(),
+      attendance: attendanceResponse,
+      dietaryPreferences: finalPreferences,
+    });
+    if (!submitted) return;
 
-      const response = await fetch("/api/rsvp/bodaMicaSanti", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          name: guestName.trim(),
-          attendance: attendanceResponse,
-          dietaryPreferences: finalPreferences,
-        }),
-      });
+    setGuestName("");
+    setAttendanceResponse("si");
+    setDietaryPreferences(["no"]);
+    setOtroText("");
 
-      if (!response.ok) {
-        const errorBody = await response.json().catch(() => null);
-        throw new Error(
-          errorBody?.error ??
-          "No pudimos guardar tu respuesta. Intenta nuevamente.",
-        );
-      }
-
-      setSubmissionFeedback({
-        type: "success",
-        message: "¡Gracias! Registramos tu respuesta.",
-      });
-
-      setGuestName("");
-      setAttendanceResponse("si");
-      setDietaryPreferences(["no"]);
-      setOtroText("");
-
-      setTimeout(() => setSubmissionFeedback(null), 5000);
-    } catch (error) {
-      setSubmissionFeedback({
-        type: "error",
-        message:
-          error instanceof Error
-            ? error.message
-            : "Ocurrió un error inesperado. Intenta nuevamente.",
-      });
-    } finally {
-      setIsSubmitting(false);
-    }
+    setTimeout(resetFeedback, 5000);
   };
 
   return (
@@ -258,7 +216,7 @@ export default function BodaMicaSanti() {
               className="pointer-events-auto h-auto min-h-0 p-0 text-[#895C28] shadow-none hover:bg-transparent hover:text-[#895C28] focus-visible:ring-2 focus-visible:ring-[#B89080] focus-visible:ring-offset-2"
             >
               <a
-                href={GOOGLE_CALENDAR_EVENT_URL}
+                href={calendarUrl}
                 target="_self"
                 rel="noopener noreferrer"
                 onClick={handleCalendarAnchorClick}
@@ -296,7 +254,7 @@ export default function BodaMicaSanti() {
             className="pointer-events-auto h-auto min-h-0 p-0 text-[#895C28] shadow-none hover:bg-transparent hover:text-[#895C28] focus-visible:ring-2 focus-visible:ring-[#B89080] focus-visible:ring-offset-2 mt-6"
           >
             <a
-              href={GOOGLE_CALENDAR_EVENT_URL}
+              href={calendarUrl}
               target="_self"
               rel="noopener noreferrer"
               onClick={handleCalendarAnchorClick}
@@ -400,7 +358,7 @@ export default function BodaMicaSanti() {
 
        <section className="py-8 bg-white">
         <div className="max-w-5xl mx-auto px-6 text-center pb-6">
-          <Image src="/bodaMica%26Santi/regalo.png" alt="Mesa de regalos" width={200} height={200} className="mx-auto mt-[-40px] mb-[-40px]" />
+          <Image src="/bodaMica%26Santi/regalo.png" alt="Mesa de regalos" width={200} height={300} className="mx-auto mt-[-40px] mb-[-40px]" />
           <div className="space-y-6 mb-2">
             <ul className="space-y-2 text-md text-[#8D8A40] md:text-lg">
               <li>
@@ -434,7 +392,7 @@ export default function BodaMicaSanti() {
             <p className="text-[#f9f2e5] text-sm mb-4">
               Vestimenta Formal. Les pedimos evitar el blanco, el beige y los tonos claros.
             </p>
-            <Image src="/bodaMica%26Santi/vestimenta.png" alt="Vestimenta formal" width={400} height={180} className="mx-auto mb-4" />
+            <Image src="/bodaMica%26Santi/vestimenta.png" alt="Vestimenta formal" width={400} height={267} className="mx-auto mb-4" />
 
       </section>
       <section className="relative bg-[#f9f2e5] px-4 py-20 flex flex-col items-center justify-center md:min-h-[900px] md:py-32">
@@ -467,7 +425,7 @@ export default function BodaMicaSanti() {
                     src={event.imageSrc}
                     alt={event.title}
                     width={100}
-                    height={100}
+                    height={125}
                     className="justify-self-center rounded-full"
                   />
                   <div className="flex items-center gap-4">
@@ -608,7 +566,7 @@ Por favor, confirmá antes del 1 de octubre
             <div className="flex flex-col gap-4 max-w-full mt-6 md:mt-0 md:flex-row">
               <Button
                 type="submit"
-                disabled={isSubmitting}
+                disabled={isSubmitting || rsvpStatus !== "open"}
                 className="flex-1 bg-[#8D8A40] hover:bg-[#966200] disabled:bg-[#966200]/30 disabled:cursor-not-allowed disabled:text-white/80 text-white text-lg py-3 rounded-xl transition-colors"
               >
                 {isSubmitting ? "Enviando..." : "Confirmar"}

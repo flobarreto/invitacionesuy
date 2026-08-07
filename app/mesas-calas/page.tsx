@@ -1,80 +1,23 @@
 "use client"
 
-import { useCallback, useEffect, useState } from "react"
+import { use } from "react"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
-
-type MesaRow = {
-  id: string
-  name: string
-  table_number: string | null
-}
-
-const MIN_LEN = 4
+import { usePublicTableLookup } from "@/hooks/use-public-table-lookup"
 
 const bodoni = { fontFamily: "var(--font-bodoni, serif)" } as const
 
-export default function MesasCalasPage() {
-  const [query, setQuery] = useState("")
-  const [results, setResults] = useState<MesaRow[]>([])
-  const [ready, setReady] = useState(false)
-  const [loading, setLoading] = useState(false)
-  const [error, setError] = useState<string | null>(null)
+type SearchParams = Promise<
+  Record<string, string | string[] | undefined>
+>
 
-  const trimmed = query.trim()
-  const canSearch = trimmed.length >= MIN_LEN
-
-  const runSearch = useCallback(async (q: string) => {
-    const t = q.trim()
-    if (t.length < MIN_LEN) {
-      setResults([])
-      setReady(false)
-      setError(null)
-      return
-    }
-
-    setLoading(true)
-    setError(null)
-
-    try {
-      const res = await fetch(
-        `/api/mesas/mxv?q=${encodeURIComponent(t)}`,
-      )
-      const data = await res.json().catch(() => null)
-
-      if (!res.ok) {
-        throw new Error(
-          typeof data?.error === "string"
-            ? data.error
-            : "No pudimos completar la búsqueda.",
-        )
-      }
-
-      setResults(Array.isArray(data?.results) ? data.results : [])
-      setReady(Boolean(data?.ready))
-    } catch (e) {
-      setResults([])
-      setReady(true)
-      setError(e instanceof Error ? e.message : "Ocurrió un error.")
-    } finally {
-      setLoading(false)
-    }
-  }, [])
-
-  useEffect(() => {
-    if (!canSearch) {
-      setResults([])
-      setReady(false)
-      setError(null)
-      return
-    }
-
-    const id = window.setTimeout(() => {
-      void runSearch(trimmed)
-    }, 320)
-
-    return () => window.clearTimeout(id)
-  }, [canSearch, trimmed, runSearch])
+export default function MesasCalasPage({
+  searchParams,
+}: {
+  searchParams: SearchParams
+}) {
+  const token = use(searchParams).token
+  const lookup = usePublicTableLookup("/api/mesas/mxv", token)
 
   return (
     <div className="min-h-screen overflow-x-hidden bg-[#f5f3ef] text-[#1a1816]">
@@ -89,47 +32,59 @@ export default function MesasCalasPage() {
               Tu mesa
             </h2>
 
-            <div className="flex flex-col gap-2">
-              <label
-                htmlFor="mesa-search-calas"
-                className="text-[0.7rem] font-bold uppercase text-[#4a4540]"
-              >
-                Nombre y apellido
-              </label>
-              <input
-                id="mesa-search-calas"
-                type="search"
-                autoComplete="off"
-                autoCorrect="off"
-                spellCheck={false}
-                placeholder="Escribí al menos 4 letras…"
-                value={query}
-                onChange={(e) => setQuery(e.target.value)}
-                className="w-full border-b border-[#1a1816]/40 bg-transparent px-0 py-3 text-[#1a1816] placeholder:text-[#4a4540]/50 focus:border-[#1a1816] focus:outline-none"
-              />
-            </div>
+            <p className="text-center text-sm text-[#4a4540]">
+              La mesa se consulta de forma privada desde el enlace personal de
+              tu invitación.
+            </p>
 
             <div className="mt-8 min-h-[4rem]">
-              {canSearch && loading && (
-                <p className="text-sm text-[#4a4540]">Buscando…</p>
+              {lookup.status === "loading" && (
+                <p className="text-sm text-[#4a4540]">Consultando…</p>
               )}
 
-              {canSearch && !loading && error && (
-                <p className="text-sm text-red-700">{error}</p>
-              )}
-
-              {canSearch && !loading && !error && ready && results.length === 0 && (
-                <p className="text-sm text-[#4a4540]">
-                  No encontramos coincidencias. Revisá la ortografía o probá con
-                  otro fragmento del nombre.
+              {lookup.status === "missing" && (
+                <p className="text-sm text-red-700">
+                  Abrí el enlace personalizado que recibiste con tu invitación.
+                  Si llegaste desde un QR general, pediles a los novios que te
+                  lo reenvíen.
                 </p>
               )}
 
-              {canSearch && !loading && !error && results.length > 0 && (
+              {lookup.status === "invalid" && (
+                <p className="text-sm text-red-700">
+                  Este enlace no es válido. Pediles a los novios que te reenvíen
+                  tu invitación.
+                </p>
+              )}
+
+              {lookup.status === "error" && (
+                <div className="space-y-3">
+                  <p className="text-sm text-red-700">{lookup.message}</p>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    onClick={() => window.location.reload()}
+                    className="border-[#1a1816]/40 bg-transparent text-[#1a1816]"
+                  >
+                    Reintentar
+                  </Button>
+                </div>
+              )}
+
+              {lookup.status === "ready" &&
+                lookup.assignments.length === 0 && (
+                  <p className="text-sm text-[#4a4540]">
+                    Todavía no hay una mesa para mostrar. Acá solo aparecen los
+                    integrantes que confirmaron asistencia.
+                  </p>
+                )}
+
+              {lookup.status === "ready" &&
+                lookup.assignments.length > 0 && (
                 <ul className="space-y-3">
-                  {results.map((row) => (
+                  {lookup.assignments.map((row, index) => (
                     <li
-                      key={row.id}
+                      key={`${row.name}-${index}`}
                       className="flex flex-wrap items-baseline justify-between gap-2 border border-[#c8c0b4] px-4 py-4"
                     >
                       <span className="font-medium text-[#1a1816]">
@@ -140,9 +95,7 @@ export default function MesasCalasPage() {
                         style={bodoni}
                       >
                         Mesa{" "}
-                        {row.table_number?.trim()
-                          ? row.table_number.trim()
-                          : "—"}
+                        {row.table ?? "—"}
                       </span>
                     </li>
                   ))}

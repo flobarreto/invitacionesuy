@@ -10,7 +10,6 @@ import { CTASection } from "@/components/sections/cta-section"
 import { useRef, useEffect, useState } from "react"
 
 export default function Home() {
-  const [currentSection, setCurrentSection] = useState(0)
   const [isLoaded, setIsLoaded] = useState(false)
   const shaderContainerRef = useRef<HTMLDivElement>(null)
 
@@ -42,34 +41,6 @@ export default function Home() {
       clearInterval(intervalId)
       clearTimeout(fallbackTimer)
     }
-  }, [])
-
-  const scrollToSection = (index: number) => {
-    const sections = document.querySelectorAll("[data-section]")
-    if (sections[index]) {
-      sections[index].scrollIntoView({ behavior: "smooth" })
-      setCurrentSection(index)
-    }
-  }
-
-  useEffect(() => {
-    const handleScroll = () => {
-      const sections = document.querySelectorAll("[data-section]")
-      const scrollPosition = window.scrollY + window.innerHeight / 2
-
-      sections.forEach((section, index) => {
-        const element = section as HTMLElement
-        const top = element.offsetTop
-        const bottom = top + element.offsetHeight
-
-        if (scrollPosition >= top && scrollPosition < bottom) {
-          setCurrentSection(index)
-        }
-      })
-    }
-
-    window.addEventListener("scroll", handleScroll, { passive: true })
-    return () => window.removeEventListener("scroll", handleScroll)
   }, [])
 
   return (

@@ -1,0 +1,354 @@
+[
+  {
+    "id": "sofi-gonchi",
+    "eventKey": "sofi-gonchi",
+    "slug": "sofi-gonchi",
+    "aliases": ["bodaSofi&Gonchi", "boda-sofi-gonchi"],
+    "status": "published",
+    "renderer": "legacy-sofi-gonchi",
+    "variant": null,
+    "coupleNames": "Sofi & Gonchi",
+    "metadata": {
+      "title": "Sofi & Gonchi",
+      "description": "20 de diciembre de 2025",
+      "image": "/bodaSofi&Gonchi/background.png"
+    },
+    "event": {
+      "startsAt": "2025-12-20T19:30:00-03:00",
+      "timezone": "America/Montevideo"
+    },
+    "rsvp": {
+      "enabled": true,
+      "opensAt": null,
+      "closesAt": "2025-12-20T19:30:00-03:00"
+    },
+    "capabilities": {
+      "rsvp": true,
+      "calendar": true,
+      "tableSearch": false
+    },
+    "calendar": {
+      "title": "Boda Sofi & Gonchi",
+      "durationMinutes": 180,
+      "details": "¡Guardate la fecha de nuestro casamiento para compartir con nosotros!",
+      "location": null
+    },
+    "assets": {
+      "basePath": "/bodaSofi&Gonchi",
+      "preview": "/bodaSofi&Gonchi/background.png"
+    },
+    "legacy": {
+      "rsvpEventKey": "bodaSofiGonchi",
+      "rsvpTable": "boda_sofi_gonchi_rsvps",
+      "routes": ["/bodaSofi&Gonchi"]
+    }
+  },
+  {
+    "id": "mica-tincho",
+    "eventKey": "mica-tincho",
+    "slug": "mica-tincho",
+    "aliases": ["bodaMica&Tincho", "boda-mica-tincho"],
+    "status": "published",
+    "renderer": "legacy-mica-tincho",
+    "variant": null,
+    "coupleNames": "Mica & Tincho",
+    "metadata": {
+      "title": "Mica & Tincho",
+      "description": "31 de enero de 2026",
+      "image": "/FotosMartin&Mica/BentaPrincipal.jpg"
+    },
+    "event": {
+      "startsAt": "2026-01-31T17:00:00-03:00",
+      "timezone": "America/Montevideo"
+    },
+    "rsvp": {
+      "enabled": true,
+      "opensAt": null,
+      "closesAt": "2026-01-31T17:00:00-03:00"
+    },
+    "capabilities": {
+      "rsvp": true,
+      "calendar": true,
+      "tableSearch": false
+    },
+    "calendar": {
+      "title": "Boda Mica & Tincho",
+      "durationMinutes": 780,
+      "details": "¡Guardate la fecha de nuestro casamiento para compartir con nosotros!",
+      "location": null
+    },
+    "assets": {
+      "basePath": "/FotosMartin&Mica",
+      "preview": "/FotosMartin&Mica/BentaPrincipal.jpg"
+    },
+    "legacy": {
+      "rsvpEventKey": "bodaMicaTincho",
+      "rsvpTable": "boda_mica_tincho_rsvps",
+      "routes": ["/bodaMica&Tincho"]
+    }
+  },
+  {
+    "id": "vir-jere",
+    "eventKey": "vir-jere",
+    "slug": "vir-jere",
+    "aliases": ["bodaVir&Jere", "boda-vir-jere"],
+    "status": "published",
+    "renderer": "legacy-vir-jere",
+    "variant": null,
+    "coupleNames": "Vir & Jere",
+    "metadata": {
+      "title": "Vir & Jere",
+      "description": "14 de marzo de 2026",
+      "image": "/FotosVir&Jere/wedding-hero.png"
+    },
+    "event": {
+      "startsAt": "2026-03-14T17:00:00-03:00",
+      "timezone": "America/Montevideo"
+    },
+    "rsvp": {
+      "enabled": true,
+      "opensAt": null,
+      "closesAt": "2026-03-14T17:00:00-03:00"
+    },
+    "capabilities": {
+      "rsvp": true,
+      "calendar": true,
+      "tableSearch": false
+    },
+    "calendar": {
+      "title": "Boda Vir & Jere",
+      "durationMinutes": 180,
+      "details": "¡Guardate la fecha de nuestro casamiento para compartir con nosotros!",
+      "location": null
+    },
+    "assets": {
+      "basePath": "/FotosVir&Jere",
+      "preview": "/FotosVir&Jere/wedding-hero.png"
+    },
+    "legacy": {
+      "rsvpEventKey": "bodaVirJere",
+      "rsvpTable": "boda_vir_jere",
+      "routes": ["/bodaVir&Jere"]
+    }
+  },
+  {
+    "id": "andres-lucre",
+    "eventKey": "andres-lucre",
+    "slug": "andres-lucre",
+    "aliases": ["bodaAndres&Lucre", "boda-andres-lucre"],
+    "status": "published",
+    "renderer": "legacy-andres-lucre",
+    "variant": null,
+    "coupleNames": "Andrés & Lucre",
+    "metadata": {
+      "title": "Andrés & Lucre",
+      "description": "21 de marzo de 2026 · Aras Dilema",
+      "image": "/fotosAndres&Lucre/them2Web.png"
+    },
+    "event": {
+      "startsAt": "2026-03-21T20:00:00-03:00",
+      "timezone": "America/Montevideo"
+    },
+    "rsvp": {
+      "enabled": true,
+      "opensAt": null,
+      "closesAt": "2026-03-14T00:00:00-03:00"
+    },
+    "capabilities": {
+      "rsvp": true,
+      "calendar": true,
+      "tableSearch": false
+    },
+    "calendar": {
+      "title": "Boda Andrés & Lucre",
+      "durationMinutes": 480,
+      "details": "¡Guardate la fecha de nuestro casamiento para compartir con nosotros!",
+      "location": null
+    },
+    "assets": {
+      "basePath": "/fotosAndres&Lucre",
+      "preview": "/fotosAndres&Lucre/them2Web.png"
+    },
+    "legacy": {
+      "rsvpEventKey": "bodaAndresLucre",
+      "rsvpTable": "boda_andres_lucre",
+      "routes": ["/bodaAndres&Lucre"]
+    }
+  },
+  {
+    "id": "calas",
+    "eventKey": "calas",
+    "slug": "calas",
+    "aliases": ["bodaCalas", "boda-calas", "juli-mati"],
+    "status": "published",
+    "renderer": "legacy-calas",
+    "variant": null,
+    "coupleNames": "Juli & Mati",
+    "metadata": {
+      "title": "Juli & Mati",
+      "description": "28 de marzo de 2026 · Montevideo",
+      "image": "/bodaCalas/hero.jpg"
+    },
+    "event": {
+      "startsAt": "2026-03-28T20:00:00-03:00",
+      "timezone": "America/Montevideo"
+    },
+    "rsvp": {
+      "enabled": true,
+      "opensAt": null,
+      "closesAt": "2026-03-15T00:00:00-03:00"
+    },
+    "capabilities": {
+      "rsvp": true,
+      "calendar": true,
+      "tableSearch": true
+    },
+    "calendar": {
+      "title": "Boda Juli & Mati",
+      "durationMinutes": 480,
+      "details": "¡Guardate la fecha de nuestro casamiento para compartir con nosotros!",
+      "location": "Regency Park Hotel, Montevideo"
+    },
+    "assets": {
+      "basePath": "/bodaCalas",
+      "preview": "/bodaCalas/hero.jpg"
+    },
+    "legacy": {
+      "rsvpEventKey": "bodaCalas",
+      "rsvpTable": "boda_calas",
+      "routes": ["/bodaCalas", "/mesas-calas"]
+    }
+  },
+  {
+    "id": "domi-diego",
+    "eventKey": "domi-diego",
+    "slug": "domi-diego",
+    "aliases": ["bodaDomi&Diego", "boda-domi-diego"],
+    "status": "published",
+    "renderer": "legacy-domi-diego",
+    "variant": "default",
+    "coupleNames": "Domi & Diego",
+    "metadata": {
+      "title": "Domi & Diego",
+      "description": "30 de mayo de 2026 · Regency Park Hotel",
+      "image": "/bodaDomi&Diego/preview.jpeg"
+    },
+    "event": {
+      "startsAt": "2026-05-30T20:00:00-03:00",
+      "timezone": "America/Montevideo"
+    },
+    "rsvp": {
+      "enabled": true,
+      "opensAt": null,
+      "closesAt": "2026-05-15T00:00:00-03:00"
+    },
+    "capabilities": {
+      "rsvp": true,
+      "calendar": true,
+      "tableSearch": true
+    },
+    "calendar": {
+      "title": "Boda Domi & Diego",
+      "durationMinutes": 480,
+      "details": "¡Guardate la fecha de nuestro casamiento para compartir con nosotros!",
+      "location": "Regency Park Hotel, Montevideo"
+    },
+    "assets": {
+      "basePath": "/bodaDomi&Diego",
+      "preview": "/bodaDomi&Diego/preview.jpeg"
+    },
+    "legacy": {
+      "rsvpEventKey": "bodaDomiDiego",
+      "rsvpTable": "boda_domi_diego",
+      "routes": ["/bodaDomi&Diego", "/boda-domi-diego"]
+    }
+  },
+  {
+    "id": "domi-diego-hotel",
+    "eventKey": "domi-diego",
+    "slug": "domi-diego-hotel",
+    "aliases": ["bodaDomi&Diego-hotel", "boda-domi-diego-hotel"],
+    "status": "published",
+    "renderer": "legacy-domi-diego",
+    "variant": "hotel",
+    "coupleNames": "Domi & Diego",
+    "metadata": {
+      "title": "Domi & Diego",
+      "description": "30 de mayo de 2026 · Regency Park Hotel",
+      "image": "/bodaDomi&Diego/preview.jpeg"
+    },
+    "event": {
+      "startsAt": "2026-05-30T20:00:00-03:00",
+      "timezone": "America/Montevideo"
+    },
+    "rsvp": {
+      "enabled": true,
+      "opensAt": null,
+      "closesAt": "2026-05-15T00:00:00-03:00"
+    },
+    "capabilities": {
+      "rsvp": true,
+      "calendar": true,
+      "tableSearch": true
+    },
+    "calendar": {
+      "title": "Boda Domi & Diego",
+      "durationMinutes": 480,
+      "details": "¡Guardate la fecha de nuestro casamiento para compartir con nosotros!",
+      "location": "Regency Park Hotel, Montevideo"
+    },
+    "assets": {
+      "basePath": "/bodaDomi&Diego",
+      "preview": "/bodaDomi&Diego/preview.jpeg"
+    },
+    "legacy": {
+      "rsvpEventKey": "bodaDomiDiego",
+      "rsvpTable": "boda_domi_diego",
+      "routes": ["/bodaDomi&Diego-hotel", "/boda-domi-diego-hotel"]
+    }
+  },
+  {
+    "id": "mica-santi",
+    "eventKey": "mica-santi",
+    "slug": "mica-santi",
+    "aliases": ["bodaMica&Santi", "mica-y-santi-v1-web", "boda-mica-santi"],
+    "status": "published",
+    "renderer": "legacy-mica-santi",
+    "variant": null,
+    "coupleNames": "Mica & Santi",
+    "metadata": {
+      "title": "Mica & Santi",
+      "description": "17 de octubre de 2026 · Viña Varela Zarranz",
+      "image": "/bodaMica&Santi/meta-foto.jpeg"
+    },
+    "event": {
+      "startsAt": "2026-10-17T17:30:00-03:00",
+      "timezone": "America/Montevideo"
+    },
+    "rsvp": {
+      "enabled": true,
+      "opensAt": null,
+      "closesAt": "2026-10-01T00:00:00-03:00"
+    },
+    "capabilities": {
+      "rsvp": true,
+      "calendar": true,
+      "tableSearch": false
+    },
+    "calendar": {
+      "title": "Boda Mica & Santi",
+      "durationMinutes": 540,
+      "details": "¡Guardate la fecha de nuestro casamiento para compartir con nosotros!",
+      "location": "Viña Varela Zarranz, Montevideo"
+    },
+    "assets": {
+      "basePath": "/bodaMica&Santi",
+      "preview": "/bodaMica&Santi/meta-foto.jpeg"
+    },
+    "legacy": {
+      "rsvpEventKey": "bodaMicaSanti",
+      "rsvpTable": "save_the_date_mica_santi",
+      "routes": ["/bodaMica&Santi", "/mica-y-santi-v1-web"]
+    }
+  }
+]

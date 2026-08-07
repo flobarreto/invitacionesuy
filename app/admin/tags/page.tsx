@@ -87,7 +87,7 @@ export default function TagsPage() {
       }
 
       setTags(data.tags || [])
-    } catch (err) {
+    } catch {
       setError("Error de conexión. Intenta nuevamente.")
     } finally {
       setLoading(false)
@@ -143,7 +143,6 @@ export default function TagsPage() {
   }
 
   const handleEditClick = (tag: Tag) => {
-    console.log("Editing tag:", tag)
     setEditingTag(tag)
     setFormData({
       name: tag.name,
@@ -170,8 +169,6 @@ export default function TagsPage() {
         name: formData.name.trim(),
         color: formData.color,
       }
-      console.log("Sending update payload:", payload)
-      
       const response = await fetch("/api/admin/tags", {
         method: "PUT",
         headers: {

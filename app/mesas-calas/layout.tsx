@@ -12,8 +12,9 @@ function getMetadataBase(): URL {
 
 export const metadata: Metadata = {
   metadataBase: getMetadataBase(),
-  title: "Tu mesa — Domi & Diego",
-  description: "Buscá tu nombre para ver el número de mesa.",
+  title: "Tu mesa — Juli & Mati",
+  description: "Consultá tu mesa desde el enlace privado de tu invitación.",
+  referrer: "no-referrer",
   robots: { index: false, follow: false },
 }
 

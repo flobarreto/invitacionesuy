@@ -38,7 +38,7 @@ export default function AdminLoginPage() {
 
       router.push("/admin")
       router.refresh()
-    } catch (err) {
+    } catch {
       setError("Error de conexión. Intenta nuevamente.")
       setLoading(false)
     }

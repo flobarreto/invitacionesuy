@@ -1,0 +1,19 @@
+{
+  "name": "invitia-whatsapp-worker",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "start": "tsx src/main.ts",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@supabase/supabase-js": "2.112.1",
+    "@whiskeysockets/baileys": "7.0.0-rc13",
+    "tsx": "4.21.0",
+    "typescript": "5.9.3"
+  },
+  "engines": {
+    "node": ">=22"
+  }
+}

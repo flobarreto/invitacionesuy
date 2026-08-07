@@ -1,10 +1,10 @@
 "use client"
 
-import { useEffect, useState, useMemo } from "react"
+import { useEffect, useState, useMemo, useRef } from "react"
 import { useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import {
   Table,
   TableBody,
@@ -30,6 +30,7 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { Badge } from "@/components/ui/badge"
 import TableNumberDialog from "@/components/table-number-dialog"
 import { tryParseJsonStringArray } from "@/lib/adminDrinks"
+import { serializeCsv } from "@/lib/csv-export"
 
 interface Tag {
   id: string
@@ -171,6 +172,7 @@ export default function AdminDashboard({ username }: AdminDashboardProps) {
     dietaryOther: "",
     favoriteSong: "",
   })
+  const addGuestAttempt = useRef<{ fingerprint: string; idempotencyKey: string } | null>(null)
 
   const fetchRSVPs = async () => {
     setLoading(true)
@@ -356,8 +358,6 @@ export default function AdminDashboard({ username }: AdminDashboardProps) {
   const totalDeclinedCount = rsvps.length - totalConfirmedCount
   
   // Estadísticas filtradas (solo para mostrar en la tabla)
-  const confirmedCount = filteredRsvps.filter(isConfirmed).length
-  const declinedCount = filteredRsvps.length - confirmedCount
 
   const tableNumbers = useMemo(() => {
     const set = new Set<string>()
@@ -405,17 +405,23 @@ export default function AdminDashboard({ username }: AdminDashboardProps) {
         ? [...validPreferences, formData.dietaryOther.trim()].filter((value, index, self) => self.indexOf(value) === index)
         : validPreferences
 
+      const payload = {
+        name: formData.name.trim(),
+        attendance: formData.attendance,
+        dietaryPreferences: finalPreferences,
+        favoriteSong: formData.favoriteSong.trim(),
+      }
+      const fingerprint = JSON.stringify(payload)
+      if (addGuestAttempt.current?.fingerprint !== fingerprint) {
+        addGuestAttempt.current = { fingerprint, idempotencyKey: crypto.randomUUID() }
+      }
       const response = await fetch("/api/admin/add-rsvp", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
+          "Idempotency-Key": addGuestAttempt.current.idempotencyKey,
         },
-        body: JSON.stringify({
-          name: formData.name.trim(),
-          attendance: formData.attendance,
-          dietaryPreferences: finalPreferences,
-          favoriteSong: formData.favoriteSong.trim(),
-        }),
+        body: fingerprint,
       })
 
       const data = await response.json()
@@ -434,6 +440,7 @@ export default function AdminDashboard({ username }: AdminDashboardProps) {
         favoriteSong: "",
       })
       setSubmitError("")
+      addGuestAttempt.current = null
       
       // Recargar la lista de RSVPs
       await fetchRSVPs()
@@ -622,24 +629,16 @@ export default function AdminDashboard({ username }: AdminDashboardProps) {
 
   // Función para descargar CSV
   const handleDownloadCSV = () => {
-    const escapeCSV = (value: string) => {
-      if (value.includes(",") || value.includes('"') || value.includes("\n")) {
-        return `"${value.replace(/"/g, '""')}"`
-      }
-      return value
-    }
-
     if (isSaveTheDateTable) {
       const headers = saveTheDateColumnKeys.map((k) => saveTheDateColumnLabel(k))
       const csvRows = [
-        headers.join(","),
+        headers,
         ...filteredRsvps.map((rsvp) =>
           saveTheDateColumnKeys
-            .map((key) => escapeCSV(getSaveTheDateCellText(key, rsvp)))
-            .join(","),
+            .map((key) => getSaveTheDateCellText(key, rsvp)),
         ),
       ]
-      const csvContent = csvRows.join("\n")
+      const csvContent = serializeCsv(csvRows)
       const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" })
       const link = document.createElement("a")
       const url = URL.createObjectURL(blob)
@@ -652,6 +651,7 @@ export default function AdminDashboard({ username }: AdminDashboardProps) {
       document.body.appendChild(link)
       link.click()
       document.body.removeChild(link)
+      URL.revokeObjectURL(url)
       return
     }
 
@@ -666,7 +666,7 @@ export default function AdminDashboard({ username }: AdminDashboardProps) {
     ]
 
     const csvRows = [
-      headers.join(","),
+      headers,
       ...filteredRsvps.map((rsvp) => {
         const dietary =
           rsvp.dietary_preferences && rsvp.dietary_preferences.length > 0
@@ -690,27 +690,27 @@ export default function AdminDashboard({ username }: AdminDashboardProps) {
             : ""
 
         const row = [
-          escapeCSV(rsvp.name),
-          escapeCSV(rsvp.attendance),
-          escapeCSV(dietary),
+          rsvp.name,
+          rsvp.attendance,
+          dietary,
         ]
 
         if (hasFavoriteSong) {
-          row.push(escapeCSV(formatFavoriteSongForDisplay(rsvp.favorite_song)))
+          row.push(formatFavoriteSongForDisplay(rsvp.favorite_song))
         }
 
         if (hasEmail) {
-          row.push(escapeCSV((rsvp.email ?? "").toString().trim()))
+          row.push((rsvp.email ?? "").toString().trim())
         }
 
-        row.push(escapeCSV(tagNames))
-        row.push(escapeCSV(date))
+        row.push(tagNames)
+        row.push(date)
 
-        return row.join(",")
+        return row
       }),
     ]
 
-    const csvContent = csvRows.join("\n")
+    const csvContent = serializeCsv(csvRows)
     const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" })
     const link = document.createElement("a")
     const url = URL.createObjectURL(blob)
@@ -721,6 +721,7 @@ export default function AdminDashboard({ username }: AdminDashboardProps) {
     document.body.appendChild(link)
     link.click()
     document.body.removeChild(link)
+    URL.revokeObjectURL(url)
   }
 
   return (

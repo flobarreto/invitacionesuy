@@ -1,0 +1,9 @@
+{
+  "extends": "../../tsconfig.json",
+  "compilerOptions": {
+    "baseUrl": "../..",
+    "incremental": false,
+    "noEmit": true
+  },
+  "include": ["src/**/*.ts", "../../lib/crm/**/*.ts", "../../lib/whatsapp/**/*.ts"]
+}

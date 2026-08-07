@@ -1,71 +1,87 @@
 import { NextResponse } from "next/server"
-import { requireAuthWithTable } from "@/lib/auth"
+import { assertMutationRequest, requireAuthWithTable } from "@/lib/auth"
+import { crmErrorResponse } from "@/lib/crm/errors"
+import { enforceRateLimit } from "@/lib/crm/rate-limit"
+import {
+  legacyRsvpTagsSchema,
+  logLegacyDatabaseError,
+  parseLegacyJson,
+} from "@/lib/legacy-admin-api"
 import { supabaseAdmin } from "@/lib/supabase"
 
 export async function PUT(request: Request) {
   try {
-    const { tableName } = await requireAuthWithTable()
+    assertMutationRequest(request)
+    const { adminId, eventId, tableName } = await requireAuthWithTable("write")
 
     if (!supabaseAdmin) {
       return NextResponse.json(
-        { error: "Error de configuración del servidor" },
-        { status: 500 }
+        { error: "El servicio no está disponible" },
+        { status: 503 },
       )
     }
 
-    let payload: {
-      rsvpId?: string
-      tagIds?: string[]
+    await enforceRateLimit({
+      request,
+      namespace: "legacy_admin_rsvp_update",
+      scope: eventId,
+      identifier: adminId,
+      limit: 120,
+      windowSeconds: 60,
+    })
+    const parsed = await parseLegacyJson(request, legacyRsvpTagsSchema)
+    if (!parsed.success) {
+      return NextResponse.json({ error: parsed.error }, { status: parsed.status })
     }
+    const { rsvpId, tagIds } = parsed.data
 
-    try {
-      payload = await request.json()
-    } catch {
-      return NextResponse.json(
-        { error: "Formato inválido" },
-        { status: 400 }
+    if (tagIds.length > 0) {
+      const { data: ownedTags, error: tagError } = await supabaseAdmin
+        .from("tags")
+        .select("id,legacy_id")
+        .eq("event_id", eventId)
+      if (tagError) {
+        logLegacyDatabaseError("verify_rsvp_tags", tagError)
+        return NextResponse.json(
+          { error: "Error al verificar las etiquetas" },
+          { status: 503 },
+        )
+      }
+      const ownedTagIds = new Set(
+        (ownedTags ?? []).flatMap((tag) =>
+          tag.legacy_id ? [tag.id, tag.legacy_id] : [tag.id],
+        ),
       )
-    }
-
-    const { rsvpId, tagIds } = payload
-
-    if (!rsvpId) {
-      return NextResponse.json(
-        { error: "El ID del RSVP es obligatorio" },
-        { status: 400 }
-      )
-    }
-
-    if (!Array.isArray(tagIds)) {
-      return NextResponse.json(
-        { error: "tagIds debe ser un array" },
-        { status: 400 }
-      )
+      if (tagIds.some((tagId) => !ownedTagIds.has(tagId))) {
+        return NextResponse.json(
+          { error: "Una o más etiquetas no pertenecen al evento" },
+          { status: 400 },
+        )
+      }
     }
 
     // Intentar actualizar como array primero (para campos text[] en PostgreSQL)
     // Si falla, intentaremos como JSON string
-    let updatePayload: any = { tags: tagIds }
-    
+    let updatePayload: { tags: string[] | string } = { tags: tagIds }
+
     // Actualizar las etiquetas del RSVP
     let { data: updatedData, error } = await supabaseAdmin
       .from(tableName)
       .update(updatePayload)
       .eq("id", rsvpId)
-      .select()
+      .select("id,tags")
       .single()
 
     // Si falla con array, intentar como JSON string (para campos jsonb o text)
-    if (error && (error.message?.includes('column') || error.code === 'PGRST116')) {
-      console.log("Retrying with JSON string format for tags field")
+    if (error && ["22P02", "42804"].includes(error.code ?? "")) {
       updatePayload = { tags: JSON.stringify(tagIds) }
       const retryResult = await supabaseAdmin
         .from(tableName)
         .update(updatePayload)
         .eq("id", rsvpId)
-        .select()
+        .select("id,tags")
         .single()
-      
+
       if (retryResult.error) {
         error = retryResult.error
       } else {
@@ -75,13 +91,10 @@ export async function PUT(request: Request) {
     }
 
     if (error) {
-      console.error("Error updating RSVP tags:", error)
-      console.error("Table name:", tableName)
-      console.error("RSVP ID:", rsvpId)
-      console.error("Tag IDs:", tagIds)
+      logLegacyDatabaseError("update_rsvp_tags", error)
       return NextResponse.json(
-        { error: "Error al actualizar las etiquetas", details: error.message },
-        { status: 500 }
+        { error: "Error al actualizar las etiquetas" },
+        { status: error.code === "PGRST116" ? 404 : 503 },
       )
     }
 
@@ -90,7 +103,7 @@ export async function PUT(request: Request) {
     if (updatedData?.tags) {
       if (Array.isArray(updatedData.tags)) {
         normalizedTags = updatedData.tags
-      } else if (typeof updatedData.tags === 'string') {
+      } else if (typeof updatedData.tags === "string") {
         try {
           const parsed = JSON.parse(updatedData.tags)
           normalizedTags = Array.isArray(parsed) ? parsed : []
@@ -104,17 +117,7 @@ export async function PUT(request: Request) {
       ok: true, 
       rsvp: { ...updatedData, tags: normalizedTags } 
     })
-  } catch (error: any) {
-    if (error.message === "Unauthorized") {
-      return NextResponse.json(
-        { error: "No autorizado" },
-        { status: 401 }
-      )
-    }
-    console.error("Error in update-rsvp-tags route:", error)
-    return NextResponse.json(
-      { error: "Error al actualizar las etiquetas" },
-      { status: 500 }
-    )
+  } catch (error: unknown) {
+    return crmErrorResponse(error)
   }
 }

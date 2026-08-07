@@ -2,97 +2,34 @@
 
 import { Button } from "@/components/ui/button";
 import { CalendarIcon, MapPinIcon } from "lucide-react";
-import { useState, useEffect, FormEvent } from "react";
+import { useState, FormEvent } from "react";
 import {
   Accordion,
   AccordionContent,
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
-
-interface TimeLeft {
-  days: number;
-  hours: number;
-  minutes: number;
-}
+import { useInvitationCountdown } from "@/hooks/invitations/use-invitation-countdown";
+import { useRsvpSubmission } from "@/hooks/invitations/use-rsvp-submission";
+import { useInvitationCalendarUrl } from "@/hooks/invitations/use-invitation-calendar-url";
 
 export default function BodaVirJere() {
-  const [timeLeft, setTimeLeft] = useState<TimeLeft>({
-    days: 0,
-    hours: 0,
-    minutes: 0,
-  });
-  const [isOpen, setIsOpen] = useState(false);
+  const timeLeft = useInvitationCountdown("vir-jere");
+  const calendarUrl = useInvitationCalendarUrl("vir-jere");
+  const {
+    status: rsvpStatus,
+    feedback: submissionFeedback,
+    isSubmitting,
+    ensureOpen,
+    resetFeedback,
+    setFeedback: setSubmissionFeedback,
+    submit: submitRsvp,
+  } = useRsvpSubmission("vir-jere");
   const [copied, setCopied] = useState(false);
   const [guestName, setGuestName] = useState("");
   const [attendanceResponse, setAttendanceResponse] = useState<"si" | "no">("si");
   const [dietaryPreferences, setDietaryPreferences] = useState<string[]>(["no"]);
   const [otroText, setOtroText] = useState("");
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [submissionFeedback, setSubmissionFeedback] = useState<{ type: "success" | "error"; message: string } | null>(
-    null
-  );
-
-  useEffect(() => {
-    const calculateTimeLeft = () => {
-      // Crear la fecha de la boda en hora de Uruguay (UTC-3)
-      // 14 de marzo de 2026 a las 17:00 hora de Uruguay
-      const weddingDate = new Date("2026-03-14T17:00:00-03:00");
-      
-      // Obtener la fecha y hora actual en hora de Uruguay
-      const now = new Date();
-      const formatter = new Intl.DateTimeFormat("en-CA", {
-        timeZone: "America/Montevideo",
-        year: "numeric",
-        month: "2-digit",
-        day: "2-digit",
-        hour: "2-digit",
-        minute: "2-digit",
-        second: "2-digit",
-        hour12: false,
-      });
-      
-      const parts = formatter.formatToParts(now);
-      const year = parseInt(parts.find(p => p.type === "year")!.value);
-      const month = parseInt(parts.find(p => p.type === "month")!.value) - 1;
-      const day = parseInt(parts.find(p => p.type === "day")!.value);
-      const hour = parseInt(parts.find(p => p.type === "hour")!.value);
-      const minute = parseInt(parts.find(p => p.type === "minute")!.value);
-      const second = parseInt(parts.find(p => p.type === "second")!.value);
-      
-      // Crear fecha actual en hora de Uruguay (UTC-3)
-      const nowUruguay = new Date(`${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}T${String(hour).padStart(2, '0')}:${String(minute).padStart(2, '0')}:${String(second).padStart(2, '0')}-03:00`);
-      
-      // Calcular la diferencia en milisegundos
-      const difference = weddingDate.getTime() - nowUruguay.getTime();
-
-      if (difference > 0) {
-        const days = Math.floor(
-          difference / (1000 * 60 * 60 * 24)
-        );
-        const hours = Math.floor(
-          (difference % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)
-        );
-        const minutes = Math.floor(
-          (difference % (1000 * 60 * 60)) / (1000 * 60)
-        );
-
-        setTimeLeft({
-          days: Math.max(0, days),
-          hours: Math.max(0, hours),
-          minutes: Math.max(0, minutes),
-        });
-      } else {
-        setTimeLeft({ days: 0, hours: 0, minutes: 0 });
-      }
-    };
-
-    calculateTimeLeft();
-    const timer = setInterval(calculateTimeLeft, 1000);
-
-    return () => clearInterval(timer);
-  }, []);
-
   const copyAccountNumber = async () => {
     try {
       await navigator.clipboard.writeText("123456789-00004");
@@ -105,7 +42,9 @@ export default function BodaVirJere() {
 
   const handleRsvpSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    setSubmissionFeedback(null);
+    resetFeedback();
+
+    if (!ensureOpen()) return;
 
     if (!guestName.trim()) {
       setSubmissionFeedback({
@@ -115,54 +54,29 @@ export default function BodaVirJere() {
       return;
     }
 
-    setIsSubmitting(true);
+    // Procesar dietaryPreferences: solo valores válidos (celiaco, veggie) y el texto de "otro" sin duplicados
+    const validPreferences = dietaryPreferences
+      .filter((p) => p !== "no" && p !== "otro" && !p.startsWith("otro:"))
+      .filter((value, index, self) => self.indexOf(value) === index); // Eliminar duplicados
 
-    try {
-      // Procesar dietaryPreferences: solo valores válidos (celiaco, veggie) y el texto de "otro" sin duplicados
-      const validPreferences = dietaryPreferences
-        .filter((p) => p !== "no" && p !== "otro" && !p.startsWith("otro:"))
-        .filter((value, index, self) => self.indexOf(value) === index); // Eliminar duplicados
-      
-      // Agregar el texto de "otro" si existe
-      const finalPreferences = otroText.trim()
-        ? [...validPreferences, otroText.trim()].filter((value, index, self) => self.indexOf(value) === index)
-        : validPreferences;
+    // Agregar el texto de "otro" si existe
+    const finalPreferences = otroText.trim()
+      ? [...validPreferences, otroText.trim()].filter((value, index, self) => self.indexOf(value) === index)
+      : validPreferences;
 
-      const response = await fetch("/api/rsvp/bodaVirJere", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          name: guestName.trim(),
-          attendance: attendanceResponse,
-          dietaryPreferences: finalPreferences,
-        }),
-      });
+    const submitted = await submitRsvp({
+      name: guestName.trim(),
+      attendance: attendanceResponse,
+      dietaryPreferences: finalPreferences,
+    });
+    if (!submitted) return;
 
-      if (!response.ok) {
-        const errorBody = await response.json().catch(() => null);
-        throw new Error(errorBody?.error ?? "No pudimos guardar tu respuesta. Intenta nuevamente.");
-      }
+    setGuestName("");
+    setAttendanceResponse("si");
+    setDietaryPreferences(["no"]);
+    setOtroText("");
 
-      setSubmissionFeedback({
-        type: "success",
-        message: "¡Gracias! Registramos tu respuesta.",
-      });
-      setGuestName("");
-      setAttendanceResponse("si");
-      setDietaryPreferences(["no"]);
-      setOtroText("");
-
-      setTimeout(() => setSubmissionFeedback(null), 5000);
-    } catch (error) {
-      setSubmissionFeedback({
-        type: "error",
-        message: error instanceof Error ? error.message : "Ocurrió un error inesperado. Intenta nuevamente.",
-      });
-    } finally {
-      setIsSubmitting(false);
-    }
+    setTimeout(resetFeedback, 5000);
   };
   return (
     <div className="min-h-screen w-full min-w-0 max-w-full overflow-x-clip">
@@ -458,7 +372,7 @@ export default function BodaVirJere() {
 
             <Button
               type="submit"
-              disabled={true}
+              disabled={isSubmitting || rsvpStatus !== "open"}
               className="w-full bg-[#596047] hover:bg-[#596047] disabled:bg-[#596047] disabled:cursor-not-allowed disabled:text-white text-white font-semibold text-lg py-3 rounded-lg transition-colors"
             >
               {isSubmitting ? "Enviando..." : "Confirmar asistencia"}
@@ -513,7 +427,7 @@ export default function BodaVirJere() {
           </div>
 
           <Button asChild className="h-8 gap-2 mb-[16px] pl-3 pr-4 py-0 bg-[#56544c] hover:bg-[#56544c]/80 rounded-lg mt-10 transition-colors">
-            <a href="https://calendar.google.com/calendar/u/0/r/eventedit?text=Boda+Vir+%26+Jere&dates=20260316T200000Z/20260316T230000Z&details=¡Te+esperamos+en+nuestra+boda%21+Confirmá+tu+asistencia+y+agendalo+acá%21"
+            <a href={calendarUrl}
               target="_blank" rel="noopener noreferrer">
               <CalendarIcon className="w-5 h-5" />
               <span className=" font-light text-[#f9f7eb] text-base text-center tracking-[0] leading-[normal] whitespace-nowrap">

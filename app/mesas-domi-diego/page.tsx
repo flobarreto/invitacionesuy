@@ -1,80 +1,24 @@
 "use client"
 
-import { useCallback, useEffect, useState } from "react"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import Link from "next/link";
+import { use } from "react"
+import Link from "next/link"
 import { Button } from "@/components/ui/button"
+import { usePublicTableLookup } from "@/hooks/use-public-table-lookup"
 
-type MesaRow = {
-  id: string
-  name: string
-  table_number: string | null
-}
+type SearchParams = Promise<
+  Record<string, string | string[] | undefined>
+>
 
-const MIN_LEN = 4
-
-export default function MesasDomiDiegoPage() {
-  const [query, setQuery] = useState("")
-  const [results, setResults] = useState<MesaRow[]>([])
-  const [ready, setReady] = useState(false)
-  const [loading, setLoading] = useState(false)
-  const [error, setError] = useState<string | null>(null)
-
-  const trimmed = query.trim()
-  const canSearch = trimmed.length >= MIN_LEN
-
-  const runSearch = useCallback(async (q: string) => {
-    const t = q.trim()
-    if (t.length < MIN_LEN) {
-      setResults([])
-      setReady(false)
-      setError(null)
-      return
-    }
-
-    setLoading(true)
-    setError(null)
-
-    try {
-      const res = await fetch(
-        `/api/mesas/boda-domi-diego?q=${encodeURIComponent(t)}`,
-      )
-      const data = await res.json().catch(() => null)
-
-      if (!res.ok) {
-        throw new Error(
-          typeof data?.error === "string"
-            ? data.error
-            : "No pudimos completar la búsqueda.",
-        )
-      }
-
-      setResults(Array.isArray(data?.results) ? data.results : [])
-      setReady(Boolean(data?.ready))
-    } catch (e) {
-      setResults([])
-      setReady(true)
-      setError(e instanceof Error ? e.message : "Ocurrió un error.")
-    } finally {
-      setLoading(false)
-    }
-  }, [])
-
-  useEffect(() => {
-    if (!canSearch) {
-      setResults([])
-      setReady(false)
-      setError(null)
-      return
-    }
-
-    const id = window.setTimeout(() => {
-      void runSearch(trimmed)
-    }, 320)
-
-    return () => window.clearTimeout(id)
-  }, [canSearch, trimmed, runSearch])
+export default function MesasDomiDiegoPage({
+  searchParams,
+}: {
+  searchParams: SearchParams
+}) {
+  const token = use(searchParams).token
+  const lookup = usePublicTableLookup(
+    "/api/mesas/boda-domi-diego",
+    token,
+  )
 
   return (
     <div className="min-h-screen overflow-x-hidden bg-[#667b5f] hanken-grotesk-regular text-[#fcf5ed]">
@@ -88,49 +32,59 @@ export default function MesasDomiDiegoPage() {
           </h1>
         </div>
 
-        <div className="">
-          <div className="space-y-2">
-            <Label
-              htmlFor="mesa-search"
-              className="text-[#fcf5ed] text-sm font-medium"
-            >
-              Nombre y apellido
-            </Label>
-            <Input
-              id="mesa-search"
-              type="search"
-              autoComplete="off"
-              autoCorrect="off"
-              spellCheck={false}
-              placeholder="Escribí al menos 4 letras…"
-              value={query}
-              onChange={(e) => setQuery(e.target.value)}
-              className="h-11 border-[#fcf5ed]/35 bg-[#fcf5ed]/95 text-[#3c4439] placeholder:text-[#667b5f]/55 focus-visible:border-[#b48d64] focus-visible:ring-[#b48d64]/40"
-            />
-          </div>
+        <div>
+          <p className="text-center text-sm text-[#fcf5ed]/85">
+            La mesa se consulta de forma privada desde el enlace personal de tu
+            invitación.
+          </p>
 
           <div className="mt-6 min-h-[4rem]">
-
-            {canSearch && loading && (
-              <p className="text-sm text-[#fcf5ed]/80">Buscando…</p>
+            {lookup.status === "loading" && (
+              <p className="text-sm text-[#fcf5ed]/80">Consultando…</p>
             )}
 
-            {canSearch && !loading && error && (
-              <p className="text-sm text-amber-100/95">{error}</p>
-            )}
-
-            {canSearch && !loading && !error && ready && results.length === 0 && (
-              <p className="text-sm text-[#fcf5ed]/85">
-                No encontramos coincidencias. Revisá la ortografía o probá con
-                otro fragmento del nombre.
+            {lookup.status === "missing" && (
+              <p className="text-sm text-amber-100/95">
+                Abrí el enlace personalizado que recibiste con tu invitación.
+                Si llegaste desde un QR general, pediles a los novios que te lo
+                reenvíen.
               </p>
             )}
 
-            {canSearch && !loading && !error && results.length > 0 && (
+            {lookup.status === "invalid" && (
+              <p className="text-sm text-amber-100/95">
+                Este enlace no es válido. Pediles a los novios que te reenvíen
+                tu invitación.
+              </p>
+            )}
+
+            {lookup.status === "error" && (
+              <div className="space-y-3">
+                <p className="text-sm text-amber-100/95">{lookup.message}</p>
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={() => window.location.reload()}
+                  className="border-[#fcf5ed]/40 bg-transparent text-[#fcf5ed] hover:bg-[#fcf5ed]/10 hover:text-[#fcf5ed]"
+                >
+                  Reintentar
+                </Button>
+              </div>
+            )}
+
+            {lookup.status === "ready" &&
+              lookup.assignments.length === 0 && (
+                <p className="text-sm text-[#fcf5ed]/85">
+                  Todavía no hay una mesa para mostrar. Acá solo aparecen los
+                  integrantes que confirmaron asistencia.
+                </p>
+              )}
+
+            {lookup.status === "ready" && lookup.assignments.length > 0 && (
               <ul className="space-y-3">
-                {results.map((row) => (
+                {lookup.assignments.map((row, index) => (
                   <li
-                    key={row.id}
+                    key={`${row.name}-${index}`}
                     className="flex justify-between items-center flex-wrap gap-0.5 rounded-lg border border-[#fcf5ed]/20 bg-[#667b5f]/40 px-4 py-3 sm:flex-row sm:items-baseline sm:justify-between sm:gap-4"
                   >
                     <span className="font-medium text-[#fcf5ed]">
@@ -139,9 +93,7 @@ export default function MesasDomiDiegoPage() {
                     <span className="instrument-serif-regular text-2xl  w-[70px] text-[#fcf5ed]">
                       Mesa &nbsp;
                       <span className="text-[#fcf5ed]">
-                        {row.table_number?.trim()
-                          ? row.table_number.trim()
-                          : "—"}
+                        {row.table ?? "—"}
                       </span>
                     </span>
                   </li>
@@ -150,9 +102,9 @@ export default function MesasDomiDiegoPage() {
             )}
           </div>
         </div>
-    
-      <footer className="text-center text-sm text-[#fcf5ed]/80 mt-auto">
-      <div className="max-w-6xl mx-auto text-[#3c4439]">
+
+        <footer className="text-center text-sm text-[#fcf5ed]/80 mt-auto">
+          <div className="max-w-6xl mx-auto text-[#3c4439]">
             <div className="text-center mt-2">
               <p className="text-xs">
                 Hecho especialmente para Diego y Domi por Invitia.uy
@@ -166,7 +118,7 @@ export default function MesasDomiDiegoPage() {
               </Button>
             </div>
           </div>
-      </footer>
+        </footer>
       </main>
     </div>
   )

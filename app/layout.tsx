@@ -1,73 +1,31 @@
 import type React from "react"
-import {
-  Montserrat,
-  Italianno,
-  Allura,
-  Cormorant_Garamond as CormorantGaramond,
-  Bodoni_Moda,
-  Dancing_Script,
-  Tangerine,
-  EB_Garamond,
-} from "next/font/google"
 import localFont from "next/font/local";
+import "@fontsource-variable/montserrat/wght.css"
+import "@fontsource/italianno/latin.css"
+import "@fontsource/allura/latin.css"
+import "@fontsource-variable/cormorant-garamond/wght.css"
+import "@fontsource-variable/cormorant-garamond/wght-italic.css"
+import "@fontsource-variable/bodoni-moda/wght.css"
+import "@fontsource-variable/dancing-script/wght.css"
+import "@fontsource/tangerine/latin.css"
+import "@fontsource-variable/eb-garamond/wght.css"
+import "@fontsource/dynalight/latin.css"
+import "@fontsource-variable/lora/wght.css"
+import "@fontsource-variable/lora/wght-italic.css"
+import "@fontsource-variable/source-sans-3/wght.css"
+import "@fontsource-variable/source-sans-3/wght-italic.css"
+import "@fontsource/italiana/latin.css"
+import "@fontsource/shadows-into-light/latin.css"
+import "@fontsource/instrument-serif/latin.css"
+import "@fontsource/instrument-serif/latin-italic.css"
+import "@fontsource-variable/hanken-grotesk/wght.css"
+import "@fontsource-variable/hanken-grotesk/wght-italic.css"
+import "@fontsource-variable/playwrite-no/wght.css"
 import "./globals.css"
-
-const montserrat = Montserrat({
-  subsets: ["latin"],
-  variable: "--font-montserrat",
-  display: "swap",
-})
-
-const italianno = Italianno({
-  subsets: ["latin"],
-  variable: "--font-italianno",
-  weight: "400",
-  display: "swap",
-})
 
 const umekoPlum = localFont({
   src: "../public/fonts/Umeko Plum.otf",
   variable: "--font-umeko",
-  display: "swap",
-})
-
-const allura = Allura({
-  subsets: ["latin"],
-  variable: "--font-allura",
-  weight: "400",
-  display: "swap",
-})
-
-const cormorantGaramond = CormorantGaramond({
-  subsets: ["latin"],
-  variable: "--font-cormorant-garamond",
-  weight: "400",
-  display: "swap",
-})
-
-const bodoni = Bodoni_Moda({
-  subsets: ["latin"],
-  variable: "--font-bodoni",
-  display: "swap",
-})
-
-const dancing = Dancing_Script({
-  subsets: ["latin"],
-  variable: "--font-dancing",
-  display: "swap",
-})
-
-const tangerine = Tangerine({
-  subsets: ["latin"],
-  variable: "--font-tangerine",
-  weight: "400",
-  display: "swap",
-})
-
-const ebGaramond = EB_Garamond({
-  subsets: ["latin"],
-  variable: "--font-eb-garamond",
-  weight: "400",
   display: "swap",
 })
 
@@ -84,22 +42,8 @@ export default function RootLayout({
   return (
     <html
       lang="es"
-      className={`${montserrat.variable} ${italianno.variable} ${umekoPlum.variable} ${cormorantGaramond.variable} ${allura.variable} ${bodoni.variable} ${dancing.variable} ${tangerine.variable} ${ebGaramond.variable} antialiased`}
+      className={`${umekoPlum.variable} antialiased`}
     >
-      <head>
-        <link rel="preconnect" href="https://fonts.googleapis.com" />
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
-        <link href="https://fonts.googleapis.com/css2?family=Dynalight&family=Lora:ital,wght@0,400..700;1,400..700&display=swap" rel="stylesheet" />
-        <link rel="preconnect" href="https://fonts.gstatic.com" />
-        <link href="https://fonts.googleapis.com/css2?family=Source+Sans+3:ital,wght@0,200..900;1,200..900&display=swap" rel="stylesheet" />
-        <link href="https://api.fontshare.com/v2/css?f[]=boska@400,500,600,700&display=swap" rel="stylesheet" />
-        <link href="https://fonts.googleapis.com/css2?family=Allura&display=swap" rel="stylesheet" />
-        <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300..700;1,300..700&display=swap" rel="stylesheet" />
-        <link href="https://fonts.googleapis.com/css2?family=Italiana&family=Shadows+Into+Light&display=swap" rel="stylesheet" />
-        <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet"></link>
-        <link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet"></link>
-        <link href="https://fonts.googleapis.com/css2?family=Playwrite+NO:wght@100..400&display=swap" rel="stylesheet"></link>
-      </head>
       <body className="font-sans">{children}</body>
     </html>
   )

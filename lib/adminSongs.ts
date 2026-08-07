@@ -1,4 +1,5 @@
 import { tryParseJsonStringArray } from "@/lib/adminDrinks"
+import { serializeCsv } from "@/lib/csv-export"
 
 /** Normaliza favorite_song (string, array o JSON) a lista de canciones. */
 export function extractSongsFromValue(raw: unknown): string[] {
@@ -63,13 +64,6 @@ export function buildSongExportRows(
     .map((cancion) => ({ cancion }))
 }
 
-function escapeCSV(value: string): string {
-  if (/[",\n\r]/.test(value)) {
-    return `"${value.replace(/"/g, '""')}"`
-  }
-  return value
-}
-
 export function downloadSongsCsv(
   rsvps: { favorite_song?: unknown }[],
   tableName: string,
@@ -77,12 +71,12 @@ export function downloadSongsCsv(
   const rows = buildSongExportRows(rsvps)
   if (rows.length === 0) return
 
-  const csvRows = [
-    escapeCSV("Canción"),
-    ...rows.map((row) => escapeCSV(row.cancion)),
-  ]
+  const csv = serializeCsv([
+    ["Canción"],
+    ...rows.map((row) => [row.cancion]),
+  ])
 
-  const blob = new Blob(["\uFEFF" + csvRows.join("\n")], {
+  const blob = new Blob([csv], {
     type: "text/csv;charset=utf-8;",
   })
   const url = URL.createObjectURL(blob)

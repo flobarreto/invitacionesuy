@@ -12,6 +12,7 @@ import bcrypt from "bcryptjs"
 import { createClient } from "@supabase/supabase-js"
 import { config } from "dotenv"
 import { resolve } from "path"
+import { ADMIN_PASSWORD_BCRYPT_ROUNDS } from "../lib/auth-password"
 
 // Cargar variables de entorno desde .env.local o .env
 config({ path: resolve(process.cwd(), ".env.local") })
@@ -42,8 +43,10 @@ const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY, {
 async function createAdminUser(username: string, password: string, tableName?: string) {
   try {
     // Hashear la contraseña
-    const saltRounds = 10
-    const hashedPassword = await bcrypt.hash(password, saltRounds)
+    const hashedPassword = await bcrypt.hash(
+      password,
+      ADMIN_PASSWORD_BCRYPT_ROUNDS,
+    )
 
     // Insertar en la tabla admin
     const { data, error } = await supabase

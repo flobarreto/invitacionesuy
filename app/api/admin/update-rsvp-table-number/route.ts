@@ -1,40 +1,39 @@
 import { NextResponse } from "next/server"
-import { requireAuthWithTable } from "@/lib/auth"
+import { assertMutationRequest, requireAuthWithTable } from "@/lib/auth"
+import { crmErrorResponse } from "@/lib/crm/errors"
+import { enforceRateLimit } from "@/lib/crm/rate-limit"
+import {
+  legacyRsvpTableSchema,
+  logLegacyDatabaseError,
+  parseLegacyJson,
+} from "@/lib/legacy-admin-api"
 import { supabaseAdmin } from "@/lib/supabase"
 
 export async function PUT(request: Request) {
   try {
-    const { tableName } = await requireAuthWithTable()
+    assertMutationRequest(request)
+    const { adminId, eventId, tableName } = await requireAuthWithTable("write")
 
     if (!supabaseAdmin) {
       return NextResponse.json(
-        { error: "Error de configuración del servidor" },
-        { status: 500 }
+        { error: "El servicio no está disponible" },
+        { status: 503 },
       )
     }
 
-    let payload: {
-      rsvpId?: string
-      tableNumber?: string | null
+    await enforceRateLimit({
+      request,
+      namespace: "legacy_admin_rsvp_update",
+      scope: eventId,
+      identifier: adminId,
+      limit: 120,
+      windowSeconds: 60,
+    })
+    const parsed = await parseLegacyJson(request, legacyRsvpTableSchema)
+    if (!parsed.success) {
+      return NextResponse.json({ error: parsed.error }, { status: parsed.status })
     }
-
-    try {
-      payload = await request.json()
-    } catch {
-      return NextResponse.json(
-        { error: "Formato inválido" },
-        { status: 400 }
-      )
-    }
-
-    const { rsvpId, tableNumber } = payload
-
-    if (!rsvpId) {
-      return NextResponse.json(
-        { error: "El ID del RSVP es obligatorio" },
-        { status: 400 }
-      )
-    }
+    const { rsvpId, tableNumber } = parsed.data
 
     // Normalizar el número de mesa (case-insensitive, guardando en mayúsculas)
     const normalizedTableNumber =
@@ -49,14 +48,14 @@ export async function PUT(request: Request) {
         table_number: normalizedTableNumber && normalizedTableNumber.length > 0 ? normalizedTableNumber : null,
       })
       .eq("id", rsvpId)
-      .select()
+      .select("id,table_number")
       .single()
 
     if (error) {
-      console.error("Error updating RSVP table number:", error)
+      logLegacyDatabaseError("update_rsvp_table", error)
       return NextResponse.json(
         { error: "Error al actualizar el número de mesa" },
-        { status: 500 }
+        { status: error.code === "PGRST116" ? 404 : 503 },
       )
     }
 
@@ -64,17 +63,7 @@ export async function PUT(request: Request) {
       ok: true, 
       rsvp: updatedData 
     })
-  } catch (error: any) {
-    if (error.message === "Unauthorized") {
-      return NextResponse.json(
-        { error: "No autorizado" },
-        { status: 401 }
-      )
-    }
-    console.error("Error in update-rsvp-table-number route:", error)
-    return NextResponse.json(
-      { error: "Error al actualizar el número de mesa" },
-      { status: 500 }
-    )
+  } catch (error: unknown) {
+    return crmErrorResponse(error)
   }
 }

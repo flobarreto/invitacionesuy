@@ -3,7 +3,39 @@
 
 @custom-variant dark (&:is(.dark *));
 
+@font-face {
+  font-family: "Boska";
+  src: url("/fonts/Boska-400.woff2") format("woff2");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Boska";
+  src: url("/fonts/Boska-500.woff2") format("woff2");
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Boska";
+  src: url("/fonts/Boska-700.woff2") format("woff2");
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
 :root {
+  --font-montserrat: "Montserrat Variable";
+  --font-italianno: "Italianno";
+  --font-allura: "Allura";
+  --font-cormorant-garamond: "Cormorant Garamond Variable";
+  --font-bodoni: "Bodoni Moda Variable";
+  --font-dancing: "Dancing Script Variable";
+  --font-tangerine: "Tangerine";
+  --font-eb-garamond: "EB Garamond Variable";
   --background: oklch(1 0 0);
   --foreground: oklch(0.145 0 0);
   --card: oklch(1 0 0);
@@ -124,7 +156,7 @@
   }
 
   .lora-font {
-    font-family: "Lora", serif;
+    font-family: "Lora Variable", serif;
     font-optical-sizing: auto;
     font-weight: 400;
     font-style: normal;
@@ -136,7 +168,7 @@
   }
 
   .source-sans-3-font {
-    font-family: "Source Sans 3", sans-serif;
+    font-family: "Source Sans 3 Variable", sans-serif;
     font-optical-sizing: auto;
     font-weight: 400;
     font-style: normal;
@@ -199,7 +231,7 @@
   }
 
   .hanken-grotesk-regular {
-    font-family: "Hanken Grotesk", sans-serif;
+    font-family: "Hanken Grotesk Variable", sans-serif;
     font-optical-sizing: auto;
     font-weight: 400;
     font-style: normal;
@@ -208,7 +240,7 @@
   /* <weight>: Use a value from 100 to 400
      <uniquifier>: Use a unique and descriptive class name */
   .playwrite-norge {
-    font-family: "Playwrite NO", cursive;
+    font-family: "Playwrite NO Variable", cursive;
     font-optical-sizing: auto;
     font-weight: 200;
     font-style: normal;

@@ -1,6 +1,5 @@
 "use client";
 
-import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { FormEvent, useEffect, useState } from "react";
 import { Copy } from "lucide-react";
@@ -8,18 +7,23 @@ import { toast } from "sonner";
 import { Toaster } from "@/components/ui/sonner";
 import Link from "next/link";
 import { copyToClipboard } from "@/app/utils/copyToClipboard";
-import { getTimeLeftToUruguayDate, type TimeLeft } from "@/app/utils/countdown";
-
-const WEDDING_DATE_ISO = "2026-05-30T20:00:00-03:00";
-
+import { useInvitationCountdown } from "@/hooks/invitations/use-invitation-countdown";
+import { useRsvpSubmission } from "@/hooks/invitations/use-rsvp-submission";
+import { useInvitationCalendarUrl } from "@/hooks/invitations/use-invitation-calendar-url";
 
 export default function BodaDomiDiegoHotel() {
   const accountNumber = "3602397";
-  const [timeLeft, setTimeLeft] = useState<TimeLeft>({
-    days: 0,
-    hours: 0,
-    minutes: 0,
-  });
+  const timeLeft = useInvitationCountdown("domi-diego-hotel");
+  const calendarUrl = useInvitationCalendarUrl("domi-diego-hotel");
+  const {
+    status: rsvpStatus,
+    feedback: submissionFeedback,
+    isSubmitting,
+    ensureOpen,
+    resetFeedback,
+    setFeedback: setSubmissionFeedback,
+    submit: submitRsvp,
+  } = useRsvpSubmission("domi-diego-hotel");
   const [accountCopied, setAccountCopied] = useState(false);
   const [guestName, setGuestName] = useState("");
   const [guestEmail, setGuestEmail] = useState("");
@@ -30,12 +34,6 @@ export default function BodaDomiDiegoHotel() {
     "no",
   ]);
   const [otroText, setOtroText] = useState("");
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [submissionFeedback, setSubmissionFeedback] = useState<{
-    type: "success" | "error";
-    message: string;
-  } | null>(null);
-
   /** Solo desktop (md+): abrir enlaces externos en pestaña nueva; en mobile, misma pestaña. */
   const [openExternalInNewTab, setOpenExternalInNewTab] = useState<
     boolean | null
@@ -49,18 +47,11 @@ export default function BodaDomiDiegoHotel() {
     return () => mq.removeEventListener("change", sync);
   }, []);
 
-  useEffect(() => {
-    const update = () => {
-      setTimeLeft(getTimeLeftToUruguayDate(WEDDING_DATE_ISO));
-    };
-    update();
-    const timer = setInterval(update, 1000);
-    return () => clearInterval(timer);
-  }, []);
-
   const handleRsvpSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    setSubmissionFeedback(null);
+    resetFeedback();
+
+    if (!ensureOpen()) return;
 
     if (!guestName.trim()) {
       setSubmissionFeedback({
@@ -70,71 +61,40 @@ export default function BodaDomiDiegoHotel() {
       return;
     }
 
-    setIsSubmitting(true);
+    const validPreferences = dietaryPreferences
+      .filter((p) => p !== "no" && p !== "otro" && !p.startsWith("otro:"))
+      .filter((value, index, self) => self.indexOf(value) === index);
 
-    try {
-      const validPreferences = dietaryPreferences
-        .filter((p) => p !== "no" && p !== "otro" && !p.startsWith("otro:"))
-        .filter((value, index, self) => self.indexOf(value) === index);
+    const finalPreferences = otroText.trim()
+      ? [...validPreferences, otroText.trim()].filter(
+          (value, index, self) => self.indexOf(value) === index,
+        )
+      : validPreferences;
 
-      const finalPreferences = otroText.trim()
-        ? [...validPreferences, otroText.trim()].filter(
-            (value, index, self) => self.indexOf(value) === index,
-          )
-        : validPreferences;
+    const submitted = await submitRsvp({
+      name: guestName.trim(),
+      email: guestEmail.trim(),
+      attendance: attendanceResponse,
+      dietaryPreferences: finalPreferences,
+    });
+    if (!submitted) return;
 
-      const response = await fetch("/api/rsvp/bodaDomiDiego", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          name: guestName.trim(),
-          email: guestEmail.trim(),
-          attendance: attendanceResponse,
-          dietaryPreferences: finalPreferences,
-        }),
-      });
+    toast.success(
+      attendanceResponse === "si"
+        ? "¡Te esperamos!"
+        : "¡Gracias por tu respuesta!",
+      {
+        position: "bottom-center",
+        duration: 7000,
+      },
+    );
+    setGuestName("");
+    setGuestEmail("");
+    setAttendanceResponse("si");
+    setDietaryPreferences(["no"]);
+    setOtroText("");
 
-      if (!response.ok) {
-        const errorBody = await response.json().catch(() => null);
-        throw new Error(
-          errorBody?.error ??
-            "No pudimos guardar tu respuesta. Intenta nuevamente.",
-        );
-      }
-
-      setSubmissionFeedback({
-        type: "success",
-        message: "¡Gracias! Registramos tu respuesta.",
-      });
-      toast.success(
-        attendanceResponse === "si"
-          ? "¡Te esperamos!"
-          : "¡Gracias por tu respuesta!",
-        {
-          position: "bottom-center",
-          duration: 7000,
-        },
-      );
-      setGuestName("");
-      setGuestEmail("");
-      setAttendanceResponse("si");
-      setDietaryPreferences(["no"]);
-      setOtroText("");
-
-      setTimeout(() => setSubmissionFeedback(null), 5000);
-    } catch (error) {
-      setSubmissionFeedback({
-        type: "error",
-        message:
-          error instanceof Error
-            ? error.message
-            : "Ocurrió un error inesperado. Intenta nuevamente.",
-      });
-    } finally {
-      setIsSubmitting(false);
-    }
+    setTimeout(resetFeedback, 5000);
   };
 
   const copyAccountNumber = async () => {
@@ -322,7 +282,7 @@ export default function BodaDomiDiegoHotel() {
               </a>
 
               <a
-                href="https://calendar.google.com/calendar/u/0/r/eventedit?text=Boda+Domi+%26+Diego&dates=20260530T230000Z/20260531T070000Z&location=Regency+Park+Hotel%2C+Montevideo"
+                href={calendarUrl}
                 target={openExternalInNewTab === true ? "_blank" : undefined}
                 rel={
                   openExternalInNewTab === true
@@ -571,7 +531,7 @@ export default function BodaDomiDiegoHotel() {
 
                 <Button
                   type="submit"
-                  disabled={isSubmitting}
+                  disabled={isSubmitting || rsvpStatus !== "open"}
                   className="w-full rounded-full border border-[#f5f3ef] bg-transparent instrument-serif-regular py-6 text-[1.5rem]  font-normal uppercase text-[#fcf5ed] hover:bg-[#f5f3ef]/90 disabled:opacity-50"
                 >
                   {isSubmitting ? "Enviando..." : "Confirmar"}
