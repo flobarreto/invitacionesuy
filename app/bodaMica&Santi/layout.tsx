@@ -11,7 +11,7 @@ function getMetadataBase(): URL {
 }
 
 /** Ruta codificada para og:image (evita que `&` se interprete como inicio de query). */
-const OG_IMAGE_PATH = "/bodaMica%26Santi/meta-foto.jpeg";
+const OG_IMAGE_PATH = "/bodaMica%26Santi/meta-foto2.jpeg";
 
 export const metadata: Metadata = {
   metadataBase: getMetadataBase(),

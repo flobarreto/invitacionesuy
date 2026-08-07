@@ -166,6 +166,14 @@ export default function BodaMicaSanti() {
         message: "¡Gracias! Registramos tu respuesta.",
       });
 
+      if (attendanceResponse === "si") {
+        if (isIPhone()) {
+          setCalendarChoiceOpen(true);
+        } else {
+          openGoogleCalendar();
+        }
+      }
+
       setGuestName("");
       setAttendanceResponse("si");
       setDietaryPreferences(["no"]);
@@ -321,38 +329,7 @@ export default function BodaMicaSanti() {
       </section> */}
 
 
-    
-      <section
-        className="relative bg-cover bg-bottom bg-no-repeat px-4 py-20"
-        style={{
-          backgroundImage: "url('/bodaMica%26Santi/ceremonia.png')",
-        }}
-      >
-        <div className="mx-auto flex flex-col items-center justify-center rounded-lg bg-[#FBF7F4]/90 p-8 max-w-[85%] text-center">
-          <p className="font-allura text-xl md:text-2xl text-[#966200] mb-4">
-            Ceremonia y Fiesta
-          </p>
-          <p className="text-[#966200] text-2xl font-medium">
-
-          Viña Varela Zarranz
-          </p>
-          
-          <a
-              href="https://maps.app.goo.gl/xnSWNpQYU9fHXazY6"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-block text-[#B89080] no-underline transition-opacity hover:opacity-80 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#B89080] focus-visible:ring-offset-2 rounded-sm"
-            >
-              <span className="block text-sm md:text-xl">
-               74 km 29 · Joaquín Suárez · Canelones
-              </span>
-            </a>
-          <Button className="bg-[#8D8A40] rounded-xl text-white mt-4 p-3 h-[30px]" onClick={() => window.open("https://ul.waze.com/ul?venue_id=199230893.1992046783.17618772&overview=yes&utm_campaign=default&utm_source=waze_website&utm_medium=lm_share_location", "_blank", "noopener,noreferrer")}>
-            Cómo ir?
-          </Button>
-        </div>
-      </section>
-      <section className="bg-[#8B6F5E] py-8"
+       <section className="bg-[#8B6F5E] py-8"
       >
           <div className="flex flex-col items-center justify-center py-4">
             <span className="text-2xl text-[#f9f2e5] font-allura">
@@ -397,6 +374,37 @@ export default function BodaMicaSanti() {
           </div>
 
       </section>
+      <section
+        className="relative bg-cover bg-bottom bg-no-repeat px-4 py-20"
+        style={{
+          backgroundImage: "url('/bodaMica%26Santi/ceremonia.png')",
+        }}
+      >
+        <div className="mx-auto flex flex-col items-center justify-center rounded-lg bg-[#FBF7F4]/90 p-8 max-w-[85%] text-center">
+          <p className="font-allura text-xl md:text-2xl text-[#966200] mb-4">
+            Ceremonia y Fiesta
+          </p>
+          <p className="text-[#966200] text-2xl font-medium">
+
+          Viña Varela Zarranz
+          </p>
+          
+          <a
+              href="https://maps.app.goo.gl/xnSWNpQYU9fHXazY6"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-block text-[#B89080] no-underline transition-opacity hover:opacity-80 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#B89080] focus-visible:ring-offset-2 rounded-sm"
+            >
+              <span className="block text-sm md:text-xl">
+               74 km 29 · Joaquín Suárez · Canelones
+              </span>
+            </a>
+          <Button className="bg-[#8D8A40] rounded-xl text-white mt-4 p-3 h-[30px]" onClick={() => window.open("https://ul.waze.com/ul?venue_id=199230893.1992046783.17618772&overview=yes&utm_campaign=default&utm_source=waze_website&utm_medium=lm_share_location", "_blank", "noopener,noreferrer")}>
+            Cómo ir?
+          </Button>
+        </div>
+      </section>
+   
 
        <section className="py-8 bg-white">
         <div className="max-w-5xl mx-auto px-6 text-center pb-6">
@@ -497,7 +505,7 @@ export default function BodaMicaSanti() {
             Asistencia
           </h2>
           <span className="text-xs text-[#8B6F5E]/80">
-Por favor, confirmá antes del 1 de octubre
+Por favor, confirmá antes del 28 de setiembre
               </span>
           </div>
 
