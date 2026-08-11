@@ -166,14 +166,6 @@ export default function BodaMicaSanti() {
         message: "¡Gracias! Registramos tu respuesta.",
       });
 
-      if (attendanceResponse === "si") {
-        if (isIPhone()) {
-          setCalendarChoiceOpen(true);
-        } else {
-          openGoogleCalendar();
-        }
-      }
-
       setGuestName("");
       setAttendanceResponse("si");
       setDietaryPreferences(["no"]);
