@@ -24,7 +24,8 @@ export async function GET() {
       supabaseAdmin.from(tableName).select("favorite_song"),
     ])
 
-    if (songsResult.error) {
+    // Código 42703: la tabla de este evento no tiene columna favorite_song (no usa canciones).
+    if (songsResult.error && songsResult.error.code !== "42703") {
       console.error("Error fetching meta:", songsResult.error)
       return NextResponse.json(
         { error: "Error al obtener metadatos" },
@@ -32,7 +33,9 @@ export async function GET() {
       )
     }
 
-    const hasSongs = eventHasSongResponses(songsResult.data ?? [])
+    const hasSongs = songsResult.error
+      ? false
+      : eventHasSongResponses(songsResult.data ?? [])
 
     return NextResponse.json({
       tableName,

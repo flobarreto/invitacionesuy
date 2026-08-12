@@ -44,12 +44,15 @@ export async function POST(request: Request) {
       name: name.trim(),
       attendance,
       dietary_preferences: dietaryPreferences,
-      drink,
     }
 
-    // Solo incluir favorite_song si está presente y no está vacío
+    // Solo incluir favorite_song/drink si están presentes: algunas tablas de evento no tienen esas columnas
     if (favoriteSong && favoriteSong.trim()) {
       insertData.favorite_song = favoriteSong.trim()
+    }
+
+    if (Array.isArray(drink) && drink.length > 0) {
+      insertData.drink = drink
     }
 
     const { error } = await supabaseAdmin.from(tableName).insert(insertData)
